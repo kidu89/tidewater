@@ -36,7 +36,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The latest verified APK is **1.0.10** (Android version code **11**), package `com.fishingfree.game`, minimum API 24 and target API 36. Android Actions run [`36890236881`](https://github.com/kidu89/tidewater/actions/runs/36890236881) produced the 51.7 MB debug APK; it has not been tested on a physical phone. Version 1.0.11 deployed the PWA. Version 1.0.12 source changes the Android 12+ APK to launch the PWA through Chrome; its APK build and Samsung A52 install have not yet been verified. The debug APK is not a Play Store release.
+Android version **1.0.12** (version code **13**), package `com.fishingfree.game`, minimum API 24 and target API 36, built successfully in [Actions run 36899442319](https://github.com/kidu89/tidewater/actions/runs/36899442319). Download its `Fishing-Free-Android-APK` artifact (54.6 MB; digest `sha256:d64c8865785833399775e5c10a8078ab519f171b6c58361cac7178927dd5ceff`), extract `app-debug.apk` from the downloaded ZIP, then send that APK to the phone. This debug APK has not been installed on the Samsung A52. On Android 12+, it opens the deployed game in Chrome; first launch requires internet, then the PWA cache can support later offline launches. The artifact is not a Play Store release. Because each GitHub-hosted debug build may use a different debug signing key, installing over a previous debug APK may require uninstalling the old app first; that can erase the local save.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
@@ -49,7 +49,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Source metadata is now app version **1.0.11**, build **12**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Source metadata is now app version **1.0.12**, build **13**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.

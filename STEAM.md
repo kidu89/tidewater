@@ -11,6 +11,8 @@ npm run desktop:package:win
 
 The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe` from that folder. It is not an installer; Steam installs the depot files and starts this executable.
 
+The local version 1.0.12 package was built successfully with `npm run desktop:package:win`. A transport archive is `release/Fishing-Free-1.0.12-Windows-x64.zip` (216,377,690 bytes; SHA-256 `04D1DA8CCB23C086EEF3D8A1B914DFE77C2C52C4F43D83C6D6D4E0949B40513C`). It is unsigned and has not been launched from a clean Windows install or through Steam; extract it before assigning its folder as SteamPipe's content root.
+
 ## Build it with GitHub Actions
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.

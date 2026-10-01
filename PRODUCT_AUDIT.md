@@ -168,11 +168,16 @@ Store prices, policies, title availability, platform coverage and review counts 
 - The intended Samsung A52 path is Chrome's standalone PWA, which avoids relying on Android System WebView for WebGPU. Chrome documents mobile Android WebGPU support on Android 12+ with Qualcomm or ARM GPUs; the user's Huawei screenshot identifies Android 10 and is below that documented support floor. Safari 26 added WebGPU for iOS 26, so older iOS devices still have the Canvas fallback. Sources: [Chrome Android WebGPU support](https://developer.chrome.com/blog/new-in-webgpu-121/) and [WebKit WebGPU demo/support page](https://webkit.org/demos/webgpu/).
 - The 1.0.11 source assigns Android version code 12 and iOS build 12. The corresponding debug APK and signed IPA have not been built. The PWA does not replace Play App Signing, App Store signing, or approval.
 
-## Android Chrome handoff — version 1.0.12 source (pending package and device check)
+## Android Chrome handoff — version 1.0.12 package
 
 - On Android 12+, the launcher now opens the deployed PWA in the installed Chrome app so the game can use Chrome's WebGPU path instead of depending on Android System WebView. If Chrome cannot be opened, the bundled Capacitor/Canvas game remains the fallback. This preserves the user's sideloaded-APK installation path while routing the Samsung A52 toward the intended renderer.
 - This handoff launches a hosted page: the first launch needs internet, and the PWA service worker caches assets as they load for later offline launches. Android versions before 12 continue to use the bundled Canvas game because Chrome's published WebGPU support begins at Android 12 on supported Qualcomm/ARM GPUs.
-- Source version is 1.0.12, Android version code 13 and iOS build 13. The Android package has not yet been built, installed, or checked on a physical A52; the external Chrome launch and WebGPU adapter acquisition are still device gates. The PWA itself was deployed and its manifest/worker/assets returned HTTP 200 in the 1.0.11 deployment.
+- GitHub Actions run [`36899442319`](https://github.com/kidu89/tidewater/actions/runs/36899442319) completed successfully for tag `android-v1.0.12` and uploaded the 54.6 MB `Fishing-Free-Android-APK` artifact (digest `sha256:d64c8865785833399775e5c10a8078ab519f171b6c58361cac7178927dd5ceff`). Source version is 1.0.12, Android version code 13 and iOS build 13. The APK has not been installed or checked on a physical A52; the external Chrome launch and WebGPU adapter acquisition are still device gates. The PWA itself was deployed and its manifest/worker/assets returned HTTP 200 in the 1.0.11 deployment.
+
+## Windows package — version 1.0.12 local build
+
+- `npm run desktop:package:win` completed successfully and produced `release/win-unpacked/` (449,101,122 bytes across 884 files). The `Fishing Free.exe` launcher is present. A 216,377,690-byte ZIP transport archive was created with SHA-256 `04D1DA8CCB23C086EEF3D8A1B914DFE77C2C52C4F43D83C6D6D4E0949B40513C`.
+- This local x64 package is unsigned and was not launched from a clean install or through Steam. It is not a Steam upload. Steamworks App ID, Windows depot, store approval and a clean Steam install/overlay check remain outstanding.
 
 ## Earlier local verification — 1 October 2026 (version 1.0.4)
 
