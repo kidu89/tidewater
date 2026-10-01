@@ -123,7 +123,7 @@ For digital features consumed inside a Play-distributed Android app, the current
 
 Store prices, policies, title availability, platform coverage and review counts are volatile. Recheck them immediately before a pricing decision or submission.
 
-## Last verified release artifacts — 1 October 2026 (version 1.0.6)
+## Earlier local verification — 1 October 2026 (version 1.0.6)
 
 - Current app source and release workflows are on `main` at commit `d61c72a344866a77c27fd2aa27056698c4dfa94b`. GitHub Pages run `36871617734` deployed that commit. The repository still carries GitHub's `forked from dgreenheck/tidewater` marker; required upstream license, credits and asset notices are preserved.
 - The local Android debug APK is `Fishing-Free-Android-1.0.6-debug.apk`, package `com.fishingfree.game`, version code 7, min API 24 and target API 36. It is 54,833,204 bytes with SHA-256 `F017EEFD2AD1D83FEAC34A2E6FA14169B521E2897C5CD0FF6C5A9EA9FB9E6047`. It installed and launched on the Android 16 x86_64 emulator. The emulator has no WebGPU adapter, so the app enters the local Canvas fishing mode. Physical installation and graphics behavior on the Samsung A52 remain unverified.
@@ -141,12 +141,12 @@ Store prices, policies, title availability, platform coverage and review counts 
 - The existing Canvas mobile fallback still fails the owner's visual-quality requirement. Version 1.0.7 does not resolve mobile renderer parity, and it must not be treated as the final Android or iOS release. Android phone/WebView startup and controller support remain unverified on hardware.
 - Next release evidence: validate 1.0.7 on the Samsung A52 and Huawei phone; address mobile renderer parity; test the Windows package with a physical controller and Steam client; obtain Apple signing assets and produce an install-verified IPA.
 
-## Current source candidate — version 1.0.8 (build pending)
+## Latest verified CI builds — version 1.0.8 (1 October 2026)
 
-- Package version is 1.0.8, Android version code 9 and iOS build 9. The production web build succeeds. Android and Windows GitHub Actions packages have not yet been built from this candidate.
+- Current `main` commit: `37a9f31cd8f73f89c8af7c4ed1ec3a65b577751b`; Android version code and iOS build are 9. The production web build succeeds. Pages run `36883908692` deployed the source. Android Actions run [`36883963522`](https://github.com/kidu89/tidewater/actions/runs/36883963522) succeeded and produced a 51.7 MB `Fishing-Free-Android-APK` artifact (digest `sha256:43d3b8a81507b76c0ceaaae30d4f4ad38b4c5a19443acf6968c6af49706a53b7`). Windows Actions run [`36883964645`](https://github.com/kidu89/tidewater/actions/runs/36883964645) succeeded and produced a 202 MB `Fishing-Free-Windows-x64` artifact (digest `sha256:0f3147f29b5f340da67a4daee507a1fc5fdcbc68f653e3b571ab4b3d5e6e0b6a`); its packaged startup smoke test passed. These are CI artifacts, not Play Store, Steam, or signed iOS releases.
 - The phone fallback now provides an optional local graphics report with OS, Chromium/WebKit version, secure-context status, WebGPU API presence, adapter request results and the reason the 3D renderer fell back. The report is not sent over the network; the player chooses whether to copy it.
-- This diagnostic improves fault isolation only. The Canvas fallback still does not meet the owner's visual-quality requirement, WebGPU behavior is unverified on both physical phones, and 1.0.8 must not be called a mobile graphics fix.
-- Next: build and inspect Android and Windows 1.0.8 artifacts; use the report on the actual phones; choose a supported rendering path that preserves the intended 3D visuals.
+- This diagnostic improves fault isolation only. The Canvas fallback still does not meet the owner's visual-quality requirement, WebGPU behavior is unverified on both physical phones, and 1.0.8 is not a mobile graphics fix. The debug APK has not been installed and checked on a physical device.
+- Next: use the report from the Samsung A52 and Huawei phone; choose a supported rendering path that preserves the intended 3D visuals; continue the physical Windows/Steam, iOS signing, and storefront validation gates above.
 
 ## Earlier local verification — 1 October 2026 (version 1.0.4)
 

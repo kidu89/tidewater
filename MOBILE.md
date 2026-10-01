@@ -32,7 +32,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The current source candidate is **1.0.8** (Android version code **9**), package `com.fishingfree.game`, minimum API 24 and target API 36. It adds an optional local graphics report to the phone mode; the renderer itself is unchanged. Build and install the Android `debug-apk` before collecting the report on a physical device. This is a debug-signed test package, not a Play Store release artifact. Version 1.0.7 run [`36878532424`](https://github.com/kidu89/tidewater/actions/runs/36878532424) is the last completed Android build (51.7 MB artifact; digest `sha256:01cf004a168456fe18e673406d3e3377db4870661484c20b4c1a4b5445a7f05f`).
+The current source build is **1.0.8** (Android version code **9**), package `com.fishingfree.game`, minimum API 24 and target API 36. It adds an optional local graphics report to the phone mode; the renderer itself is unchanged. Android Actions run [`36883963522`](https://github.com/kidu89/tidewater/actions/runs/36883963522) succeeded and produced the `Fishing-Free-Android-APK` artifact (51.7 MB; digest `sha256:43d3b8a81507b76c0ceaaae30d4f4ad38b4c5a19443acf6968c6af49706a53b7`). Download the artifact ZIP from that run and extract `app-debug.apk`. This is a debug-signed test package, not a Play Store release artifact, and it has not been tested on a physical phone. The diagnostics do not fix the simpler Canvas fallback or establish WebGPU support in Android System WebView.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
