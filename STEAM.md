@@ -1,5 +1,7 @@
 # Fishing Free — Steam for Windows
 
+The current store-page copy, verified feature list and media/release checklist are in [docs/STEAM_STORE_DRAFT.md](docs/STEAM_STORE_DRAFT.md). It is an internal draft, not a published Steam page.
+
 The game is packaged as an Electron desktop app. It runs the bundled Vite build from a loopback-only local server, so the game does not depend on a website being online. The renderer has Node integration disabled, uses context isolation and sandboxing, blocks navigation away from the game, and only opens explicitly linked HTTPS pages in the system browser.
 
 ## Build the Steam folder locally
@@ -11,13 +13,13 @@ npm run desktop:package:win
 
 The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe` from that folder. It is not an installer; Steam installs the depot files and starts this executable.
 
-The local version 1.0.12 package was built successfully with `npm run desktop:package:win`. A transport archive is `release/Fishing-Free-1.0.12-Windows-x64.zip` (216,377,690 bytes; SHA-256 `04D1DA8CCB23C086EEF3D8A1B914DFE77C2C52C4F43D83C6D6D4E0949B40513C`). It is unsigned and has not been launched from a clean Windows install or through Steam; extract it before assigning its folder as SteamPipe's content root.
+The local version 1.0.13 package was built successfully with `npm run desktop:package:win`. A transport archive is `release/Fishing-Free-1.0.13-Windows-x64.zip` (216,377,568 bytes; SHA-256 `C1685C783C74C3FB733545694ECF1C011E8C72E4209ACB77ABF8C732A4675D56`). It is unsigned and has not been launched from a clean Windows install or through Steam; extract it before assigning its folder as SteamPipe's content root.
 
 ## Build it with GitHub Actions
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.
 
-The owner's public repository is `kidu89/tidewater`. The latest Windows Actions build is version 1.0.12 at commit `7bf5a533ec36d9d3511f089cb1ca67088e5466ba`. Run [`36903452261`](https://github.com/kidu89/tidewater/actions/runs/36903452261) passed packaging, executable-presence and packaged-startup checks, then uploaded `Fishing-Free-Windows-x64`. The package includes the lower whale-breach pitch fix. CI artifacts are not Steam uploads. Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
+The owner's public repository is `kidu89/tidewater`. The latest Windows Actions build is version 1.0.13 at commit `500d269`. Run [`36909904619`](https://github.com/kidu89/tidewater/actions/runs/36909904619) passed packaging, executable-presence and packaged-startup checks, then uploaded `Fishing-Free-Windows-x64` (202 MB; digest `sha256:6d9c9b1bd628d2abd0423b626dc3e4791dacebd9fc85f98d66755d66e6052319`). The package includes the whale-breach pitch fix and the emergency-tow prompt after a capsize. CI artifacts are not Steam uploads. Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
 
 ## Publish through SteamPipe
 
@@ -62,7 +64,6 @@ Sources: [Steam Direct](https://partner.steamgames.com/steamdirect/) and [Steam 
 - **Working title:** Fishing Free. The name is generic and may be difficult to search; clear the title and trademark before store submission.
 - **Legal:** keep the root MIT `LICENSE`, `CREDITS.md`, and third-party notices. The web build copies the source notices into `dist/legal/`, which is included in the desktop package.
 - **Graphics:** the default path needs a usable WebGPU adapter. On unsupported hardware the game switches to the touch-first Canvas fishing game. That mode has not yet been accepted as equivalent to the full 3D game and must be redesigned or validated before mobile release.
-- **Windows runtime:** the 1.0.12 x64 package builds in GitHub Actions and its smoke test stages the package, launches the app and verifies its bundled page over loopback. A clean Steam install and overlay test on a real Windows machine remain outstanding.
+- **Windows runtime:** the 1.0.13 x64 package builds in GitHub Actions and its smoke test stages the package, launches the app and verifies its bundled page over loopback. A clean Steam install and overlay test on a real Windows machine remain outstanding.
 - **Controller:** standard-mapped gamepads now control movement, swimming, steering, look, fishing, interactions and basic panel navigation. The mapping has not been checked on a physical controller or Steam Deck; do that before listing controller support. Keep Steam Input as the compatibility option for unusual layouts.
 - **Store assets:** final capsule art, library assets, screenshots from the shipping build, trailer, localization, support contact and privacy disclosures still need an owner-approved release pass.
-
