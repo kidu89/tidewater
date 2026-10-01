@@ -83,10 +83,10 @@ For digital features consumed inside a Play-distributed Android app, the current
 
 ## Ownership, naming and release readiness
 
-- The checked-out source is pushed to the owner's `kidu89/tidewater` repository on `main` at `54d5e9980c5a2df63675afdb0fa8f1fd98b16dda`, authored as `kidu89`. GitHub Pages deployed this commit successfully, and `https://kidu89.github.io/tidewater/` serves the rebranded game. Android debug run `36859878100` and Windows package/smoke-test run `36860135612` both completed successfully from the `kidu89` session. The repository is still marked as a fork of `dgreenheck/tidewater`; app branding changed, while required upstream license and asset notices remain.
+- The checked-out source is pushed to the owner's `kidu89/tidewater` repository on `main` at `1820444fbfb93247fa0a4c2bb9b89526f794ae4c`, authored as `kidu89`. GitHub Pages deployed this commit successfully, and `https://kidu89.github.io/tidewater/` serves the rebranded game. Android run `36868685249` and Windows package/smoke-test run `36868686225` both completed successfully from the `kidu89` session. The repository is still marked as a fork of `dgreenheck/tidewater`; app branding changed, while required upstream license and asset notices remain.
 - The root `LICENSE` grants MIT permissions but requires its copyright and permission notice to remain with substantial copies. `CREDITS.md` and the asset-level licenses must also ship. Rebranding UI and package display names is fine; deleting the legal notices or presenting third-party assets as wholly original is not.
 - The Windows package includes the MIT license and credits in `dist/legal/`. Audit every font, model, sound, logo, store screenshot and generated asset again before sale. Do not claim exclusive ownership of the upstream code or vendor assets.
-- A GitHub-hosted iOS archive still needs the owner’s Apple signing certificate, password, provisioning profile, team ID and a write-enabled GitHub repository. Do not commit signing files.
+- A GitHub-hosted iOS archive still needs the owner’s Apple signing certificate, password, provisioning profile and team ID. The repository is writable by its owner, but its Actions secrets page currently contains no repository or environment secrets. Do not commit signing files.
 - Android, iOS and Windows now use the brand-aligned identifier `com.fishingfree.game`. This is a new mobile app identity; prior test APKs using `com.tidewater.game` do not upgrade in place. The original source license and credits remain packaged.
 - No Steam App ID or depot IDs exist yet. Steam Direct currently charges US$100 per app (recoupable after US$1,000 adjusted gross revenue), requires a 30-day wait and a Coming Soon page live for at least two weeks for a first release. Steam's review typically takes 3–5 business days; plan at least 7. See [Steam Direct](https://partner.steamgames.com/steamdirect/) and [Steam's review process](https://partner.steamgames.com/doc/store/review_process?language=english).
 
@@ -96,8 +96,8 @@ For digital features consumed inside a Play-distributed Android app, the current
 
 - Put the current changes in a GitHub repository the release owner can write to; keep all upstream and asset notices.
 - Build the Windows x64 folder and launch it from a clean directory without Node installed or a game website. Confirm a fresh save, return after relaunch, graphics settings, keyboard/mouse, external links, 16:9/ultrawide window resize, low-GPU fallback and Steam overlay on Windows 10/11.
-- Install the rebranded Android 1.0.4 APK on the Samsung A52 and the reported Huawei device. It has only been installed and launched on the available x86_64 emulator so far. Record Android/WebView versions, whether `navigator.gpu` exists, whether `requestAdapter()` returns a value, and which game mode appears. The loader must not stay at 2% or show an adapter error after fallback begins.
-- Decide if Canvas mode is acceptable as a deliberately different low-end/mobile edition. If not, implement a supported WebGL renderer or create a much closer non-WebGPU mode; do not describe the current Canvas game as visually equivalent to 3D.
+- Install the rebranded Android 1.0.6 APK on the Samsung A52 and the reported Huawei device. The current 1.0.6 build was installed and launched only on the available x86_64 emulator so far. Record Android/WebView versions, whether `navigator.gpu` exists, whether `requestAdapter()` returns a value, and which game mode appears. Confirm that the loader reaches playable mode without staying at 2% or showing an adapter error.
+- The owner has explicitly rejected the Canvas fallback's visual quality. Replace it with a higher-fidelity supported mobile renderer or enable the full renderer on supported devices, then validate it on real Android/iOS hardware. Do not treat the current Canvas mode as the final mobile product or describe it as visually equivalent to 3D.
 - Generate the IPA from the Mac GitHub runner only after secrets are added and the artifact installs in TestFlight or on registered devices. Windows cannot sign iOS apps locally.
 
 ### P1 — validate the play loop and the name
@@ -123,7 +123,18 @@ For digital features consumed inside a Play-distributed Android app, the current
 
 Store prices, policies, title availability, platform coverage and review counts are volatile. Recheck them immediately before a pricing decision or submission.
 
-## Local verification update — 1 October 2026
+## Current release candidate — 1 October 2026 (version 1.0.6)
+
+- Current app source is on `main` at commit `1820444fbfb93247fa0a4c2bb9b89526f794ae4c`. GitHub Pages deployed that commit. The repository still carries GitHub's `forked from dgreenheck/tidewater` marker; required upstream license, credits and asset notices are preserved.
+- The local Android debug APK is `Fishing-Free-Android-1.0.6-debug.apk`, package `com.fishingfree.game`, version code 7, min API 24 and target API 36. It is 54,833,204 bytes with SHA-256 `F017EEFD2AD1D83FEAC34A2E6FA14169B521E2897C5CD0FF6C5A9EA9FB9E6047`. It installed and launched on the Android 16 x86_64 emulator. The emulator has no WebGPU adapter, so the app enters the local Canvas fishing mode. Physical installation and graphics behavior on the Samsung A52 remain unverified.
+- Android GitHub Actions run `36868685249` succeeded and produced the 51.7 MB `Fishing-Free-Android-APK` artifact (digest `sha256:977d31e7de75ead74f5f07dbe186d85ff11a88bd0d7868863feed870c11016d8`). Windows run `36868686225` succeeded and produced the 202 MB `Fishing-Free-Windows-x64` artifact (digest `sha256:8d201d44f6f7a902b837b85ba57b2f56b99fe4aa74e90cb8cf3b14ef41895f58`). The latter's CI smoke test launched the packaged executable and checked its local page; it is not a SteamPipe upload or a Steam-client install test.
+- The iOS project metadata is aligned in the current working tree to version 1.0.6, build 7, bundle ID `com.fishingfree.game` and iOS 15 deployment. No signed IPA exists. GitHub Settings currently shows no repository or environment Actions secrets; an Apple team ID, distribution certificate/private key and matching provisioning profile are required before the iOS workflow can run.
+- The latest user-provided `chrome://gpu` screenshot is from a Huawei ELE-L29 on Android 10. Chrome reports WebGPU acceleration, but that does not establish WebGPU availability inside the Capacitor Android System WebView. The owner separately identified a Samsung A52 on Android 12. Test the exact app build on each device before claiming compatibility.
+- The owner has rejected the Canvas fallback's visual quality. Mobile graphics parity is an unresolved product blocker. A more capable renderer and real-device validation are needed; the existing Canvas mode is only a functional fallback.
+- The Actions workflows are being upgraded from deprecated Node 20 action releases to current Node 24-compatible releases. The edits are local and still require a successful GitHub run before this maintenance work is considered shipped.
+- Steam submission, a signed iOS build, store billing, and real-player market validation remain outstanding. Current monetization advice is a hypothesis, not measured willingness to pay or a revenue forecast.
+
+## Earlier local verification — 1 October 2026 (version 1.0.4)
 
 - `npm run build` completes with Vite 8.3.0. `npm test` passes the fishing/game-logic checks, headless WebGPU engine smoke test and whale-breach regression check. The whale peaks at 1.31 m above the water, then returns below the surface. The smoke test writes to the OS temporary directory instead of assuming `/tmp`.
 - `npm audit` reports zero vulnerabilities across the dependency tree.

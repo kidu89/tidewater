@@ -15,7 +15,7 @@ The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe`
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.
 
-The owner's public repository is `kidu89/tidewater`. The release source and workflows are pushed to `main` at commit `54d5e9980c5a2df63675afdb0fa8f1fd98b16dda`. Windows build and startup smoke-test run `36860135612` succeeded and produced the `Fishing-Free-Windows-x64` artifact. The game is not yet a Steam build upload: Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
+The owner's public repository is `kidu89/tidewater`. The release source and workflows are pushed to `main` at commit `1820444fbfb93247fa0a4c2bb9b89526f794ae4c` (app version 1.0.6). Windows build and startup smoke-test run `36868686225` succeeded and produced the `Fishing-Free-Windows-x64` artifact (202 MB; digest `sha256:8d201d44f6f7a902b837b85ba57b2f56b99fe4aa74e90cb8cf3b14ef41895f58`). The game is not yet a Steam build upload: Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
 
 ## Publish through SteamPipe
 
@@ -51,6 +51,6 @@ The Steam App ID, depot IDs, SteamCMD credentials, store art, store description,
 - **Working title:** Fishing Free. The name is generic and may be difficult to search; clear the title and trademark before store submission.
 - **Legal:** keep the root MIT `LICENSE`, `CREDITS.md`, and third-party notices. The web build copies the source notices into `dist/legal/`, which is included in the desktop package.
 - **Graphics:** the default path needs a usable WebGPU adapter. On unsupported hardware the game switches to the touch-first Canvas fishing game. That mode has not yet been accepted as equivalent to the full 3D game and must be redesigned or validated before mobile release.
-- **Windows runtime:** the 1.0.4 x64 package builds locally. The development host's restricted workspace ACL prevents Electron's sandbox from reading the package when launched from the checkout. Actions run `36860135612` succeeded after staging under `Program Files`, launching the app and verifying its bundled page over loopback. A Steam install and overlay test on a real Windows machine remain outstanding.
+- **Windows runtime:** the 1.0.6 x64 package builds in GitHub Actions and its smoke test stages the package, launches the app and verifies its bundled page over loopback. The development host's restricted workspace ACL prevented a fresh local package launch from the checkout. A Steam install and overlay test on a real Windows machine remain outstanding.
 - **Controller:** there is no native gamepad mapping yet. Provide and test a Steam Input keyboard/mouse layout before claiming controller support.
 - **Store assets:** final capsule art, library assets, screenshots from the shipping build, trailer, localization, support contact and privacy disclosures still need an owner-approved release pass.

@@ -28,10 +28,10 @@ jobs:
       IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -152,7 +152,7 @@ jobs:
           cp "$IPA_PATH" "$RUNNER_TEMP/Fishing-Free.ipa"
 
       - name: Upload IPA artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Fishing-Free-iOS-${{ inputs.distribution || 'ad-hoc' }}
           path: ${{ runner.temp }}/Fishing-Free.ipa
