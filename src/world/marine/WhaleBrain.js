@@ -14,8 +14,9 @@ const ROUTE = [ [ 70, 300 ], [ 60, 200 ], [ 35, 120 ], [ 5, 88 ], [ - 25, 100 ],
 const SURFACE_AT = 0.25; // route fraction where the surfacing sequence starts (heading in toward the beach)
 const CRUISE_SPEED = 2.6; // m/s underwater
 const SURFACE_SPEED = 1.5;
-const BREACH_LAUNCH_ACCEL = 5.5; // m/s²: an ~8–9 m/s push as the back clears the surface
-const BREACH_MAX_RISE_SPEED = 9; // m/s: keep the breach powerful without sending the whale skyward
+const BREACH_LAUNCH_ACCEL = 4.2; // m/s²: lift the back clear while keeping the body close to the water
+const BREACH_MAX_RISE_SPEED = 7.5; // m/s: limit the airborne arc so the whale cannot appear to fly
+const BREACH_MAX_HEIGHT = 0.25; // m above the queried surface, for a low, heavy breach
 const TAU = Math.PI * 2;
 
 const _e = new THREE.Euler();
@@ -453,8 +454,12 @@ export class WhaleBrain {
 
 			// ballistic above the water (buoyancy and drag take over below), twisting onto the side
 			ay = this.vy > 0 || this.y > this.water - 1 ? - 9.81 : ( yT - this.y ) * 0.5 - 1.5 * this.vy;
+			// Cap the remaining upward energy as well as launch speed. This keeps a delayed water
+			// query or a low frame rate from turning the breach into a long, hovering flight.
+			const riseRoom = Math.max( 0, this.water + BREACH_MAX_HEIGHT - this.y );
+			this.vy = Math.min( this.vy, Math.sqrt( 2 * 9.81 * riseRoom ) );
 			this.breachRoll += ( 1.9 - this.breachRoll ) * Math.min( 1, dt * 1.2 );
-			if ( this.vy < 0 && this.y < this.water - 1.5 && ! this.seq.splashed ) {
+			if ( this.vy < 0 && this.y < this.water + 0.25 && ! this.seq.splashed ) {
 
 				this.seq.splashed = true;
 				this.splashes ++;

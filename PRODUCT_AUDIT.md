@@ -96,7 +96,7 @@ For digital features consumed inside a Play-distributed Android app, the current
 
 - Put the current changes in a GitHub repository the release owner can write to; keep all upstream and asset notices.
 - Build the Windows x64 folder and launch it from a clean directory without Node installed or a game website. Confirm a fresh save, return after relaunch, graphics settings, keyboard/mouse, external links, 16:9/ultrawide window resize, low-GPU fallback and Steam overlay on Windows 10/11.
-- Install the 1.0.8 APK on the Samsung A52 and the reported Huawei device. The CI artifact is debug-signed and has not been checked on either physical phone. Use the in-app graphics report to record Android/WebView versions, whether `navigator.gpu` exists, `requestAdapter()` outcomes, and which game mode appears. Confirm the game reaches a playable scene without staying at 2% or showing an adapter error.
+- Install the latest debug APK on the Samsung A52 and the reported Huawei device. The 1.0.9 CI artifact (run [`36888737239`](https://github.com/kidu89/tidewater/actions/runs/36888737239)) has not been checked on either physical phone. Use the in-app graphics report to record Android/WebView versions, whether `navigator.gpu` exists, `requestAdapter()` outcomes, and which game mode appears. Confirm the game reaches a playable scene without staying at 2% or showing an adapter error.
 - The owner has explicitly rejected the Canvas fallback's visual quality. Replace it with a higher-fidelity supported mobile renderer or enable the full renderer on supported devices, then validate it on real Android/iOS hardware. Do not treat the current Canvas mode as the final mobile product or describe it as visually equivalent to 3D.
 - Generate the IPA from the Mac GitHub runner only after secrets are added and the artifact installs in TestFlight or on registered devices. Windows cannot sign iOS apps locally.
 
@@ -141,12 +141,24 @@ Store prices, policies, title availability, platform coverage and review counts 
 - The existing Canvas mobile fallback still fails the owner's visual-quality requirement. Version 1.0.7 does not resolve mobile renderer parity, and it must not be treated as the final Android or iOS release. Android phone/WebView startup and controller support remain unverified on hardware.
 - Next release evidence: validate 1.0.7 on the Samsung A52 and Huawei phone; address mobile renderer parity; test the Windows package with a physical controller and Steam client; obtain Apple signing assets and produce an install-verified IPA.
 
-## Latest verified CI builds — version 1.0.8 (1 October 2026)
+## Previous verified CI builds — version 1.0.8 (1 October 2026)
 
 - Current `main` commit: `37a9f31cd8f73f89c8af7c4ed1ec3a65b577751b`; Android version code and iOS build are 9. The production web build succeeds. Pages run `36883908692` deployed the source. Android Actions run [`36883963522`](https://github.com/kidu89/tidewater/actions/runs/36883963522) succeeded and produced a 51.7 MB `Fishing-Free-Android-APK` artifact (digest `sha256:43d3b8a81507b76c0ceaaae30d4f4ad38b4c5a19443acf6968c6af49706a53b7`). Windows Actions run [`36883964645`](https://github.com/kidu89/tidewater/actions/runs/36883964645) succeeded and produced a 202 MB `Fishing-Free-Windows-x64` artifact (digest `sha256:0f3147f29b5f340da67a4daee507a1fc5fdcbc68f653e3b571ab4b3d5e6e0b6a`); its packaged startup smoke test passed. These are CI artifacts, not Play Store, Steam, or signed iOS releases.
 - The phone fallback now provides an optional local graphics report with OS, Chromium/WebKit version, secure-context status, WebGPU API presence, adapter request results and the reason the 3D renderer fell back. The report is not sent over the network; the player chooses whether to copy it.
 - This diagnostic improves fault isolation only. The Canvas fallback still does not meet the owner's visual-quality requirement, WebGPU behavior is unverified on both physical phones, and 1.0.8 is not a mobile graphics fix. The debug APK has not been installed and checked on a physical device.
 - Next: use the report from the Samsung A52 and Huawei phone; choose a supported rendering path that preserves the intended 3D visuals; continue the physical Windows/Steam, iOS signing, and storefront validation gates above.
+
+## Latest verified CI builds — version 1.0.9 (1 October 2026)
+
+- Source commit `96967e054ea59a573e00eaaab96f7146e3aad1b2` has Android version code 10 and iOS build 10. Pages run [`36888626014`](https://github.com/kidu89/tidewater/actions/runs/36888626014) succeeded. Android run [`36888737239`](https://github.com/kidu89/tidewater/actions/runs/36888737239) produced a 51.7 MB debug APK (digest `sha256:d15348fc4443107f08a3a6388da8ccdc42b4d25750ac164905695066f566f269`). Windows run [`36888737851`](https://github.com/kidu89/tidewater/actions/runs/36888737851) produced a 202 MB x64 package (digest `sha256:a5f35b9ffd8be76179ba45156ddcfb974895a3dba15ccbbdf2559a94f42022b9`); the packaged startup smoke test passed.
+- The boat now surfaces the emergency tow prompt if it remains grounded in shallow water. Build success confirms packaging only; recovery still needs a gameplay pass. The APK has not been installed on the Samsung A52 or the Huawei phone.
+
+## Current source candidate — version 1.0.10 (build pending)
+
+- Package version is 1.0.10, Android version code 11 and iOS build 11. The production web build succeeds; the Android and Windows workflows have not yet built this candidate.
+- The whale breach now has a lower, energy-limited arc, and the re-entry splash triggers at the waterline instead of after the whale is fully submerged. This change is intended to remove the hovering/flying appearance while preserving occasional breaches.
+- Version 1.0.9 adds recovery guidance when the boat remains grounded: a non-moored hull in shallow water, mostly dry and nearly motionless for 1.5 seconds surfaces the existing B emergency-tow prompt. The v1.0.9 Android and Windows packages built; both gameplay changes still need player verification in the packaged game.
+- This release candidate does not address the unresolved mobile renderer-quality requirement. Use the latest APK on the physical phones, collect the local graphics report, and verify the boat recovery and whale re-entry in play before treating either fix as validated.
 
 ## Earlier local verification — 1 October 2026 (version 1.0.4)
 
