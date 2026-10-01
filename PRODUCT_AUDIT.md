@@ -96,7 +96,7 @@ For digital features consumed inside a Play-distributed Android app, the current
 
 - Put the current changes in a GitHub repository the release owner can write to; keep all upstream and asset notices.
 - Build the Windows x64 folder and launch it from a clean directory without Node installed or a game website. Confirm a fresh save, return after relaunch, graphics settings, keyboard/mouse, external links, 16:9/ultrawide window resize, low-GPU fallback and Steam overlay on Windows 10/11.
-- Install the 1.0.7 APK on the Samsung A52 and the reported Huawei device. The CI artifact is debug-signed and has not been checked on either physical phone. Record Android/System WebView versions, whether `navigator.gpu` exists, whether `requestAdapter()` returns a value, and which game mode appears. Confirm the game reaches a playable scene without staying at 2% or showing an adapter error.
+- Install the 1.0.8 APK on the Samsung A52 and the reported Huawei device. The CI artifact is debug-signed and has not been checked on either physical phone. Use the in-app graphics report to record Android/WebView versions, whether `navigator.gpu` exists, `requestAdapter()` outcomes, and which game mode appears. Confirm the game reaches a playable scene without staying at 2% or showing an adapter error.
 - The owner has explicitly rejected the Canvas fallback's visual quality. Replace it with a higher-fidelity supported mobile renderer or enable the full renderer on supported devices, then validate it on real Android/iOS hardware. Do not treat the current Canvas mode as the final mobile product or describe it as visually equivalent to 3D.
 - Generate the IPA from the Mac GitHub runner only after secrets are added and the artifact installs in TestFlight or on registered devices. Windows cannot sign iOS apps locally.
 
@@ -134,12 +134,19 @@ Store prices, policies, title availability, platform coverage and review counts 
 - The Actions workflows now use Node 24-compatible releases for checkout, Node setup and artifact upload; the Pages workflow also uses the current Pages actions and has explicit `actions: read` permission. The latest Android, Windows and Pages workflows all passed without the earlier Node 20 deprecation warnings.
 - Steam submission, a signed iOS build, store billing, and real-player market validation remain outstanding. Current monetization advice is a hypothesis, not measured willingness to pay or a revenue forecast.
 
-## Current CI builds — version 1.0.7 (1 October 2026)
+## Previous verified CI builds — version 1.0.7 (1 October 2026)
 
 - The current `main` commit is `d6b66c96fc4100d0b9fa9febd4d682867ba82716`; Android version code and iOS build are 8. Android Actions run [`36878532424`](https://github.com/kidu89/tidewater/actions/runs/36878532424) succeeded and produced the 51.7 MB `Fishing-Free-Android-APK` artifact (digest `sha256:01cf004a168456fe18e673406d3e3377db4870661484c20b4c1a4b5445a7f05f`). Windows Actions run [`36878533392`](https://github.com/kidu89/tidewater/actions/runs/36878533392) succeeded and produced the 202 MB `Fishing-Free-Windows-x64` artifact (digest `sha256:9ea4e5b98e9c0dc1facb458abbeadc61d91f7579c59b1cc3b9f77e02f36d9c62`); its launch smoke test passed. The artifacts are temporary CI downloads, not store releases; neither run installs on a real phone, Steam, or a retail PC.
 - Standard-mapped gamepad support covers movement, swimming, boat steering, camera look, fishing triggers, interactions, modal navigation and the first-start prompt. It has not been checked on a physical controller or Steam Deck.
 - The existing Canvas mobile fallback still fails the owner's visual-quality requirement. Version 1.0.7 does not resolve mobile renderer parity, and it must not be treated as the final Android or iOS release. Android phone/WebView startup and controller support remain unverified on hardware.
 - Next release evidence: validate 1.0.7 on the Samsung A52 and Huawei phone; address mobile renderer parity; test the Windows package with a physical controller and Steam client; obtain Apple signing assets and produce an install-verified IPA.
+
+## Current source candidate — version 1.0.8 (build pending)
+
+- Package version is 1.0.8, Android version code 9 and iOS build 9. The production web build succeeds. Android and Windows GitHub Actions packages have not yet been built from this candidate.
+- The phone fallback now provides an optional local graphics report with OS, Chromium/WebKit version, secure-context status, WebGPU API presence, adapter request results and the reason the 3D renderer fell back. The report is not sent over the network; the player chooses whether to copy it.
+- This diagnostic improves fault isolation only. The Canvas fallback still does not meet the owner's visual-quality requirement, WebGPU behavior is unverified on both physical phones, and 1.0.8 must not be called a mobile graphics fix.
+- Next: build and inspect Android and Windows 1.0.8 artifacts; use the report on the actual phones; choose a supported rendering path that preserves the intended 3D visuals.
 
 ## Earlier local verification — 1 October 2026 (version 1.0.4)
 

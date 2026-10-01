@@ -20,10 +20,11 @@ const money = ( value ) => '$' + Math.round( value ).toLocaleString( 'en-US' );
 // The full 3D island remains the preferred mode wherever a WebGPU adapter is available.
 export class CanvasFishingGame {
 
-	constructor( root, { reason = '' } = {} ) {
+	constructor( root, { reason = '', graphicsDetails = {} } = {} ) {
 
 		this.root = root;
 		this.reason = reason;
+		this.graphicsDetails = graphicsDetails;
 		this.zone = WATERS[ 0 ];
 		this.data = this.load();
 		this.phase = 'ready';
@@ -109,7 +110,7 @@ export class CanvasFishingGame {
 						<button class="tw-lite__share" type="button" data-share hidden>SHARE CATCH</button>
 					</div>
 					<div class="tw-lite__upgrade" data-upgrade hidden></div>
-					<p class="tw-lite__device-note">Phone fishing mode · Your progress saves on this device</p>
+					<p class="tw-lite__device-note"><span>Phone fishing mode · Your progress saves on this device</span><button type="button" data-graphics-info>GRAPHICS INFO</button></p>
 				</div>
 				<div class="tw-lite__modal" data-modal hidden></div>
 			</div>`;
@@ -165,6 +166,8 @@ export class CanvasFishingGame {
 			const waterButton = event.target.closest( '[data-zone]' );
 			if ( waterButton ) this.selectWater( waterButton.dataset.zone );
 			if ( event.target.closest( '[data-close-log]' ) ) this.closeLogbook();
+			if ( event.target.closest( '[data-graphics-info]' ) ) this.showGraphicsDetails();
+			if ( event.target.closest( '[data-copy-graphics-info]' ) ) this.copyGraphicsDetails();
 			if ( event.target.closest( '[data-upgrade-rod]' ) ) this.upgradeRod();
 
 		} );
@@ -448,6 +451,47 @@ export class CanvasFishingGame {
 		} ).join( '' );
 		this.root.querySelector( '[data-modal]' ).innerHTML = `<section class="tw-lite__dialog" role="dialog" aria-modal="true" aria-label="Fish logbook"><div class="tw-lite__dialog-top"><div><span>YOUR ISLAND JOURNAL</span><h2>Fish logbook</h2></div><button type="button" data-close-log aria-label="Close logbook">×</button></div><p>${ entries.length } of ${ Object.keys( FISH ).length } species discovered · ${ this.data.catches } fish landed · personal best ${ this.data.bestKg.toFixed( 2 ) } kg</p><ul>${ rows || '<li class="tw-lite__empty">No fish recorded yet. Cast a line to begin your collection.</li>' }</ul><button class="tw-lite__primary" type="button" data-close-log>BACK TO THE WATER</button></section>`;
 		this.root.querySelector( '[data-modal]' ).hidden = false;
+
+	}
+
+	showGraphicsDetails() {
+
+		const labels = {
+			mode: 'Rendering mode', osVersion: 'Operating system', engineVersion: 'Browser engine',
+			secureContext: 'Secure graphics context', webgpuApi: 'WebGPU API', adapterProbe: 'Adapter result',
+			adapterAttempts: 'Adapter attempts', reason: 'Fallback reason',
+		};
+		const rows = Object.entries( labels ).map( ( [ key, label ] ) => `<li><span>${ label }</span><strong data-graphics-value="${ key }">Checking…</strong></li>` ).join( '' );
+		const modal = this.root.querySelector( '[data-modal]' );
+		modal.innerHTML = `<section class="tw-lite__dialog" role="dialog" aria-modal="true" aria-label="Graphics diagnostics"><div class="tw-lite__dialog-top"><div><span>DEVICE CHECK</span><h2>Graphics details</h2></div><button type="button" data-close-log aria-label="Close graphics details">×</button></div><p>This report stays on this device. It can show why full 3D did not start.</p><ul>${ rows }</ul><button class="tw-lite__primary" type="button" data-copy-graphics-info>COPY DEVICE REPORT</button><small class="tw-lite__diagnostic-status" data-graphics-copy-status aria-live="polite"></small><button class="tw-lite__secondary" type="button" data-close-log>BACK TO THE WATER</button></section>`;
+		for ( const [ key, value ] of Object.entries( this.graphicsDetails ) ) {
+			const field = modal.querySelector( `[data-graphics-value="${ key }"]` );
+			if ( field ) field.textContent = String( value ).slice( 0, 180 );
+		}
+		modal.hidden = false;
+
+	}
+
+	async copyGraphicsDetails() {
+
+		const report = Object.entries( this.graphicsDetails ).map( ( [ key, value ] ) => `${ key }: ${ value }` ).join( '\n' );
+		let copied = false;
+		try {
+			await navigator.clipboard.writeText( report );
+			copied = true;
+		} catch {
+			const field = document.createElement( 'textarea' );
+			field.value = report;
+			field.setAttribute( 'readonly', '' );
+			field.style.position = 'fixed';
+			field.style.opacity = '0';
+			this.root.append( field );
+			field.select();
+			try { copied = document.execCommand( 'copy' ); } catch { copied = false; }
+			field.remove();
+		}
+		const status = this.root.querySelector( '[data-graphics-copy-status]' );
+		if ( status ) status.textContent = copied ? 'Copied. You can paste this report into your message.' : 'Copy unavailable. You can take a screenshot of these details.';
 
 	}
 

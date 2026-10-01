@@ -407,6 +407,19 @@
 	text-align: center;
 }
 
+.tw-lite__device-note button {
+	margin-left: 5px;
+	padding: 3px 4px;
+	border: 0;
+	background: transparent;
+	color: rgba(220, 239, 232, .76);
+	font: inherit;
+	font-weight: 750;
+	letter-spacing: .08em;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
 .tw-lite__modal {
 	position: absolute;
 	z-index: 4;
@@ -489,6 +502,24 @@
 	font-size: 10px;
 	font-weight: 650;
 	text-align: right;
+}
+
+.tw-lite__dialog .tw-lite__diagnostic-status {
+	min-height: 18px;
+	margin: 4px 0 8px;
+	color: var(--lite-aqua);
+	font-size: 11px;
+}
+
+.tw-lite__dialog .tw-lite__secondary {
+	min-height: 38px;
+	border: 1px solid var(--lite-border);
+	border-radius: 12px;
+	background: rgba(255, 255, 255, .05);
+	color: var(--lite-ink);
+	font: inherit;
+	font-size: 11px;
+	font-weight: 800;
 }
 
 .tw-lite__dialog .tw-lite__empty {

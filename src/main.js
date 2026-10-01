@@ -12,6 +12,26 @@ if ( /[?&]bench\b/.test( location.search ) ) {
 const bench = /[?&]bench\b/.test( location.search );
 const WEBGPU_PROBE_TIMEOUT_MS = 10000;
 
+function browserGraphicsDetails( reason = '' ) {
+
+	const ua = navigator.userAgent || '';
+	const android = ua.match( /Android\s+([\d.]+)/i );
+	const chromium = ua.match( /(?:Chrome|Chromium|CriOS)\/([\d.]+)/i );
+	const webkit = ua.match( /Version\/([\d.]+)/i );
+	const probe = globalThis.__fishingFreeWebGPUProbe || {};
+	return {
+		mode: /;\s*wv\)/i.test( ua ) ? 'Android WebView' : /Android/i.test( ua ) ? 'Android browser' : /iPhone|iPad|iPod/i.test( ua ) ? 'iOS browser' : 'Browser',
+		osVersion: android ? `Android ${ android[ 1 ] }` : /iPhone|iPad|iPod/i.test( ua ) ? 'iOS (version not exposed)' : 'Not reported',
+		engineVersion: chromium ? `Chromium ${ chromium[ 1 ] }` : webkit ? `WebKit ${ webkit[ 1 ] }` : 'Not reported',
+		secureContext: globalThis.isSecureContext ? 'Yes' : 'No',
+		webgpuApi: navigator.gpu ? 'Available' : 'Not exposed',
+		adapterProbe: probe.result || ( navigator.gpu ? 'Not run' : 'Not available' ),
+		adapterAttempts: Array.isArray( probe.attempts ) && probe.attempts.length ? probe.attempts.join( '; ' ) : 'No adapter attempts recorded',
+		reason: reason || probe.startupError || 'No fallback reason recorded',
+	};
+
+}
+
 const loaderArt = document.querySelector( '.loader-art' );
 if ( loaderArt ) {
 	const showArt = () => loaderArt.classList.add( 'is-in' );
@@ -23,16 +43,21 @@ async function findWebGPUAdapter() {
 
 	if ( ! navigator.gpu ) return null;
 	const deadline = performance.now() + WEBGPU_PROBE_TIMEOUT_MS;
+	const probe = globalThis.__fishingFreeWebGPUProbe = { attempts: [], result: 'Searching for a graphics adapter.' };
 	// Prefer the full WebGPU feature level. On recent Android Chromium builds, the compatibility
 	// level can also expose a GPU through OpenGL ES when the default Vulkan adapter is unavailable.
-	for ( const options of [
-		{ powerPreference: 'high-performance' }, {}, { powerPreference: 'low-power' },
-		{ featureLevel: 'compatibility', powerPreference: 'high-performance' },
-		{ featureLevel: 'compatibility' },
+	for ( const [ label, options ] of [
+		[ 'High-performance', { powerPreference: 'high-performance' } ], [ 'Default', {} ], [ 'Low-power', { powerPreference: 'low-power' } ],
+		[ 'Compatibility high-performance', { featureLevel: 'compatibility', powerPreference: 'high-performance' } ],
+		[ 'Compatibility', { featureLevel: 'compatibility' } ],
 	] ) {
 		const remaining = deadline - performance.now();
-		if ( remaining <= 0 ) return null;
+		if ( remaining <= 0 ) {
+			probe.result = 'The adapter search reached its 10-second time limit.';
+			return null;
+		}
 		let timeout;
+		let timedOut = false;
 
 		try {
 			// Some Android WebViews expose navigator.gpu but never settle requestAdapter().
@@ -40,16 +65,23 @@ async function findWebGPUAdapter() {
 			// sitting on the loading screen indefinitely.
 			const adapter = await Promise.race( [
 				navigator.gpu.requestAdapter( options ),
-				new Promise( ( resolve ) => { timeout = setTimeout( () => resolve( null ), remaining ); } ),
+				new Promise( ( resolve ) => { timeout = setTimeout( () => { timedOut = true; resolve( null ); }, remaining ); } ),
 			] );
-			if ( adapter ) return adapter;
-		} catch {
+			if ( adapter ) {
+				probe.attempts.push( `${ label }: adapter found` );
+				probe.result = 'Adapter found.';
+				return adapter;
+			}
+			probe.attempts.push( `${ label }: ${ timedOut ? 'timed out' : 'no adapter' }` );
+		} catch ( error ) {
+			probe.attempts.push( `${ label }: request rejected${ error?.name ? ` (${ error.name })` : '' }` );
 			// Keep trying without a preference for Android WebViews that reject adapter options.
 		} finally {
 			clearTimeout( timeout );
 		}
 
 	}
+	probe.result = 'No compatible adapter was returned.';
 	return null;
 
 }
@@ -63,7 +95,7 @@ function startPhoneMode( reason ) {
 	if ( fps ) fps.style.display = 'none';
 	return import( './mobile/CanvasFishingGame.js' ).then( ( { CanvasFishingGame } ) => {
 
-		const game = new CanvasFishingGame( document.getElementById( 'app' ), { reason } );
+		const game = new CanvasFishingGame( document.getElementById( 'app' ), { reason, graphicsDetails: browserGraphicsDetails( reason ) } );
 		game.start();
 		window.__phoneGame = game;
 		return game;
@@ -110,6 +142,8 @@ async function startWebGPUGame() {
 	} catch ( error ) {
 
 		console.error( '[Fishing Free] WebGPU game could not start; switching to the phone mode.', error );
+		globalThis.__fishingFreeWebGPUProbe ||= { attempts: [], result: 'An adapter was found, but renderer startup failed.' };
+		globalThis.__fishingFreeWebGPUProbe.startupError = error.message;
 		if ( bench ) {
 
 			ui.setLoadingError( 'WebGPU game could not start: ' + error.message );
