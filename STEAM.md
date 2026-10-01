@@ -15,7 +15,7 @@ The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe`
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.
 
-The owner's public repository is `kidu89/tidewater`. Windows run [`36888737851`](https://github.com/kidu89/tidewater/actions/runs/36888737851) built version 1.0.9 and passed the packaged startup smoke test. Its `Fishing-Free-Windows-x64` artifact is 202 MB with digest `sha256:a5f35b9ffd8be76179ba45156ddcfb974895a3dba15ccbbdf2559a94f42022b9`. Source candidate 1.0.10 lowers the whale's breach arc and moves its impact splash to the waterline; its Windows build is pending. CI artifacts are not Steam uploads. Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
+The owner's public repository is `kidu89/tidewater`. Windows run [`36890236517`](https://github.com/kidu89/tidewater/actions/runs/36890236517) built version 1.0.10 and passed the packaged startup smoke test. Its `Fishing-Free-Windows-x64` artifact is 202 MB with digest `sha256:5c16fb5a8e3a43c3df2602be609d9ba46e97f3b70c6b4fc6f58fbed4e6853bb0`. The whale's breach arc is lower, and its impact splash now occurs at the waterline. CI artifacts are not Steam uploads. Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
 
 ## Publish through SteamPipe
 
@@ -51,6 +51,6 @@ The Steam App ID, depot IDs, SteamCMD credentials, store art, store description,
 - **Working title:** Fishing Free. The name is generic and may be difficult to search; clear the title and trademark before store submission.
 - **Legal:** keep the root MIT `LICENSE`, `CREDITS.md`, and third-party notices. The web build copies the source notices into `dist/legal/`, which is included in the desktop package.
 - **Graphics:** the default path needs a usable WebGPU adapter. On unsupported hardware the game switches to the touch-first Canvas fishing game. That mode has not yet been accepted as equivalent to the full 3D game and must be redesigned or validated before mobile release.
-- **Windows runtime:** the 1.0.9 x64 package builds in GitHub Actions and its smoke test stages the package, launches the app and verifies its bundled page over loopback. The 1.0.10 package is pending; a Steam install and overlay test on a real Windows machine remain outstanding.
+- **Windows runtime:** the 1.0.10 x64 package builds in GitHub Actions and its smoke test stages the package, launches the app and verifies its bundled page over loopback. A Steam install and overlay test on a real Windows machine remain outstanding.
 - **Controller:** standard-mapped gamepads now control movement, swimming, steering, look, fishing, interactions and basic panel navigation. The mapping has not been checked on a physical controller or Steam Deck; do that before listing controller support. Keep Steam Input as the compatibility option for unusual layouts.
 - **Store assets:** final capsule art, library assets, screenshots from the shipping build, trailer, localization, support contact and privacy disclosures still need an owner-approved release pass.

@@ -32,7 +32,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The current source candidate is **1.0.10** (Android version code **11**), package `com.fishingfree.game`, minimum API 24 and target API 36. It lowers the whale's breach arc and triggers its re-entry splash at the waterline, alongside the stranded-boat tow prompt from 1.0.9. Android Actions run [`36888737239`](https://github.com/kidu89/tidewater/actions/runs/36888737239) produced the latest verified APK (version 1.0.9, 51.7 MB; digest `sha256:d15348fc4443107f08a3a6388da8ccdc42b4d25750ac164905695066f566f269`). The 1.0.10 APK build is pending. The artifact is debug-signed, not a Play Store release, and has not been tested on a physical phone. The optional local graphics report still does not fix the Canvas fallback or establish WebGPU support in Android System WebView.
+The latest verified package is **1.0.10** (Android version code **11**), package `com.fishingfree.game`, minimum API 24 and target API 36. It lowers the whale's breach arc and triggers its re-entry splash at the waterline, alongside the stranded-boat tow prompt from 1.0.9. Android Actions run [`36890236881`](https://github.com/kidu89/tidewater/actions/runs/36890236881) produced the 51.7 MB APK (digest `sha256:ea9e2753af910aa033fa2c1e920f811f6106f73fe70b235c3daa9582c6e51045`). This artifact is debug-signed, not a Play Store release, and has not been tested on a physical phone. The optional local graphics report still does not fix the Canvas fallback or establish WebGPU support in Android System WebView.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
