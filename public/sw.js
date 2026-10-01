@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'fishing-free-shell-';
-const CACHE_NAME = `${ CACHE_PREFIX }1.0.11`;
+const CACHE_NAME = `${ CACHE_PREFIX }1.0.13`;
 const APP_SCOPE = self.registration.scope;
 
 self.addEventListener( 'install', ( event ) => {
@@ -64,3 +64,4 @@ self.addEventListener( 'fetch', ( event ) => {
 		return response;
 	} )() );
 } );
+
