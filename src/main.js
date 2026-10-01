@@ -1,9 +1,6 @@
 import './core/BenchSeed.js';
-import { App } from './App.js';
-import { UI } from './ui/UI.js';
-import { AppUI } from './ui/AppUI.js';
 
-// ?bench runs in background tabs too (automation): rAF does not fire in a hidden page
+// ?bench runs in background tabs too (automation): rAF does not fire in a hidden page.
 if ( /[?&]bench\b/.test( location.search ) ) {
 
 	const raf = window.requestAnimationFrame.bind( window ), caf = window.cancelAnimationFrame.bind( window );
@@ -12,36 +9,131 @@ if ( /[?&]bench\b/.test( location.search ) ) {
 
 }
 
-const ui = new UI();
-const app = new App();
-window.__ui = ui;
+const bench = /[?&]bench\b/.test( location.search );
 
-app.init( ( p, text, until ) => ui.setLoading( p, text, until ) ).then( async () => {
+const loaderArt = document.querySelector( '.loader-art' );
+if ( loaderArt ) {
+	const showArt = () => loaderArt.classList.add( 'is-in' );
+	if ( loaderArt.complete && loaderArt.naturalWidth > 0 ) showArt();
+	else loaderArt.addEventListener( 'load', showArt, { once: true } );
+}
 
-	app.ui = new AppUI( app, ui );
-	ui.setLoading( 1, 'Ready' );
-	await ui.hideLoader();
-	// frame-time benchmark and reference shots (see core/Bench.js): it drives the frames itself
-	if ( app.qs.has( 'bench' ) ) {
+async function findWebGPUAdapter() {
 
-		window.__bench = new ( await import( './core/Bench.js' ) ).Bench( app );
-		if ( app.qs.has( 'auto' ) ) window.__job = window.__bench.auto( app.qs.get( 'auto' ), { runs: Number( app.qs.get( 'runs' ) ) || 1 } );
-		// ?bench&shots=view1,view2[&tag=name][&dt=seconds][&seq=n&every=frames]: reference shots of the named views only (core/DebugViews.js; dt > 0: the clock runs, e.g. for the eased lens flare)
-		// &wdbg=N: the water shader's debug view (WaterMaterial debugMode) in the shots
-		if ( app.qs.has( 'wdbg' ) && app.waterMaterial ) app.waterMaterial.debugMode.value = Number( app.qs.get( 'wdbg' ) );
-		if ( app.qs.has( 'shots' ) ) window.__job = window.__bench.shots( app.qs.get( 'shots' ).split( ',' ), { tag: app.qs.get( 'tag' ) || 'shot', dt: Number( app.qs.get( 'dt' ) ) || 0, seq: Number( app.qs.get( 'seq' ) ) || 1, every: Number( app.qs.get( 'every' ) ) || 1 } );
+	if ( ! navigator.gpu ) return null;
+	// Prefer the full WebGPU feature level. On recent Android Chromium builds, the compatibility
+	// level can also expose a GPU through OpenGL ES when the default Vulkan adapter is unavailable.
+	for ( const options of [
+		{ powerPreference: 'high-performance' }, {}, { powerPreference: 'low-power' },
+		{ featureLevel: 'compatibility', powerPreference: 'high-performance' },
+		{ featureLevel: 'compatibility' },
+	] ) {
 
-	} else app.start();
-	ui.showStartOverlay( () => {
+		try {
+			const adapter = await navigator.gpu.requestAdapter( options );
+			if ( adapter ) return adapter;
+		} catch {
+			// Keep trying without a preference for Android WebViews that reject adapter options.
+		}
 
-		app.input.requestLock();
-		if ( app.audio ) app.audio.resume();
+	}
+	return null;
+
+}
+
+function startPhoneMode( reason ) {
+
+	console.info( '[Fishing Free] Starting phone fishing mode:', reason );
+	const loader = document.getElementById( 'loader' );
+	loader?.classList.add( 'tw-hidden' );
+	const fps = document.getElementById( 'fps' );
+	if ( fps ) fps.style.display = 'none';
+	return import( './mobile/CanvasFishingGame.js' ).then( ( { CanvasFishingGame } ) => {
+
+		const game = new CanvasFishingGame( document.getElementById( 'app' ), { reason } );
+		game.start();
+		window.__phoneGame = game;
+		return game;
 
 	} );
 
-} ).catch( ( e ) => {
+}
 
-	console.error( e );
-	ui.setLoadingError( 'Something went wrong: ' + e.message );
+async function startWebGPUGame() {
+
+	const [ { App }, { UI }, { AppUI }, { TouchControls } ] = await Promise.all( [
+		import( './App.js' ), import( './ui/UI.js' ), import( './ui/AppUI.js' ), import( './mobile/TouchControls.js' ),
+	] );
+	const ui = new UI();
+	const app = new App();
+	window.__ui = ui;
+
+	try {
+
+		await app.init( ( p, text, until ) => ui.setLoading( p, text, until ) );
+		app.ui = new AppUI( app, ui );
+		app.touchControls = new TouchControls( app.input );
+		ui.setLoading( 1, 'Ready' );
+		await ui.hideLoader();
+		// frame-time benchmark and reference shots (see core/Bench.js): it drives the frames itself.
+		if ( app.qs.has( 'bench' ) ) {
+
+			window.__bench = new ( await import( './core/Bench.js' ) ).Bench( app );
+			if ( app.qs.has( 'auto' ) ) window.__job = window.__bench.auto( app.qs.get( 'auto' ), { runs: Number( app.qs.get( 'runs' ) ) || 1 } );
+			if ( app.qs.has( 'wdbg' ) && app.waterMaterial ) app.waterMaterial.debugMode.value = Number( app.qs.get( 'wdbg' ) );
+			if ( app.qs.has( 'shots' ) ) window.__job = window.__bench.shots( app.qs.get( 'shots' ).split( ',' ), {
+				tag: app.qs.get( 'tag' ) || 'shot', dt: Number( app.qs.get( 'dt' ) ) || 0,
+				seq: Number( app.qs.get( 'seq' ) ) || 1, every: Number( app.qs.get( 'every' ) ) || 1,
+			} );
+
+		} else app.start();
+		ui.showStartOverlay( () => {
+
+			if ( ! app.isTouchDevice ) app.input.requestLock();
+			if ( app.audio ) app.audio.resume();
+
+		} );
+
+	} catch ( error ) {
+
+		console.error( '[Fishing Free] WebGPU game could not start; switching to the phone mode.', error );
+		if ( bench ) {
+
+			ui.setLoadingError( 'WebGPU game could not start: ' + error.message );
+			return;
+
+		}
+		await startPhoneMode( error.message || 'WebGPU is unavailable on this device.' );
+
+	}
+
+}
+
+async function start() {
+
+	if ( bench ) return startWebGPUGame();
+	if ( ! navigator.gpu ) return startPhoneMode( 'This browser does not expose WebGPU.' );
+	const adapter = await findWebGPUAdapter();
+	if ( ! adapter ) return startPhoneMode( 'WebGPU is present but could not create a graphics adapter.' );
+	// Hand the preflight adapter to the renderer so it is not requested twice.
+	globalThis.__fishingFreeWebGPUAdapter = adapter;
+	return startWebGPUGame();
+
+}
+
+start().catch( ( error ) => {
+
+	console.error( '[Fishing Free] Startup failed.', error );
+	if ( bench ) return;
+	startPhoneMode( error.message || 'The 3D renderer could not start.' ).catch( ( fallbackError ) => {
+
+		console.error( '[Fishing Free] Phone mode failed to start.', fallbackError );
+		const loader = document.getElementById( 'loader' );
+		if ( ! loader ) return;
+		loader.classList.remove( 'tw-hidden' );
+		const status = loader.querySelector( '.loader-status' );
+		if ( status ) status.textContent = 'The phone fishing mode could not start. Please close and reopen Fishing Free.';
+
+	} );
 
 } );

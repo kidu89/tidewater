@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig( {
-	// relative asset paths: the build runs from any sub-path (GitHub Pages serves it under /tidewater/)
+	// Relative paths let the app load the complete bundle from its packaged assets and local address.
 	base: './',
-	build: { target: 'esnext', chunkSizeWarningLimit: 4000 },
+	build: { target: 'chrome80', chunkSizeWarningLimit: 4000 },
 	server: { port: 5188, strictPort: true, host: '127.0.0.1' },
 } );

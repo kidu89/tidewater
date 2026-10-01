@@ -1,0 +1,80 @@
+apply plugin: 'com.android.application'
+
+def configuredVersionCode = System.getenv('ANDROID_VERSION_CODE')
+def fishingFreeVersionCode = configuredVersionCode ? configuredVersionCode.toInteger() : 5
+if (fishingFreeVersionCode < 1 || fishingFreeVersionCode > 2100000000) {
+    throw new GradleException("ANDROID_VERSION_CODE must be between 1 and 2100000000; received '${configuredVersionCode}'.")
+}
+
+android {
+    namespace = "com.fishingfree.game"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.fishingfree.game"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode fishingFreeVersionCode
+        versionName "1.0.4"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+// Release builds can be signed with the owner's upload key supplied by CI.
+// Keep the signing material outside the repository and leave local builds unsigned when absent.
+def releaseStorePath = System.getenv('ANDROID_KEYSTORE_PATH')
+if (releaseStorePath) {
+    android.signingConfigs.create('releaseUpload') {
+        storeFile file(releaseStorePath)
+        storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+        keyAlias System.getenv('ANDROID_KEY_ALIAS')
+        keyPassword System.getenv('ANDROID_KEY_PASSWORD')
+    }
+    android.buildTypes.getByName('release').signingConfig = android.signingConfigs.getByName('releaseUpload')
+}
+
+// Some build runners override Java's user.home. Reuse the Windows profile's existing debug key
+// whenever it exists, so a rebuilt APK can update the same locally installed app.
+def windowsDebugKeystore = new File(System.getenv('USERPROFILE') ?: '', '.android/debug.keystore')
+if (windowsDebugKeystore.isFile()) {
+    android.signingConfigs.debug.storeFile = windowsDebugKeystore
+}
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

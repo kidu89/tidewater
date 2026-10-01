@@ -5,7 +5,9 @@
 //   lw        [ a, b ] length-weight relation W (g) = a * L (cm, total length) ^ b (FishBase-style values)
 //   model     key in SPECIES (the swimming model / skin)
 //   habitat   weights per water type (see Bites.habitatAt): shallows (sand, < 3 m), reef (over the
-//             reef), pier (around the piles), bay (open water 3–20 m), deep (offshore, > 20 m)
+//             reef), pier (around the piles), bay (open water 3–20 m), deep (offshore, > 20 m),
+//             cay (Pelican Cay flats), key (the protected channel around Turtle Key),
+//             mangrove (the tidal creeks around Mangrove Reach)
 //   kg        [ min, max ] weight; sizes follow a skewed distribution (most fish are small)
 //   price     $ per kg at the fish stand
 //   fight     0..1 how hard it pulls (surge strength and frequency in the catch mini-game)
@@ -15,6 +17,7 @@
 export const FISH = {
 	silverside: { name: 'Hardhead silverside', sci: 'Atherinomorus stipes', lw: [ 0.0074, 3.1 ], model: 'silverside', habitat: { shallows: 1, pier: 0.6, bay: 0.2 }, kg: [ 0.02, 0.08 ], price: 3, fight: 0.05, stamina: 1.5, time: 'any', rarity: 0.2 },
 	mullet: { name: 'Striped mullet', sci: 'Mugil cephalus', lw: [ 0.0112, 2.98 ], model: 'mullet', habitat: { shallows: 1, pier: 0.4 }, kg: [ 0.4, 2.2 ], price: 5, fight: 0.3, stamina: 5, time: 'day', rarity: 0.8 },
+	bonefish: { name: 'Bonefish', sci: 'Albula vulpes', lw: [ 0.0085, 3.02 ], model: 'bonefish', habitat: { cay: 1 }, kg: [ 0.7, 7 ], price: 11, fight: 0.78, stamina: 13, time: 'dawnDusk', rarity: 0.48 },
 	needlefish: { name: 'Houndfish', sci: 'Tylosurus crocodilus', lw: [ 0.0012, 3.1 ], model: 'needlefish', habitat: { shallows: 0.7, bay: 0.5, pier: 0.3 }, kg: [ 0.5, 2.5 ], price: 4, fight: 0.45, stamina: 5, time: 'day', rarity: 0.5 },
 	sergeant: { name: 'Sergeant major', sci: 'Abudefduf saxatilis', lw: [ 0.0234, 3.0 ], model: 'sergeant', habitat: { pier: 1, reef: 0.8 }, kg: [ 0.1, 0.35 ], price: 6, fight: 0.15, stamina: 2.5, time: 'day', rarity: 1 },
 	grunt: { name: 'Bluestriped grunt', sci: 'Haemulon sciurus', lw: [ 0.0145, 3.06 ], model: 'grunt', habitat: { pier: 1, reef: 0.8, bay: 0.2 }, kg: [ 0.3, 1.2 ], price: 7, fight: 0.25, stamina: 4, time: 'any', rarity: 1 },
@@ -30,7 +33,10 @@ export const FISH = {
 	redSnapper: { name: 'Red snapper', sci: 'Lutjanus campechanus', lw: [ 0.0137, 2.98 ], model: 'redSnapper', habitat: { deep: 1, bay: 0.2 }, kg: [ 1.5, 9 ], price: 18, fight: 0.5, stamina: 9, time: 'any', rarity: 0.7 },
 	tuna: { name: 'Blackfin tuna', sci: 'Thunnus atlanticus', lw: [ 0.0145, 3.0 ], model: 'tuna', habitat: { deep: 1 }, kg: [ 3, 14 ], price: 16, fight: 0.85, stamina: 16, time: 'dawnDusk', rarity: 0.5 },
 	mahi: { name: 'Mahi-mahi', sci: 'Coryphaena hippurus', lw: [ 0.0079, 3.0 ], model: 'mahi', habitat: { deep: 0.8 }, kg: [ 4, 18 ], price: 14, fight: 0.8, stamina: 15, time: 'day', rarity: 0.4 },
-	tarpon: { name: 'Tarpon', sci: 'Megalops atlanticus', lw: [ 0.0077, 3.02 ], model: 'tarpon', habitat: { pier: 0.35, bay: 0.5, shallows: 0.15 }, kg: [ 10, 45 ], price: 4, fight: 1, stamina: 24, time: 'night', rarity: 0.2 },
+	tarpon: { name: 'Tarpon', sci: 'Megalops atlanticus', lw: [ 0.0077, 3.02 ], model: 'tarpon', habitat: { pier: 0.35, bay: 0.5, shallows: 0.15, mangrove: 0.85 }, kg: [ 10, 45 ], price: 4, fight: 1, stamina: 24, time: 'night', rarity: 0.2 },
+	snook: { name: 'Common snook', sci: 'Centropomus undecimalis', lw: [ 0.0092, 3.02 ], model: 'snook', habitat: { key: 1, mangrove: 0.9, bay: 0.35, shallows: 0.2 }, kg: [ 0.8, 11 ], price: 10, fight: 0.72, stamina: 12, time: 'dawnDusk', rarity: 0.48 },
+	permit: { name: 'Atlantic permit', sci: 'Trachinotus falcatus', lw: [ 0.0121, 3.02 ], model: 'permit', habitat: { key: 0.55, cay: 0.85, shallows: 0.25 }, kg: [ 0.6, 14 ], price: 15, fight: 0.82, stamina: 15, time: 'day', rarity: 0.34 },
+	lionfish: { name: 'Red lionfish', sci: 'Pterois volitans', lw: [ 0.018, 3.0 ], model: 'lionfish', habitat: { reef: 0.85, key: 0.12 }, kg: [ 0.18, 0.9 ], price: 18, fight: 0.18, stamina: 3, time: 'night', rarity: 0.32 },
 };
 
 export const FISH_IDS = Object.keys( FISH );

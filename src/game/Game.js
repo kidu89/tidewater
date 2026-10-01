@@ -12,6 +12,7 @@ import { UPGRADES, fuelBurn } from './Gear.js';
 import { GameHUD } from './GameHUD.js';
 import { Minimap } from './Minimap.js';
 import { Guide } from './Guide.js';
+import { readFriendChallenge } from './FriendDuel.js';
 
 // how long the catch card stays up unless dismissed (ms)
 const CATCH_CARD_MS = 9000;
@@ -30,6 +31,7 @@ export class Game {
 		this.app = app;
 		this.state = new GameState();
 		this.state.load();
+		this.friendChallenge = readFriendChallenge( typeof window !== 'undefined' ? window.location.search : '' );
 		this.rod = new FishingRod( { scene: app.scene, camera: app.camera, query: app.query, terrain: app.terrainData, audio: app.audio } );
 		this.rod.onLand = ( where ) => this.onBobberLanded( where );
 		this.stand = new FishStand( { scene: app.scene, terrain: app.terrainData, colliders: app.colliders } );
@@ -40,6 +42,7 @@ export class Game {
 		// boat upgrades: engine (thrust / top speed) and deck floodlights for night fishing
 		const b = app.boatCtl;
 		this._engineBase = { maxThrust: b.maxThrust, pitchSpeed: b.pitchSpeed };
+		b.onCapsizeRecover = () => this.toast( 'The boat righted itself after the rough water', 3200 );
 		this.floods = [];
 		if ( app.localLights ) this.addFloodlights( app.localLights, app.boat );
 		this._fuelOut = false;
@@ -143,6 +146,7 @@ export class Game {
 
 		const app = this.app, p = app.player, inp = app.input, rod = this.rod;
 		this._cardDismissed = false;
+		if ( inp.hit( 'KeyB' ) && ! app.freeCam ) this.towToHarbor();
 		if ( ! this.hud && app.ui && app.ui.ui && typeof document !== 'undefined' && document.head ) {
 
 			const ui = app.ui.ui;
@@ -152,6 +156,19 @@ export class Game {
 			this.guide = new Guide( ui, this, this.minimap );
 			ui.onReplayGuide = () => this.guide.replay();
 
+		}
+
+		if ( ( p.mode === 'boat' || p.mode === 'deck' ) && ! this.state.career.locations.includes( 'pelican-cay' ) ) {
+			const cay = WORLD.pelicanCay, boat = app.boatCtl.position;
+			if ( Math.hypot( boat.x - cay.center.x, boat.z - cay.center.z ) <= cay.discoverRadius ) this.state.discoverLocation( 'pelican-cay' );
+		}
+		if ( ( p.mode === 'boat' || p.mode === 'deck' ) && ! this.state.career.locations.includes( 'turtle-key' ) ) {
+			const key = WORLD.turtleKey, boat = app.boatCtl.position;
+			if ( Math.hypot( boat.x - key.center.x, boat.z - key.center.z ) <= key.discoverRadius ) this.state.discoverLocation( 'turtle-key' );
+		}
+		if ( ( p.mode === 'boat' || p.mode === 'deck' ) && ! this.state.career.locations.includes( 'mangrove-reach' ) ) {
+			const reach = WORLD.mangroveReach, boat = app.boatCtl.position;
+			if ( Math.hypot( boat.x - reach.center.x, boat.z - reach.center.z ) <= reach.discoverRadius ) this.state.discoverLocation( 'mangrove-reach' );
 		}
 
 		const can = this.canFish;
@@ -229,14 +246,19 @@ export class Game {
 
 				if ( L.shown ) {
 
-					// a slow turn so both flanks show
-					L.cardT += dt;
-					yaw += Math.sin( L.cardT * 0.7 ) * 0.55;
-					if ( lDown || inp.hit( 'KeyE' ) || inp.hit( 'Escape' ) || L.cardT > CATCH_CARD_MS / 1000 ) {
+					if ( this.hud.catchSharing ) {
+						// Keep the catch card open while the system share sheet is in use.
+						L.cardT = 0;
+					} else {
+						// a slow turn so both flanks show
+						L.cardT += dt;
+						yaw += Math.sin( L.cardT * 0.7 ) * 0.55;
+						if ( lDown || inp.hit( 'KeyE' ) || inp.hit( 'Escape' ) || L.cardT > CATCH_CARD_MS / 1000 ) {
 
-						this._cardDismissed = true; // this frame's E / click belong to the card
-						this.endLanding();
+							this._cardDismissed = true; // this frame's E / click belong to the card
+							this.endLanding();
 
+						}
 					}
 
 				}
@@ -280,6 +302,37 @@ export class Game {
 		} );
 		if ( this.minimap ) this.minimap.update( dt );
 		if ( this.guide ) this.guide.update( dt );
+
+	}
+
+	// Emergency recovery: return the player and boat to the pier without changing saved progress.
+	towToHarbor() {
+
+		const app = this.app, p = app.player, b = app.boatCtl;
+		const wasDriving = b.driven;
+		this.cancelLine( true );
+		this.endLanding();
+		this.rod.equip( false );
+		b.reset();
+		if ( wasDriving && app.audio ) app.audio.engineStop();
+
+		const dockWalk = new Vector3( WORLD.pier.x, 0, WORLD.pier.zEnd - 12 );
+		const ground = Math.max( app.terrainData.heightAt( dockWalk.x, dockWalk.z ), app.colliders.groundHeightAt( dockWalk.x, dockWalk.z, 50 ) );
+		p.position.set( dockWalk.x, ground, dockWalk.z );
+		p.velocity.set( 0, 0, 0 );
+		p.mode = 'walk';
+		p.yaw = Math.PI;
+		p.pitch = - 0.05;
+		p.grounded = true;
+		p.floating = true;
+		p.waterMean = null;
+		p._camY = null;
+		p.camOff = 0;
+		p.camOffV = 0;
+		p.deckVel.set( 0, 0, 0 );
+		p.busy = false;
+		p.prompt = null;
+		this.toast( 'Harbor tow complete · your boat is ready at the pier', 3600 );
 
 	}
 
@@ -403,11 +456,17 @@ export class Game {
 		const b = { x, z };
 		const reef = WORLD.reef;
 		const reefDist = Math.hypot( b.x - reef.center.x, b.z - reef.center.z ) - reef.radius;
+		const cay = WORLD.pelicanCay;
+		const cayDist = ( Math.hypot( ( b.x - cay.center.x ) / cay.radiusX, ( b.z - cay.center.z ) / cay.radiusZ ) - 1 ) * Math.min( cay.radiusX, cay.radiusZ );
+		const key = WORLD.turtleKey;
+		const keyDist = ( Math.hypot( ( b.x - key.center.x ) / key.radiusX, ( b.z - key.center.z ) / key.radiusZ ) - 1 ) * Math.min( key.radiusX, key.radiusZ );
+		const reach = WORLD.mangroveReach;
+		const reachDist = ( Math.hypot( ( b.x - reach.center.x ) / reach.radiusX, ( b.z - reach.center.z ) / reach.radiusZ ) - 1 ) * Math.min( reach.radiusX, reach.radiusZ );
 		const P = this._pier;
 		const rect = ( x0, x1, z0, z1 ) => Math.hypot( Math.max( x0 - b.x, 0, b.x - x1 ), Math.max( z0 - b.z, 0, b.z - z1 ) );
 		const walk = rect( P.x - P.width / 2, P.x + P.width / 2, P.zStart, P.zEnd );
 		const head = rect( P.x - P.headWidth / 2, P.x + P.headWidth / 2, P.zEnd - P.headDepth, P.zEnd );
-		return habitatAt( { depth, reefDist, pierDist: Math.min( walk, head ) } );
+		return habitatAt( { depth, reefDist, pierDist: Math.min( walk, head ), cayDist, cayRadius: cay.fishingRadius, keyDist, keyRadius: key.fishingRadius, mangroveDist: reachDist, mangroveRadius: reach.fishingRadius } );
 
 	}
 
@@ -497,6 +556,7 @@ export class Game {
 
 		const g = this.state.stats;
 		this.fight = new CatchMinigame( { species: b.species, kg: b.kg, lineKg: g.lineKg, reelSpeed: g.reelSpeed, distance: Math.max( 3, this.rod.lineOut ) } );
+		this.fight.fishingHabitat = this.habitat();
 		this.bite = null;
 		this.rod.hook();
 		this.toast( 'Fish on!', 1200 );
@@ -517,7 +577,7 @@ export class Game {
 		const name = FISH[ f.species ].name;
 		if ( st === 'caught' ) {
 
-			const entry = this.state.addFish( f.species, f.kg, this.hour );
+			const entry = this.state.addFish( f.species, f.kg, this.hour, { habitat: f.fishingHabitat } );
 			const info = this.state.lastCatch;
 			if ( au && au.fishSplash ) au.fishSplash( this.rod.bobber, 0.8 );
 			if ( au && au.fishFlop ) au.fishFlop();

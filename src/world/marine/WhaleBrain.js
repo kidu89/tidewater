@@ -14,6 +14,8 @@ const ROUTE = [ [ 70, 300 ], [ 60, 200 ], [ 35, 120 ], [ 5, 88 ], [ - 25, 100 ],
 const SURFACE_AT = 0.25; // route fraction where the surfacing sequence starts (heading in toward the beach)
 const CRUISE_SPEED = 2.6; // m/s underwater
 const SURFACE_SPEED = 1.5;
+const BREACH_LAUNCH_ACCEL = 5.5; // m/s²: an ~8–9 m/s push as the back clears the surface
+const BREACH_MAX_RISE_SPEED = 9; // m/s: keep the breach powerful without sending the whale skyward
 const TAU = Math.PI * 2;
 
 const _e = new THREE.Euler();
@@ -442,8 +444,9 @@ export class WhaleBrain {
 		let ay = ( yT - this.y ) * w * w - 2 * w * this.vy;
 		if ( target.breach === 'launch' ) {
 
-			// drive for the surface; out of the water at ~9 m/s
-			ay = 14;
+			// Drive up through the surface, then let gravity carry the breach. A constant 14 m/s²
+			// launch accelerated the whale to ~13.5 m/s and sent it several metres too high.
+			ay = this.vy < BREACH_MAX_RISE_SPEED ? BREACH_LAUNCH_ACCEL : 0;
 			if ( this.y > this.water - 2.5 ) this._nextKey( 'air' );
 
 		} else if ( target.breach === 'air' ) {

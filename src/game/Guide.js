@@ -7,7 +7,7 @@ import { CHANDLERY } from './Chandlery.js';
 //    markers pulse on the minimap). Enter / Space / click: next, Esc: skip. Replay from the help (F1).
 //  - one-time tips the first time something happens (rod out, first nibble, fish on, first catch,
 //    full cooler, next to the boat, at Joe's, at Marta's), in a card above the minimap.
-// Seen state in localStorage ('tidewater.guide'), wrapped in try/catch.
+// Seen state is stored under the legacy key 'tidewater.guide' to preserve existing player progress.
 //   const guide = new Guide( ui, game, minimap );  guide.update( dt );  guide.replay()
 
 const KEY = 'tidewater.guide';
@@ -43,7 +43,7 @@ const CSS = /* css */`
 .gm-guide-dots span.is-on { width: 18px; border-radius: 3px; background: var(--tw-sun); }
 .gm-guide-btns { display: flex; align-items: center; gap: var(--tw-2); }
 .gm-guide-hint { color: var(--tw-ink-3); font-size: var(--tw-fs-xs); margin-right: var(--tw-2); }
-.gm-coach { position: absolute; right: var(--tw-edge); bottom: calc(var(--tw-edge) + 184 * var(--tw-u) + var(--tw-3)); width: min(calc(290 * var(--tw-u)), calc(100vw - 2 * var(--tw-edge)));
+.gm-coach { position: absolute; right: var(--tw-edge-right); bottom: calc(var(--tw-edge-bottom) + 184 * var(--tw-u) + var(--tw-3)); width: min(calc(290 * var(--tw-u)), calc(100vw - 2 * var(--tw-edge)));
 	padding: var(--tw-3) var(--tw-4); border-radius: var(--tw-r-lg); color: var(--tw-ink); font: 500 var(--tw-fs-sm) var(--tw-font); line-height: 1.5;
 	pointer-events: none; opacity: 0; transform: translateY(calc(8 * var(--tw-u))); visibility: hidden;
 	transition: opacity 360ms var(--tw-ease), transform 480ms var(--tw-ease), visibility 0s linear 480ms, right var(--tw-slow) var(--tw-ease); }
@@ -67,10 +67,14 @@ const row = ( keys, text ) => `<div class="gm-guide-row"><span class="k">${ keys
 
 const CARDS = [
 	{
-		eyebrow: 'Welcome to Tidewater',
+		eyebrow: 'Welcome to Fishing Free',
 		title: 'Fish the island, sell your catch',
 		body: `<p>Catch fish from the <b>beach</b>, the <b>pier</b> or your <b>boat</b>. Different fish bite in the shallows, around the pier, over the reef and out in deep water, and they change with the time of day.</p>
-			<p>Sell your catch to <b>Joe</b> at the fish stand by the pier, then spend the money on upgrades from <b>Marta</b> at the chandlery by the boathouse: stronger line, a faster reel, a bigger hold, a fish finder and lights for fishing at night.</p>`,
+			<p>Take the boat south to <b>Pelican Cay</b> for a new stretch of shallow flats and bonefish. Its gold marker points the way on the minimap.</p>
+			<p>Continue east to <b>Turtle Key</b> for a rocky island channel, permit on the flats and elusive snook. A teal marker points the way.</p>
+			<p>Venture southwest to <b>Mangrove Reach</b>, a chain of low green islets and sheltered tidal creeks. Look for snook around the creek mouths and tarpon in the deeper channel.</p>
+			<p>Sell your catch to <b>Joe</b> at the fish stand by the pier, then spend the money on upgrades from <b>Marta</b> at the chandlery by the boathouse: stronger line, a faster reel, a bigger hold, a fish finder and lights for fishing at night.</p>
+			<p>Open your journal with <b>I</b> to track fish, achievements and optional harbor contracts. Share a catch to challenge a friend to beat the same species.</p>`,
 	},
 	{
 		eyebrow: 'Fishing',
@@ -81,7 +85,7 @@ const CARDS = [
 			${ row( k( 'LMB' ), 'Strike when the bobber is <b>pulled under</b> (dips are only nibbles)' ) }
 			${ row( k( 'Hold', 'LMB' ), 'Reel in. <b>Let go when the tension turns red</b>, or the line snaps' ) }
 			${ row( k( 'RMB' ), 'Reel an empty line back in' ) }
-			${ row( k( 'I' ), 'Your cooler and fish log' ) }
+			${ row( k( 'I' ), 'Your cooler, species guide, achievements and contracts' ) }
 		</div>`,
 	},
 	{
@@ -90,6 +94,7 @@ const CARDS = [
 		body: `<div class="gm-guide-list">
 			${ row( k( 'W', 'A', 'S', 'D' ), 'Move, mouse to look, <kbd>Shift</kbd> to run' ) }
 			${ row( k( 'E' ), 'Board the boat, take the helm, talk to Joe and Marta' ) }
+			${ row( k( 'B' ), 'Call an emergency tow back to the harbor if the boat gets into trouble' ) }
 			${ row( k( 'F1' ), 'All controls, and this guide again' ) }
 		</div>
 		<div class="gm-guide-where">

@@ -1,0 +1,99 @@
+name: Build Fishing Free for Steam (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'desktop-v*'
+
+permissions:
+  contents: read
+
+jobs:
+  package-windows:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build the game and Steam folder
+        run: |
+          npm ci
+          npm run desktop:package:win
+
+      - name: Confirm the Windows game executable exists
+        shell: pwsh
+        run: |
+          $game = Resolve-Path 'release/win-unpacked/Fishing Free.exe'
+          if ((Get-Item -LiteralPath $game).Length -lt 1000000) {
+            throw 'The packaged Fishing Free executable is unexpectedly small.'
+          }
+
+      - name: Smoke test the packaged game startup
+        shell: pwsh
+        run: |
+          $game = Resolve-Path 'release/win-unpacked/Fishing Free.exe'
+          $programFiles = [IO.Path]::GetFullPath($env:ProgramFiles).TrimEnd('\')
+          $workingDirectory = [IO.Path]::GetFullPath((Join-Path $programFiles 'Fishing Free Smoke'))
+          if (-not $workingDirectory.StartsWith("$programFiles\", [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Smoke-test directory is outside Program Files: $workingDirectory"
+          }
+          if (Test-Path -LiteralPath $workingDirectory) {
+            Remove-Item -LiteralPath $workingDirectory -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $workingDirectory | Out-Null
+          Copy-Item -Path (Join-Path (Split-Path -Parent $game) '*') -Destination $workingDirectory -Recurse -Force
+          $stagedGame = Join-Path $workingDirectory 'Fishing Free.exe'
+          $process = $null
+          $healthy = $false
+          try {
+            $process = Start-Process -FilePath $stagedGame -WorkingDirectory $workingDirectory -PassThru
+            for ($attempt = 0; $attempt -lt 45; $attempt++) {
+              if ($process.HasExited) {
+                throw "Fishing Free exited during startup with code $($process.ExitCode)."
+              }
+
+              $listeners = Get-NetTCPConnection -State Listen -OwningProcess $process.Id -ErrorAction SilentlyContinue |
+                Where-Object { $_.LocalAddress -eq '127.0.0.1' }
+              foreach ($listener in $listeners) {
+                try {
+                  $page = Invoke-WebRequest -Uri "http://127.0.0.1:$($listener.LocalPort)/" -TimeoutSec 3
+                  if ($page.StatusCode -eq 200 -and $page.Content -match '<title>Fishing Free</title>') {
+                    $healthy = $true
+                    break
+                  }
+                } catch { }
+              }
+              if ($healthy) { break }
+              Start-Sleep -Seconds 1
+            }
+
+            if (-not $healthy) {
+              throw 'Fishing Free did not serve its bundled Fishing Free page over loopback within 45 seconds.'
+            }
+          } finally {
+            if ($null -ne $process -and -not $process.HasExited) {
+              $null = $process.CloseMainWindow()
+              if (-not $process.WaitForExit(5000)) {
+                & taskkill.exe /PID $process.Id /T /F | Out-Null
+                $null = $process.WaitForExit(10000)
+              }
+            }
+            Remove-Item -LiteralPath $workingDirectory -Recurse -Force -ErrorAction SilentlyContinue
+          }
+
+      - name: Upload Steam-ready Windows build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fishing-Free-Windows-x64
+          path: release/win-unpacked/
+          if-no-files-found: warn
+          retention-days: 14

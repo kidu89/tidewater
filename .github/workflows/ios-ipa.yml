@@ -1,0 +1,176 @@
+name: Build Fishing Free iOS IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      distribution:
+        description: IPA signing type
+        required: true
+        type: choice
+        options:
+          - ad-hoc
+          - app-store-connect
+  push:
+    branches:
+      - release/ios-ipa
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+      IOS_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
+      IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+      IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Bundle the latest game assets
+        run: |
+          npm ci
+          npm run mobile:sync:ios
+
+      - name: Import Apple signing files
+        id: signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in IOS_TEAM_ID IOS_CERTIFICATE_P12_BASE64 IOS_CERTIFICATE_PASSWORD IOS_PROVISIONING_PROFILE_BASE64; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Add the ${name} GitHub Actions secret before running this workflow."
+              exit 1
+            fi
+          done
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/fishing-free-build.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -base64 32)"
+          CERTIFICATE_PATH="$RUNNER_TEMP/fishing-free-distribution.p12"
+          PROFILE_PATH="$RUNNER_TEMP/fishing-free.mobileprovision"
+          PROFILE_PLIST="$RUNNER_TEMP/fishing-free-profile.plist"
+
+          echo "keychain_path=$KEYCHAIN_PATH" >> "$GITHUB_OUTPUT"
+          echo "certificate_path=$CERTIFICATE_PATH" >> "$GITHUB_OUTPUT"
+          echo "profile_path=$PROFILE_PATH" >> "$GITHUB_OUTPUT"
+          echo "profile_plist=$PROFILE_PLIST" >> "$GITHUB_OUTPUT"
+
+          printf '%s' "$IOS_CERTIFICATE_P12_BASE64" | base64 -D > "$CERTIFICATE_PATH"
+          printf '%s' "$IOS_PROVISIONING_PROFILE_BASE64" | base64 -D > "$PROFILE_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERTIFICATE_PATH" -k "$KEYCHAIN_PATH" -P "$IOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security cms -D -i "$PROFILE_PATH" > "$PROFILE_PLIST"
+
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' "$PROFILE_PLIST")
+          PROFILE_TEAM_ID=$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' "$PROFILE_PLIST")
+          PROFILE_APP_ID=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$PROFILE_PLIST")
+          if [[ "$PROFILE_TEAM_ID" != "$IOS_TEAM_ID" || "$PROFILE_APP_ID" != "$IOS_TEAM_ID.com.fishingfree.game" ]]; then
+            echo "::error::The provisioning profile must match team $IOS_TEAM_ID and bundle ID com.fishingfree.game."
+            exit 1
+          fi
+
+          echo "profile_name=$PROFILE_NAME" >> "$GITHUB_OUTPUT"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_NAME.mobileprovision"
+
+      - name: Archive and export signed IPA
+        shell: bash
+        env:
+          DISTRIBUTION: ${{ inputs.distribution || 'ad-hoc' }}
+          PROFILE_NAME: ${{ steps.signing.outputs.profile_name }}
+        run: |
+          set -euo pipefail
+          ARCHIVE_PATH="$RUNNER_TEMP/Fishing-Free.xcarchive"
+          EXPORT_PATH="$RUNNER_TEMP/Fishing-Free-export"
+          OPTIONS_PATH="$RUNNER_TEMP/ExportOptions.plist"
+          mkdir -p "$EXPORT_PATH"
+
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$ARCHIVE_PATH" \
+            DEVELOPMENT_TEAM="$IOS_TEAM_ID" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            archive
+
+          XCODE_HELP="$(xcodebuild -help 2>&1 || true)"
+          if [[ "$DISTRIBUTION" == "ad-hoc" ]]; then
+            if grep -q 'release-testing' <<< "$XCODE_HELP"; then
+              EXPORT_METHOD='release-testing'
+            else
+              EXPORT_METHOD='ad-hoc'
+            fi
+          else
+            if grep -q 'app-store-connect' <<< "$XCODE_HELP"; then
+              EXPORT_METHOD='app-store-connect'
+            else
+              EXPORT_METHOD='app-store'
+            fi
+          fi
+
+          python3 - "$OPTIONS_PATH" "$EXPORT_METHOD" "$IOS_TEAM_ID" "$PROFILE_NAME" <<'PY'
+          import plistlib
+          import sys
+          options = {
+              "method": sys.argv[2],
+              "signingStyle": "manual",
+              "teamID": sys.argv[3],
+              "provisioningProfiles": {"com.fishingfree.game": sys.argv[4]},
+          }
+          with open(sys.argv[1], "wb") as output:
+              plistlib.dump(options, output)
+          PY
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist "$OPTIONS_PATH"
+          IPA_PATH="$(find "$EXPORT_PATH" -maxdepth 1 -name '*.ipa' -print -quit)"
+          if [[ -z "$IPA_PATH" ]]; then
+            echo "::error::Xcode completed without exporting an IPA."
+            exit 1
+          fi
+          cp "$IPA_PATH" "$RUNNER_TEMP/Fishing-Free.ipa"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fishing-Free-iOS-${{ inputs.distribution || 'ad-hoc' }}
+          path: ${{ runner.temp }}/Fishing-Free.ipa
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove signing material
+        if: always()
+        shell: bash
+        env:
+          KEYCHAIN_PATH: ${{ steps.signing.outputs.keychain_path }}
+          CERTIFICATE_PATH: ${{ steps.signing.outputs.certificate_path }}
+          PROFILE_NAME: ${{ steps.signing.outputs.profile_name }}
+          PROFILE_PATH: ${{ steps.signing.outputs.profile_path }}
+          PROFILE_PLIST: ${{ steps.signing.outputs.profile_plist }}
+        run: |
+          [[ -z "$KEYCHAIN_PATH" ]] || security delete-keychain "$KEYCHAIN_PATH" || true
+          [[ -z "$CERTIFICATE_PATH" ]] || rm -f "$CERTIFICATE_PATH"
+          [[ -z "$PROFILE_PATH" ]] || rm -f "$PROFILE_PATH"
+          [[ -z "$PROFILE_PLIST" ]] || rm -f "$PROFILE_PLIST"
+          [[ -z "$PROFILE_NAME" ]] || rm -f "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_NAME.mobileprovision"

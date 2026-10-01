@@ -1,11 +1,11 @@
-# Tidewater
+# Fishing Free
 
 An island fishing game for the browser. Cast from the pier, the beach or your own boat, fight the fish,
 sell your catch to Joe at the fish stand, and spend it on better gear at Marta's chandlery. Around it is a
 real-time tropical island and ocean: swim the reef, drive the boat out to deep water, and watch a humpback
 breach. It runs directly on WebGPU and WGSL with its own small rendering engine, no framework.
 
-**Play it:** https://dgreenheck.github.io/tidewater/
+**Run locally:** `npm ci` then `npm run dev`.
 
 ![Fishing off the pier at golden hour](docs/screenshot.jpg)
 
@@ -19,14 +19,22 @@ breach. It runs directly on WebGPU and WGSL with its own small rendering engine,
 - The first load compiles several hundred shaders, which can take a minute or more. Later visits are
   faster because the browser caches them.
 
+## Windows, Android and iOS
+
+The project includes a Steam-ready Windows desktop shell, a Capacitor mobile shell and touch controls. See [STEAM.md](STEAM.md) for the Windows package and Steam depot steps, [MOBILE.md](MOBILE.md) for mobile builds, and [PRODUCT_AUDIT.md](PRODUCT_AUDIT.md) for the release risks, growth plan and monetization recommendation.
+
 ## Features
 
 **Fishing**
 - A spinning rod and reel that cast, reel and bend under load, with the bail, rotor and crank animated.
 - Bites that depend on the water (shallows, pier, reef, bay, deep water), depth and time of day, across
-  18 Caribbean species.
+  22 Caribbean species.
 - A line-tension fight: keep the tension in the green band, ease off when the fish runs.
 - A full-screen catch card with the fish's length and weight, a fish log with records, and a cooler.
+- A field guide that tracks undiscovered species, habitat and activity clues, and personal records.
+- Three boat-reachable island destinations: Pelican Cay's flats, Turtle Key's rocky channel, and Mangrove Reach's tidal islets.
+- A persistent solo objective tracker that guides players through harbor contracts and then the full species collection.
+- Asynchronous friend challenges: share a catch, compete on the same species, and send the result back by link.
 - Joe's fish stand buys your catch; Marta's chandlery sells line, reels, rods, a bigger hold, fuel, a rebuilt
   engine, a fish finder and deck floodlights for night fishing.
 - Walk the deck and the wheelhouse while the boat drifts; the boat burns fuel.

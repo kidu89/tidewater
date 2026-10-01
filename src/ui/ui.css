@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Tidewater UI
+   Fishing Free UI
    Dark translucent glass over the ocean. Aqua is the interactive accent,
    the warm sun tone marks time, light and "modified" state.
    Every metric scales with --tw-u (≈1px at 720p, 1.25px at 1440p).
@@ -46,6 +46,10 @@
 	--tw-r-md: calc(10 * var(--tw-u));
 	--tw-r-lg: calc(16 * var(--tw-u));
 	--tw-edge: calc(16 * var(--tw-u));
+	--tw-edge-top: max(var(--tw-edge), env(safe-area-inset-top, 0px));
+	--tw-edge-right: max(var(--tw-edge), env(safe-area-inset-right, 0px));
+	--tw-edge-bottom: max(var(--tw-edge), env(safe-area-inset-bottom, 0px));
+	--tw-edge-left: max(var(--tw-edge), env(safe-area-inset-left, 0px));
 	--tw-panel-w: calc(340 * var(--tw-u));
 }
 
@@ -133,9 +137,9 @@ body {
 
 .loader-inner {
 	position: absolute;
-	left: clamp(20px, 6vw, 112px);
-	right: clamp(20px, 6vw, 112px);
-	bottom: clamp(24px, 7vh, 96px);
+	left: max(env(safe-area-inset-left, 0px), clamp(20px, 6vw, 112px));
+	right: max(env(safe-area-inset-right, 0px), clamp(20px, 6vw, 112px));
+	bottom: max(env(safe-area-inset-bottom, 0px), clamp(24px, 7vh, 96px));
 	display: flex;
 	flex-direction: column;
 	gap: clamp(20px, 3.2vh, 40px);
@@ -527,8 +531,8 @@ body {
 /* top-left: frame rate, brand, traversal mode */
 .tw-tl {
 	position: absolute;
-	top: var(--tw-edge);
-	left: var(--tw-edge);
+	top: var(--tw-edge-top);
+	left: var(--tw-edge-left);
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -691,7 +695,7 @@ body {
 /* top-centre: notifications */
 .tw-toasts {
 	position: absolute;
-	top: var(--tw-edge);
+	top: var(--tw-edge-top);
 	left: 50%;
 	display: flex;
 	flex-direction: column;
@@ -837,8 +841,8 @@ body {
 /* bottom-left: boat instruments */
 .tw-boat {
 	position: absolute;
-	left: var(--tw-edge);
-	bottom: var(--tw-edge);
+	left: var(--tw-edge-left);
+	bottom: var(--tw-edge-bottom);
 	display: flex;
 	align-items: center;
 	gap: var(--tw-4);
@@ -1077,7 +1081,7 @@ body {
 /* left: depth sounder */
 .tw-depth {
 	position: absolute;
-	left: var(--tw-edge);
+	left: var(--tw-edge-left);
 	top: 50%;
 	display: flex;
 	align-items: center;

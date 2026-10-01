@@ -1,7 +1,11 @@
 import { FISH, fishValue, fishLengthCm } from './FishTable.js';
 import { defaultUpgrades, gearStats, nextLevel, UPGRADES, FUEL_PRICE } from './Gear.js';
+import { getAchievementProgress, HABITAT_KEYS } from './Achievements.js';
+import { CONTRACTS, CONTRACT_IDS, getContractProgress } from './Contracts.js';
 
-const SAVE_KEY = 'tidewater.save.v1';
+// Keep the legacy keys so existing saves survive the Fishing Free rebrand.
+const SAVE_KEY = 'tidewater.save.v2';
+const LEGACY_SAVE_KEY = 'tidewater.save.v1';
 
 // Everything the player owns: wallet, the fish in the cooler / hold, the fish log and the gear
 // levels. Saved to localStorage (per browser) after every change; storage can be missing or throw
@@ -18,6 +22,9 @@ export class GameState {
 		this.lastCatch = null;
 		this.upgrades = defaultUpgrades();
 		this.fuel = null; // litres left (null = full tank)
+		this.career = emptyCareer();
+		this.newAchievements = [];
+		this._unlockedAchievements = new Set();
 		this._nextId = 1;
 		this.listeners = new Set();
 
@@ -26,6 +33,18 @@ export class GameState {
 	get stats() {
 
 		return gearStats( this.upgrades );
+
+	}
+
+	get achievementProgress() {
+
+		return getAchievementProgress( this );
+
+	}
+
+	get contractProgress() {
+
+		return getContractProgress( this );
 
 	}
 
@@ -54,7 +73,7 @@ export class GameState {
 
 	// store a caught fish; returns the entry, or null when the hold is full (it is logged either way).
 	// A record beats an earlier catch of the species; the first one of a species is a new species.
-	addFish( species, kg, timeOfDay = 12 ) {
+	addFish( species, kg, timeOfDay = 12, { habitat = null } = {} ) {
 
 		kg = Math.round( kg * 100 ) / 100;
 		const cm = Math.round( fishLengthCm( species, kg ) );
@@ -73,6 +92,13 @@ export class GameState {
 		const value = fishValue( species, kg );
 		const kept = this.fits( kg );
 		this.lastCatch = { species, kg, cm, value, newSpecies, record, prevBestKg, prevBestCm, kept };
+		this.career.caught ++;
+		if ( kept ) this.career.kept ++;
+		if ( record ) this.career.records ++;
+		this.career.bestCatchKg = Math.max( this.career.bestCatchKg, kg );
+		if ( habitat ) {
+			for ( const key of HABITAT_KEYS ) if ( habitat[ key ] >= 0.4 ) this.career.habitats[ key ] ++;
+		}
 		if ( ! kept ) {
 
 			this.save();
@@ -89,6 +115,28 @@ export class GameState {
 
 	}
 
+	discoverLocation( id ) {
+
+		if ( ! [ 'pelican-cay', 'turtle-key', 'mangrove-reach' ].includes( id ) || this.career.locations.includes( id ) ) return false;
+		this.career.locations.push( id );
+		this.save();
+		this.emit();
+		return true;
+
+	}
+
+	claimContract( id ) {
+
+		const contract = CONTRACTS.find( ( entry ) => entry.id === id );
+		if ( ! contract || this.career.claimedContracts.includes( id ) || contract.current( this ) < contract.target ) return null;
+		this.career.claimedContracts.push( id );
+		this.money += contract.reward;
+		this.save();
+		this.emit();
+		return contract;
+
+	}
+
 	// sell the given fish ids (all when omitted); returns the money made
 	sell( ids = null ) {
 
@@ -98,6 +146,8 @@ export class GameState {
 		for ( const f of sold ) total += f.value;
 		this.inventory = keep;
 		this.money += total;
+		this.career.sold += sold.length;
+		this.career.salesValue += total;
 		this.save();
 		this.emit();
 		return { total, count: sold.length };
@@ -182,19 +232,22 @@ export class GameState {
 
 	emit() {
 
+		const unlocked = this.achievementProgress.filter( ( achievement ) => achievement.unlocked );
+		this.newAchievements = unlocked.filter( ( achievement ) => ! this._unlockedAchievements.has( achievement.id ) );
+		this._unlockedAchievements = new Set( unlocked.map( ( achievement ) => achievement.id ) );
 		for ( const fn of this.listeners ) fn( this );
 
 	}
 
 	toJSON() {
 
-		return { v: 1, money: this.money, inventory: this.inventory, log: this.log, upgrades: this.upgrades, fuel: this.fuel, nextId: this._nextId };
+		return { v: 2, money: this.money, inventory: this.inventory, log: this.log, upgrades: this.upgrades, fuel: this.fuel, nextId: this._nextId, career: this.career };
 
 	}
 
 	fromJSON( d ) {
 
-		if ( ! d || d.v !== 1 ) return false;
+		if ( ! d || ( d.v !== 1 && d.v !== 2 ) ) return false;
 		this.money = Number.isFinite( d.money ) ? d.money : 0;
 		this.inventory = Array.isArray( d.inventory ) ? d.inventory.filter( ( f ) => f && FISH[ f.species ] && Number.isFinite( f.kg ) ) : [];
 		// saves from before lengths were recorded
@@ -204,6 +257,9 @@ export class GameState {
 		this.upgrades = { ...defaultUpgrades(), ...( d.upgrades || {} ) };
 		this.fuel = Number.isFinite( d.fuel ) ? d.fuel : null;
 		this._nextId = Math.max( d.nextId | 0, ...this.inventory.map( ( f ) => f.id + 1 ), 1 );
+		this.career = normalizeCareer( d.career, this.inventory, this.log );
+		this.newAchievements = [];
+		this._unlockedAchievements = new Set( this.achievementProgress.filter( ( achievement ) => achievement.unlocked ).map( ( achievement ) => achievement.id ) );
 		return true;
 
 	}
@@ -222,16 +278,17 @@ export class GameState {
 	load() {
 
 		if ( ! this.storage ) return false;
-		try {
-
-			const raw = this.storage.getItem( SAVE_KEY );
-			return raw ? this.fromJSON( JSON.parse( raw ) ) : false;
-
-		} catch ( e ) {
-
-			return false;
-
-		}
+		let raw = null;
+		try { raw = this.storage.getItem( SAVE_KEY ); } catch ( e ) { /* storage unavailable */ }
+		if ( raw ) try { if ( this.fromJSON( JSON.parse( raw ) ) ) return true; } catch ( e ) { /* try the previous version */ }
+		try { raw = this.storage.getItem( LEGACY_SAVE_KEY ); } catch ( e ) { return false; }
+		if ( raw ) try {
+			if ( this.fromJSON( JSON.parse( raw ) ) ) {
+				this.save();
+				return true;
+			}
+		} catch ( e ) { /* invalid save: start a fresh career */ }
+		return false;
 
 	}
 
@@ -242,10 +299,54 @@ export class GameState {
 		this.log = {};
 		this.upgrades = defaultUpgrades();
 		this.fuel = null;
+		this.career = emptyCareer();
+		this.newAchievements = [];
+		this._unlockedAchievements.clear();
 		this.save();
 		this.emit();
 
 	}
+
+}
+
+function emptyCareer() {
+
+	return { caught: 0, kept: 0, sold: 0, salesValue: 0, records: 0, bestCatchKg: 0, locations: [], habitats: Object.fromEntries( HABITAT_KEYS.map( ( key ) => [ key, 0 ] ) ), claimedContracts: [] };
+
+}
+
+function normalizeCareer( career, inventory, log ) {
+
+	const result = emptyCareer();
+	if ( career && typeof career === 'object' ) {
+		for ( const key of [ 'caught', 'kept', 'sold', 'records' ] ) result[ key ] = safeCount( career[ key ] );
+		result.salesValue = safeNumber( career.salesValue );
+		result.bestCatchKg = safeNumber( career.bestCatchKg );
+		result.locations = Array.isArray( career.locations ) ? career.locations.filter( ( id ) => [ 'pelican-cay', 'turtle-key', 'mangrove-reach' ].includes( id ) ) : [];
+		result.claimedContracts = Array.isArray( career.claimedContracts ) ? career.claimedContracts.filter( ( id ) => CONTRACT_IDS.has( id ) ) : [];
+		if ( career.habitats && typeof career.habitats === 'object' ) {
+			for ( const key of HABITAT_KEYS ) result.habitats[ key ] = safeCount( career.habitats[ key ] );
+		}
+		return result;
+	}
+
+	// Older v1 saves have only per-species counts and current inventory, so migrate what is known.
+	result.caught = Object.values( log ).reduce( ( total, entry ) => total + safeCount( entry?.count ), 0 );
+	result.kept = inventory.length;
+	result.bestCatchKg = Math.max( 0, ...Object.values( log ).map( ( entry ) => safeNumber( entry?.bestKg ) ) );
+	return result;
+
+}
+
+function safeCount( value ) {
+
+	return Number.isFinite( value ) ? Math.max( 0, Math.floor( value ) ) : 0;
+
+}
+
+function safeNumber( value ) {
+
+	return Number.isFinite( value ) ? Math.max( 0, value ) : 0;
 
 }
 

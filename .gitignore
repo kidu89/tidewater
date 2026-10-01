@@ -1,4 +1,13 @@
 node_modules
 dist
+release
+.codex-npm-cache
+.electron-cache
+.electron-builder-cache
+.gradle-cache
+.jdk21/
+.jdk21-temurin.*
+.test-output/
+steamworks/generated/
 .DS_Store
 *.log

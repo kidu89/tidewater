@@ -1,17 +1,70 @@
 {
-  "name": "tidewater",
-  "version": "1.0.0",
+  "name": "fishing-free",
+  "version": "1.0.4",
+  "description": "A scenic tropical island fishing game.",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5189",
-    "build": "vite build",
+    "build": "vite build && node scripts/copy-legal.mjs",
     "preview": "vite preview",
-    "test": "node test/game-logic.mjs && node test/engine-smoke.mjs"
+    "test": "node test/game-logic.mjs && node test/engine-smoke.mjs && node test/whale-brain.mjs",
+    "mobile:add:android": "cap add android",
+    "mobile:add:ios": "cap add ios",
+    "mobile:sync": "npm run build && cap sync",
+    "mobile:sync:android": "npm run build && cap sync android",
+    "mobile:sync:ios": "npm run build && cap sync ios",
+    "desktop:dev": "npm run build && electron .",
+    "desktop:package:win": "npm run build && electron-builder --win dir --x64 --publish never",
+    "multiplayer:server": "node server/multiplayer-server.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/filesystem": "^8.1.3",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/share": "^8.0.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.17.0",
     "vite": "^8.3.0",
     "webgpu": "^0.6.1"
   },
+  "overrides": {
+    "xcode": {
+      "uuid": "^11.1.1"
+    }
+  },
   "license": "MIT",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "main": "desktop/main.cjs",
+  "build": {
+    "appId": "com.fishingfree.game",
+    "productName": "Fishing Free",
+    "electronDownload": {
+      "cache": ".electron-cache"
+    },
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "desktop/main.cjs",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "icon": "desktop/icon.ico",
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    }
+  }
 }

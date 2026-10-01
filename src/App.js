@@ -72,14 +72,16 @@ export class App {
 
 	constructor() {
 
+		this.qs = new URLSearchParams( location.search );
+		this.isTouchDevice = ( globalThis.navigator?.maxTouchPoints || 0 ) > 0 || !! globalThis.matchMedia?.( '(pointer: coarse)' ).matches;
+		this.mobileProfile = this.isTouchDevice && ! this.qs.has( 'fullQuality' );
 		this.settings = {
 			timeOfDay: 16.2,
 			sunAzimuth: 0, // degrees: turns the sun's daily path about the vertical
 			timeSpeed: 0, // hours per real second
 			exposure: 0.55,
-			renderScale: 1, // internal resolution (the temporal upscaler reconstructs the output), Performance tab
+			renderScale: this.mobileProfile ? 0.68 : 1, // lower internal resolution on touch devices
 		};
-		this.qs = new URLSearchParams( location.search );
 
 	}
 
@@ -114,7 +116,7 @@ export class App {
 		await progress( 0.04, 'Building the atmosphere…' );
 		this.atmosphere = new Atmosphere( renderer );
 		this.sky = new Sky( this.atmosphere );
-		if ( ! qs.has( 'noClouds' ) ) {
+		if ( ! qs.has( 'noClouds' ) && ! this.mobileProfile ) {
 
 			// sky-pro-webgpu's clouds ("Partly cloudy"); ?oldClouds: the previous ones
 			this.clouds = qs.has( 'oldClouds' ) ? new Clouds( renderer, this.atmosphere ) : new SkyProClouds( renderer, this.atmosphere );
@@ -180,10 +182,10 @@ export class App {
 		this.surface.detail = this.seaDetail;
 		this.shore = new ShoreWaves( this.terrainGPU );
 		this.surface.shore = this.shore;
-		this.caustics = qs.has( 'noCaustics' ) ? null : new Caustics( renderer, this.fft );
+		this.caustics = qs.has( 'noCaustics' ) || this.mobileProfile ? null : new Caustics( renderer, this.fft );
 		if ( this.caustics ) this.caustics.detail = this.seaDetail;
 
-		if ( ! qs.has( 'noSim' ) ) {
+		if ( ! qs.has( 'noSim' ) && ! this.mobileProfile ) {
 
 			this.shoreSim = new ShoreSim( renderer, { terrainGPU: this.terrainGPU, shore: this.shore } );
 			this.surface.shoreSim = this.shoreSim;
@@ -326,7 +328,7 @@ fn terrainWetness( xz: vec2f, h: f32 ) -> vec2f {
 		// is seen from where the triangle facing can't be trusted
 		this.waterMaterial.cameraWaterHeightNode = this.query.cameraState().x;
 		// aerial perspective, marine haze and volumetric sun shafts (post)
-		this.haze = qs.has( 'noHaze' ) ? null : new AirHaze( {
+		this.haze = qs.has( 'noHaze' ) || this.mobileProfile ? null : new AirHaze( {
 			depthTexture: this.sceneRenderer.sceneRT.depthTexture, underwater: this.underwater, atmosphere: this.atmosphere,
 			sky: this.sky, clouds: this.clouds, terrain: this.terrainGPU, csm: this.csm,
 		} );
@@ -355,7 +357,7 @@ fn terrainWetness( xz: vec2f, h: f32 ) -> vec2f {
 		engine.domElement.addEventListener( 'click', () => {
 
 			if ( window.__ui && window.__ui.isPointerOverUI ) return;
-			this.input.requestLock();
+			if ( ! this.isTouchDevice ) this.input.requestLock();
 			if ( this.audio ) this.audio.resume();
 
 		} );

@@ -6,10 +6,14 @@ export class Input {
 		this.dom = dom;
 		this.keys = new Set();
 		this.pressed = new Set();
+		this.physicalKeys = new Set();
+		this.virtualKeys = new Set();
 		this.look = { x: 0, y: 0 };
 		this.wheel = 0;
 		this.mouseDown = false;
 		this.rightDown = false;
+		this.physicalButtons = new Set();
+		this.virtualButtons = new Set();
 		this.locked = false;
 		this.enabled = true;
 
@@ -17,23 +21,29 @@ export class Input {
 
 			if ( e.target && ( e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA' ) ) return;
 			if ( ! this.keys.has( e.code ) ) this.pressed.add( e.code );
+			this.physicalKeys.add( e.code );
 			this.keys.add( e.code );
 			if ( [ 'Space', 'ArrowUp', 'ArrowDown', 'Tab' ].includes( e.code ) ) e.preventDefault();
 
 		} );
-		window.addEventListener( 'keyup', ( e ) => this.keys.delete( e.code ) );
-		window.addEventListener( 'blur', () => this.keys.clear() );
+		window.addEventListener( 'keyup', ( e ) => {
+
+			this.physicalKeys.delete( e.code );
+			if ( ! this.virtualKeys.has( e.code ) ) this.keys.delete( e.code );
+
+		} );
+		window.addEventListener( 'blur', () => this.releaseAll() );
 
 		dom.addEventListener( 'mousedown', ( e ) => {
 
-			if ( e.button === 0 ) this.mouseDown = true;
-			if ( e.button === 2 ) this.rightDown = true;
+			this.physicalButtons.add( e.button );
+			this.updateButtons();
 
 		} );
 		window.addEventListener( 'mouseup', ( e ) => {
 
-			if ( e.button === 0 ) this.mouseDown = false;
-			if ( e.button === 2 ) this.rightDown = false;
+			this.physicalButtons.delete( e.button );
+			this.updateButtons();
 
 		} );
 		dom.addEventListener( 'contextmenu', ( e ) => e.preventDefault() );
@@ -65,6 +75,54 @@ export class Input {
 	requestLock() {
 
 		if ( ! this.locked ) this.dom.requestPointerLock?.()?.catch?.( () => {} );
+
+	}
+
+	// Mobile controls feed the same state as a keyboard without synthesizing DOM events.
+	setVirtualKey( code, down ) {
+
+		if ( down ) {
+			if ( ! this.keys.has( code ) ) this.pressed.add( code );
+			this.virtualKeys.add( code );
+			this.keys.add( code );
+		} else {
+			this.virtualKeys.delete( code );
+			if ( ! this.physicalKeys.has( code ) ) this.keys.delete( code );
+		}
+
+	}
+
+	setVirtualButton( button, down ) {
+
+		if ( down ) this.virtualButtons.add( button );
+		else this.virtualButtons.delete( button );
+		this.updateButtons();
+
+	}
+
+	addLookDelta( x, y ) {
+
+		this.look.x += x;
+		this.look.y += y;
+
+	}
+
+	updateButtons() {
+
+		this.mouseDown = this.physicalButtons.has( 0 ) || this.virtualButtons.has( 0 );
+		this.rightDown = this.physicalButtons.has( 2 ) || this.virtualButtons.has( 2 );
+
+	}
+
+	releaseAll() {
+
+		this.physicalKeys.clear();
+		this.virtualKeys.clear();
+		this.keys.clear();
+		this.pressed.clear();
+		this.physicalButtons.clear();
+		this.virtualButtons.clear();
+		this.updateButtons();
 
 	}
 

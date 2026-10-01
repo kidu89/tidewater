@@ -28,7 +28,7 @@ const VILLAGE = WORLD.village.center;
 
 // CPU-side procedural island heightmap plus bilinear queries.
 //
-// A volcanic high island: a hand-placed ridge skeleton (summit massif with rock plugs, spurs
+// The main volcanic island uses a hand-placed ridge skeleton (summit massif with rock plugs, spurs
 // framing the village valley and the two headlands) carved by slope-aligned erosion noise into
 // branching gullies and knife-edge ridges; sea cliffs, wave-cut platforms and sea stacks on the
 // rocky coast; the bay keeps its tuned beach / surf-zone profile (only cusps, a zero-mean bar and
@@ -127,7 +127,14 @@ export class TerrainData {
 		const dBody = ellipseDist( x, z, 0, - 442, 565, 400 );
 		const dW = ellipseDist( x, z, - 272, - 25, 92, 205 );
 		const dE = ellipseDist( x, z, 288, - 12, 108, 228 );
-		let d = smin( dBody, smin( dW, dE, 40 ), 75 );
+		const cay = WORLD.pelicanCay;
+		const dCay = ellipseDist( x, z, cay.center.x, cay.center.z, cay.radiusX, cay.radiusZ );
+		const key = WORLD.turtleKey;
+		const dKey = ellipseDist( x, z, key.center.x, key.center.z, key.radiusX, key.radiusZ );
+		const reach = WORLD.mangroveReach;
+		let dReach = ellipseDist( x, z, reach.center.x, reach.center.z, reach.radiusX, reach.radiusZ );
+		for ( const islet of reach.islets ) dReach = smin( dReach, ellipseDist( x, z, islet.center.x, islet.center.z, islet.radiusX, islet.radiusZ ), 14 );
+		let d = smin( smin( smin( smin( dBody, smin( dW, dE, 40 ), 75 ), dCay, 28 ), dKey, 18 ), dReach, 14 );
 		d += F.f170 * 34 * ( 1 - 0.9 * bz );
 		if ( bz < 1 ) d += this.noise.fbm( x / 38, z / 38, 3 ) * 7 * ( 1 - bz );
 		d += F.und * 5 * bz; // gentle beach undulation
@@ -251,6 +258,27 @@ export class TerrainData {
 				m *= 1 - open;
 				m -= softRamp( m - e * S - n2.fbm( x / 9, z / 9, 2 ) * 1.5 * ( 1 - bz ), 3 );
 				h = h + softRamp( m - h, 6 );
+
+			}
+
+			// A low central rise gives detached Pelican Cay a walkable, protected interior.
+			const cay = WORLD.pelicanCay;
+			const cayDist = ellipseDist( x, z, cay.center.x, cay.center.z, cay.radiusX, cay.radiusZ );
+			if ( cayDist < 0 ) h += 10 * smoothstep( 0, 1, - cayDist / Math.min( cay.radiusX, cay.radiusZ ) );
+
+			// A taller, rocky spine gives Turtle Key a distinct silhouette above the water.
+			const key = WORLD.turtleKey;
+			const keyDist = ellipseDist( x, z, key.center.x, key.center.z, key.radiusX, key.radiusZ );
+			if ( keyDist < 0 ) h += 18 * smoothstep( 0, 1, - keyDist / Math.min( key.radiusX, key.radiusZ ) );
+
+			// Low, walkable hummocks give the mangrove islets a distinct, tide-worn silhouette.
+			const reach = WORLD.mangroveReach;
+			const reachDist = ellipseDist( x, z, reach.center.x, reach.center.z, reach.radiusX, reach.radiusZ );
+			if ( reachDist < 0 ) h += 8.5 * smoothstep( 0, 1, - reachDist / Math.min( reach.radiusX, reach.radiusZ ) );
+			for ( const islet of reach.islets ) {
+
+				const isletDist = ellipseDist( x, z, islet.center.x, islet.center.z, islet.radiusX, islet.radiusZ );
+				if ( isletDist < 0 ) h += 5.5 * smoothstep( 0, 1, - isletDist / Math.min( islet.radiusX, islet.radiusZ ) );
 
 			}
 
@@ -417,7 +445,7 @@ export class TerrainData {
 		for ( let j = 1; j < res - 1; j ++ ) {
 
 			const z = o + j + 0.5;
-			if ( z > 320 || z < - 900 ) continue;
+			if ( z > 720 || z < - 900 ) continue;
 			for ( let i = 1; i < res - 1; i ++ ) {
 
 				const k = j * res + i;
@@ -529,7 +557,7 @@ export class TerrainData {
 		for ( let j = 1; j < res - 1; j ++ ) {
 
 			const z = o + j + 0.5;
-			if ( z > 330 || z < - 880 ) continue;
+			if ( z > 720 || z < - 880 ) continue;
 			for ( let i = 1; i < res - 1; i ++ ) {
 
 				const k = j * res + i;
@@ -706,7 +734,7 @@ export class TerrainData {
 		for ( let j = 1; j < res - 1; j ++ ) {
 
 			const z = o + j + 0.5;
-			if ( z < - 900 || z > 420 ) continue;
+			if ( z < - 900 || z > 720 ) continue;
 			for ( let i = 1; i < res - 1; i ++ ) {
 
 				const k = j * res + i;

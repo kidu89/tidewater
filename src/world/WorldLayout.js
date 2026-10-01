@@ -27,6 +27,37 @@ export const WORLD = {
 
 	reef: { center: new THREE.Vector3( - 78, 0, 58 ), radius: 58 },
 
+	pelicanCay: {
+		name: 'Pelican Cay',
+		center: new THREE.Vector3( 0, 0, 245 ),
+		radiusX: 62,
+		radiusZ: 48,
+		fishingRadius: 138,
+		discoverRadius: 95,
+	},
+
+	turtleKey: {
+		name: 'Turtle Key',
+		center: new THREE.Vector3( 248, 0, 276 ),
+		radiusX: 46,
+		radiusZ: 34,
+		fishingRadius: 116,
+		discoverRadius: 82,
+	},
+
+	mangroveReach: {
+		name: 'Mangrove Reach',
+		center: new THREE.Vector3( - 410, 0, 520 ),
+		radiusX: 52,
+		radiusZ: 38,
+		islets: [
+			{ center: new THREE.Vector3( - 488, 0, 495 ), radiusX: 21, radiusZ: 26 },
+			{ center: new THREE.Vector3( - 326, 0, 558 ), radiusX: 24, radiusZ: 18 },
+		],
+		fishingRadius: 150,
+		discoverRadius: 100,
+	},
+
 	spawn: { position: new THREE.Vector3( 18, 0, - 60 ), yaw: Math.PI }, // kept clear of rocks, plants and debris
 	// where the player starts: on the boardwalk up from the pier foot, looking down it toward the pier
 	start: { position: new THREE.Vector3( 53.6, 0, - 77 ), yaw: Math.PI },

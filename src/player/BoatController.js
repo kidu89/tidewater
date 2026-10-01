@@ -121,6 +121,8 @@ export class BoatController {
 		this.onSlam = null;
 		this._acc = 0;
 		this._age = 0; // s since the latest read-back was issued
+		this._capsizeT = 0;
+		this.onCapsizeRecover = null;
 
 		this.bowWorld = new THREE.Vector3();
 		this.sternWorld = new THREE.Vector3();
@@ -248,6 +250,59 @@ export class BoatController {
 		this.model.setThrottle( this.throttle );
 		this.model.setSteering( this.steer );
 		this.model.setPropellerRPM( this.rpm * 2400 * Math.sign( this.throttle || 1 ) );
+		this.apply();
+
+		// Waves may occasionally push the hull over or below the surface. Give the simulation a
+		// moment to settle, then right the boat in place so a single bad impact cannot end a trip.
+		const surface = this.surfaceHeight();
+		const up = _up.set( 0, 1, 0 ).applyQuaternion( this.quaternion ).y;
+		if ( up < 0.15 || this.position.y < surface - 4 ) this._capsizeT += Math.min( dt, 0.1 );
+		else this._capsizeT = 0;
+		if ( this._capsizeT >= 1.25 ) {
+
+			this.rightBoat( surface );
+			if ( this.onCapsizeRecover ) this.onCapsizeRecover();
+
+		}
+
+	}
+
+	surfaceHeight() {
+
+		if ( ! this.hasWater || ! this.waterH.length ) return 0;
+		let sum = 0, count = 0;
+		for ( let i = 0; i < this.waterH.length; i ++ ) {
+
+			const h = this.waterH[ i ];
+			if ( Number.isFinite( h ) ) { sum += h; count ++; }
+
+		}
+		return count ? sum / count : 0;
+
+	}
+
+	rightBoat( surface = this.surfaceHeight() ) {
+
+		// Preserve heading and helm state; discard roll, pitch and dangerous momentum.
+		const fwd = this.forward( _fwd );
+		const heading = Math.atan2( fwd.x, fwd.z );
+		this.quaternion.setFromAxisAngle( _up.set( 0, 1, 0 ), heading );
+		this.position.y = surface;
+		this.velocity.set( 0, 0, 0 );
+		this.angular.set( 0, 0, 0 );
+		this.throttle = 0;
+		this.throttleTarget = 0;
+		this.steer = 0;
+		this.rpm = 0;
+		this.speed = 0;
+		this.forwardSpeed = 0;
+		this.thrust = 0;
+		this._acc = 0;
+		this._age = 0;
+		this._capsizeT = 0;
+		this.model.setThrottle( 0 );
+		this.model.setSteering( 0 );
+		this.model.setPropellerRPM( 0 );
 		this.apply();
 
 	}
@@ -443,11 +498,23 @@ export class BoatController {
 		this.velocity.set( 0, 0, 0 );
 		this.angular.set( 0, 0, 0 );
 		this.throttle = 0;
+		this.throttleTarget = 0;
 		this.steer = 0;
 		this.rpm = 0;
+		this.driven = false;
 		this.moored = true;
+		this.speed = 0;
+		this.forwardSpeed = 0;
+		this.thrust = 0;
+		this._acc = 0;
+		this._age = 0;
+		this._capsizeT = 0;
+		this.model.setThrottle( 0 );
+		this.model.setSteering( 0 );
+		this.model.setPropellerRPM( 0 );
 		this.mooring.anchor.copy( WORLD.boatDock.position );
 		this.mooring.heading = WORLD.boatDock.heading;
+		this.apply();
 
 	}
 

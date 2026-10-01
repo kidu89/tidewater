@@ -494,6 +494,12 @@ function surface( prop, lodFade ) {
 		// faint dark stripes along the scale rows of the upper flank
 		let lines = smoothstep( 0.7, 0.95, sin( sd * 280.0 ) ) * smoothstep( -0.1, 0.3, h ) * bodyK * 0.25;
 		c *= 1.0 - lines;
+	} else if ( pat == ${ PT( 'bonefish' ) } ) {
+		// pale silver bars and a fine dark line make the flats species distinct from the mullet
+		let bars = smoothstep( 0.76, 0.96, sin( ( z + 0.48 ) * 37.0 + fishVnoise( vec2f( z * 9.0, h * 5.0 ) ) * 0.8 ) ) * smoothstep( -0.38, -0.02, h ) * bodyK;
+		c = mix( c, vec3f( 0.29, 0.38, 0.36 ), bars * 0.48 );
+		let stripe = fishBand( h, 0.04, 0.035, fwH + 0.025 ) * bodyK;
+		c = mix( c, vec3f( 0.3, 0.39, 0.4 ), stripe * 0.48 );
 	} else if ( pat == ${ PT( 'needlefish' ) } ) {
 		// dark blue lateral stripe, dark beak
 		let stripe = fishBand( h, 0.0, 0.06, fwH + 0.05 ) * bodyK;
@@ -512,6 +518,21 @@ function surface( prop, lodFade ) {
 		// huge scales with dark edges
 		let rims = smoothstep( 0.8, 0.97, sf ) * sfade * bodyK;
 		c *= 1.0 - rims * 0.35;
+	} else if ( pat == ${ PT( 'snook' ) } ) {
+		// common snook: a crisp dark lateral stripe over a silver flank
+		let stripe = fishBand( h, 0.08, 0.045, fwH + 0.025 ) * bodyK;
+		c = mix( c, vec3f( 0.055, 0.085, 0.09 ), stripe * 0.88 );
+		c = mix( c, vec3f( 0.82, 0.74, 0.42 ), fishBand( h, 0.16, 0.008, 0.006 ) * bodyK * 0.75 );
+	} else if ( pat == ${ PT( 'permit' ) } ) {
+		// Atlantic permit: polished silver sides, faint bars and a dark trailing edge
+		let bars = smoothstep( 0.55, 0.8, sin( ( z + 0.42 ) * 42.0 + n1 * 0.4 ) ) * smoothstep( 0.15, 0.42, h ) * bodyK;
+		c = mix( c, vec3f( 0.28, 0.34, 0.35 ), bars * 0.58 );
+		let tail = smoothstep( 0.1, 0.2, z ) * smoothstep( 0.02, 0.12, h ) * bodyK;
+		c = mix( c, vec3f( 0.11, 0.15, 0.17 ), tail * 0.55 );
+	} else if ( pat == ${ PT( 'lionfish' ) } ) {
+		// red-and-cream bands run across the body and continue through the long spined fins
+		let bands = smoothstep( 0.4, 0.78, sin( z * 54.0 + n1 * 1.8 ) ) * bodyK;
+		c = mix( c, vec3f( 0.9, 0.76, 0.57 ), bands * select( 0.9, 0.48, isFin ) );
 	}
 
 	// ---- lateral line (a row of pores along a dark line)

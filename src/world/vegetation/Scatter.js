@@ -342,7 +342,7 @@ export function scatterVegetation( site, seed = 99 ) {
 
 	// island bounds (land lies roughly within these); the headlands either side of the bay reach
 	// south to z ~ +320 (HZ1)
-	const X0 = - 660, X1 = 660, Z0 = - 900, Z1 = - 20, HZ1 = 320;
+	const X0 = - 660, X1 = 660, Z0 = - 900, Z1 = - 20, HZ1 = 720;
 
 	// --- broadleaf trees: a closed canopy on the forest ground (hillsides, gullies), thinning at
 	// the forest edge into scattered trees; a few lone trees on the meadow ----------------------
@@ -354,6 +354,10 @@ export function scatterVegetation( site, seed = 99 ) {
 		let p = c.forest > 0.5 ? 0.9 : smoothstep( 0.15, 0.5, c.forest ) * 0.38 * smoothstep( - 0.25, 0.2, clump ) + 0.008;
 		// headlands (south of the bay line): wind-shaped scattered trees and clumps, not a closed forest
 		if ( z > Z1 ) p = c.forest > 0.5 ? 0.45 * smoothstep( - 0.2, 0.2, clump ) : p;
+		const reach = WORLD.mangroveReach;
+		let wetland = 1 - smoothstep( 26, 63, Math.hypot( x - reach.center.x, z - reach.center.z ) );
+		for ( const islet of reach.islets ) wetland = Math.max( wetland, 1 - smoothstep( 10, 30, Math.hypot( x - islet.center.x, z - islet.center.z ) ) );
+		p = Math.max( p, wetland * 0.82 );
 		if ( c.forest <= 0.5 ) p += headland( x, z, c ) * ( 0.9 * smoothstep( - 0.2, 0.2, clump ) + 0.1 );
 		if ( rand() > p ) return;
 		// crowns must not overhang the houses: trunks >= 7 m from footprints / boardwalks

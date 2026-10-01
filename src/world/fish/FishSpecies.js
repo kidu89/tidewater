@@ -24,7 +24,7 @@
 export const PATTERN = {
 	silverside: 0, chromis: 1, grunt: 2, yellowtail: 3, tang: 4, sergeant: 5, wrasse: 6, parrot: 7,
 	angel: 8, barracuda: 9, redSnapper: 10, grouper: 11, tuna: 12, mahi: 13, mullet: 14, needlefish: 15,
-	jack: 16, tarpon: 17, stingray: 18, eagleRay: 19, turtle: 20,
+	jack: 16, tarpon: 17, stingray: 18, eagleRay: 19, turtle: 20, bonefish: 21, snook: 22, permit: 23, lionfish: 24,
 };
 
 const spiny = ( from, to, rays, h, rake, notch = 0.16 ) => ( { from, to, rays, spiny: true, h, rake, notch } );
@@ -288,6 +288,23 @@ export const SPECIES = {
 		iris: 0xc8b890, irid: 0.5, metal: 0.55,
 	},
 
+	// bonefish: streamlined silver body, small downturned mouth and forked tail for the flats
+	bonefish: {
+		pattern: PATTERN.bonefish, body: 0.84, sec: 2.15,
+		top: [ [ 0, 0.004 ], [ 0.03, 0.022 ], [ 0.08, 0.046 ], [ 0.16, 0.07 ], [ 0.28, 0.089 ], [ 0.42, 0.095 ], [ 0.56, 0.087 ], [ 0.7, 0.067 ], [ 0.84, 0.044 ], [ 1, 0.03 ] ],
+		bot: [ [ 0, 0.004 ], [ 0.03, 0.018 ], [ 0.08, 0.039 ], [ 0.16, 0.061 ], [ 0.28, 0.078 ], [ 0.42, 0.083 ], [ 0.56, 0.077 ], [ 0.7, 0.06 ], [ 0.84, 0.041 ], [ 1, 0.028 ] ],
+		wid: [ [ 0, 0.004 ], [ 0.04, 0.022 ], [ 0.12, 0.041 ], [ 0.25, 0.055 ], [ 0.42, 0.059 ], [ 0.6, 0.051 ], [ 0.8, 0.035 ], [ 1, 0.019 ] ],
+		mouth: { corner: 0.055, y: - 0.009, tip: - 0.014, protrude: 0.006 },
+		eye: { u: 0.105, y: 0.018, r: 0.022 }, opercle: 0.24,
+		scales: 0.018, scaleVis: 0.52, lateral: 0.14, arch: 0.08,
+		dorsal: [ spiny( 0.43, 0.51, 5, [ [ 0, 0.052 ], [ 1, 0.03 ] ], [ 0.35, 0.65 ], 0.13 ), soft( 0.65, 0.76, 10, [ [ 0, 0.05 ], [ 1, 0.025 ] ], [ 0.55, 0.9 ] ) ],
+		anal: [ soft( 0.62, 0.75, 11, [ [ 0, 0.045 ], [ 1, 0.022 ] ], [ 0.55, 0.9 ] ) ],
+		pectoral: { u: 0.25, y: 0.022, len: 0.13, base: 0.02, rays: 15, shape: 'pointed', spread: 0.42 },
+		pelvic: { u: 0.42, len: 0.07, rays: 6 },
+		caudal: { shape: 'forked', len: 0.2, span: 0.145, fork: 0.48, rays: 17 },
+		iris: 0xb8b8a0, irid: 0.68, metal: 0.72,
+	},
+
 	// Atlantic needlefish / houndfish: long toothed beak, dorsal and anal fins far back
 	needlefish: {
 		pattern: PATTERN.needlefish, body: 0.9, sec: 2.0,
@@ -346,6 +363,25 @@ export const SPECIES = {
 
 };
 
+// New catchable species reuse proven body archetypes, with their own pattern ids and skin rows.
+// This keeps the fish silhouettes detailed while giving each discovery a distinct colour/pattern.
+SPECIES.snook = { ...SPECIES.tarpon, pattern: PATTERN.snook, body: 0.82, lateral: 0.12, metal: 0.45 };
+SPECIES.permit = { ...SPECIES.jack, pattern: PATTERN.permit, body: 0.78, metal: 0.6 };
+SPECIES.lionfish = {
+	...SPECIES.angel,
+	pattern: PATTERN.lionfish,
+	body: 0.8,
+	dorsal: [
+		spiny( 0.24, 0.57, 13, [ [ 0, 0.12 ], [ 0.35, 0.24 ], [ 1, 0.16 ] ], [ 0.2, 0.55 ], 0.04 ),
+		soft( 0.57, 0.88, 16, [ [ 0, 0.08 ], [ 0.55, 0.09 ], [ 1, 0.04 ] ], [ 0.55, 0.95 ] ),
+	],
+	anal: [
+		spiny( 0.55, 0.63, 4, [ [ 0, 0.1 ], [ 1, 0.18 ] ], [ 0.35, 0.55 ], 0.05 ),
+		soft( 0.63, 0.87, 14, [ [ 0, 0.07 ], [ 1, 0.035 ] ], [ 0.55, 0.95 ] ),
+	],
+	pectoral: { u: 0.28, y: 0, len: 0.3, base: 0.04, rays: 20, shape: 'rounded', spread: 0.82 },
+};
+
 // Skin colours (sRGB): back, flank, belly, fins, fin edges; the shader adds the species'
 // markings (stripes, bars, spots) on top.
 export const SKIN = {
@@ -364,10 +400,14 @@ export const SKIN = {
 	tuna: { back: 0x0e1628, flank: 0x66748a, belly: 0xd6dade, fin: 0x1e2630, edge: 0x161a22, rough: 0.28 },
 	mahi: { back: 0x125c6a, flank: 0xcdb52a, belly: 0xefe29a, fin: 0x2c5c9c, edge: 0x1c4c9c, rough: 0.3 },
 	mullet: { back: 0x485856, flank: 0xb4bcbe, belly: 0xe6eaea, fin: 0x848c8c, edge: 0x6c7474, rough: 0.33 },
+	bonefish: { back: 0x405c66, flank: 0xbfc9c8, belly: 0xe9eded, fin: 0x7b8989, edge: 0x68797d, rough: 0.29 },
 	needlefish: { back: 0x36766c, flank: 0xb4cccc, belly: 0xeef2f2, fin: 0x76968e, edge: 0x46666c, rough: 0.3 },
 	jack: { back: 0x56768c, flank: 0xbcc8d0, belly: 0xe6ecee, fin: 0x86949c, edge: 0x3c444c, rough: 0.3 },
 	tarpon: { back: 0x364c5c, flank: 0xd4dadc, belly: 0xeef0f2, fin: 0x86949c, edge: 0x4c565c, rough: 0.28 },
 	stingray: { back: 0x6c604c, flank: 0x7a6c56, belly: 0xd8d6d0, fin: 0x4c4236, edge: 0x8a7c66, rough: 0.5 },
 	eagleRay: { back: 0x14181e, flank: 0x1c2028, belly: 0xe0e2e2, fin: 0x101418, edge: 0x2a2e36, rough: 0.35 },
 	turtle: { back: 0x3e3220, flank: 0x86683a, belly: 0xc8b884, fin: 0x4a4238, edge: 0x9a9280, rough: 0.45 },
+	snook: { back: 0x344a4d, flank: 0xaab9b7, belly: 0xe1e7e4, fin: 0x647a78, edge: 0x202e32, rough: 0.28 },
+	permit: { back: 0x59676d, flank: 0xc5d0d0, belly: 0xf0f1e9, fin: 0x637d82, edge: 0x35484d, rough: 0.3 },
+	lionfish: { back: 0x8e3028, flank: 0xd86f54, belly: 0xe7b590, fin: 0xaa4938, edge: 0xf0d6af, rough: 0.42 },
 };

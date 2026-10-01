@@ -28,8 +28,25 @@ export const GPU = {
 	async init( { canvas = null, requiredLimits = {}, headless = false } = {} ) {
 
 		if ( ! navigator.gpu ) throw new Error( 'WebGPU is not available in this browser.' );
-		const adapter = await navigator.gpu.requestAdapter( { powerPreference: 'high-performance' } );
-		if ( ! adapter ) throw new Error( 'No WebGPU adapter found.' );
+		let adapter = this.adapter || globalThis.__fishingFreeWebGPUAdapter || null;
+		globalThis.__fishingFreeWebGPUAdapter = null;
+		// Prefer core WebGPU; try Android Chromium's OpenGL ES compatibility level before giving up.
+		for ( const options of [
+			{ powerPreference: 'high-performance' }, {}, { powerPreference: 'low-power' },
+			{ featureLevel: 'compatibility', powerPreference: 'high-performance' },
+			{ featureLevel: 'compatibility' },
+		] ) {
+
+			if ( adapter ) break;
+			try {
+				adapter = await navigator.gpu.requestAdapter( options );
+			} catch {
+				// Some Android WebViews reject adapter preference options instead of ignoring them.
+			}
+			if ( adapter ) break;
+
+		}
+		if ( ! adapter ) throw new Error( 'No WebGPU adapter found. Update Android System WebView and Chrome, then restart the phone.' );
 		this.adapter = adapter;
 
 		const L = adapter.limits;

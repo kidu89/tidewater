@@ -1,0 +1,127 @@
+name: Build Fishing Free Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact:
+        description: Android package to build
+        required: true
+        type: choice
+        default: debug-apk
+        options:
+          - debug-apk
+          - play-release
+  push:
+    tags:
+      - 'android-v*'
+
+permissions:
+  contents: read
+
+jobs:
+  package-android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build the bundled Android app
+        run: |
+          npm ci
+          npm run mobile:sync:android
+      - name: Build debug APK for device checks
+        if: github.event_name != 'workflow_dispatch' || inputs.artifact == 'debug-apk'
+        run: bash android/gradlew --no-daemon -p android assembleDebug
+
+      - name: Upload sideloadable APK
+        if: github.event_name != 'workflow_dispatch' || inputs.artifact == 'debug-apk'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fishing-Free-Android-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Prepare Android upload key
+        if: github.event_name == 'workflow_dispatch' && inputs.artifact == 'play-release'
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Add the ${name} GitHub Actions secret before building a Play release."
+              exit 1
+            fi
+          done
+
+          umask 077
+          KEYSTORE_PATH="$RUNNER_TEMP/fishing-free-upload-key.jks"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          if [[ ! -s "$KEYSTORE_PATH" ]]; then
+            echo "::error::The Android upload keystore decoded to an empty file."
+            exit 1
+          fi
+          {
+            echo "ANDROID_KEYSTORE_PATH=$KEYSTORE_PATH"
+            echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD"
+            echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS"
+            echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
+            echo "ANDROID_VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))"
+          } >> "$GITHUB_ENV"
+
+      - name: Build signed Android APK and Play bundle
+        if: github.event_name == 'workflow_dispatch' && inputs.artifact == 'play-release'
+        run: bash android/gradlew --no-daemon -p android assembleRelease bundleRelease
+
+      - name: Verify Android release signatures
+        if: github.event_name == 'workflow_dispatch' && inputs.artifact == 'play-release'
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK_PATH='android/app/build/outputs/apk/release/app-release.apk'
+          AAB_PATH='android/app/build/outputs/bundle/release/app-release.aab'
+          test -s "$APK_PATH"
+          test -s "$AAB_PATH"
+
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          if [[ -z "$APKSIGNER" ]]; then
+            echo '::error::Android build-tools apksigner was not found.'
+            exit 1
+          fi
+          "$APKSIGNER" verify --verbose "$APK_PATH"
+          jarsigner -verify -certs "$AAB_PATH" > "$RUNNER_TEMP/fishing-free-aab-signature.txt"
+          grep -q 'jar verified' "$RUNNER_TEMP/fishing-free-aab-signature.txt"
+
+      - name: Upload Android release artifacts
+        if: github.event_name == 'workflow_dispatch' && inputs.artifact == 'play-release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fishing-Free-Android-Play-Release
+          path: |
+            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove Android upload key
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.artifact == 'play-release'
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/fishing-free-upload-key.jks"

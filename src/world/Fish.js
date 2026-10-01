@@ -70,6 +70,9 @@ const BEHAVIOUR = {
 	turtle: { model: 'turtle', length: [ 0.9, 1.1 ], mode: 'turtle', cruise: 0.3, max: 0.8, burst: 1.4, accel: 0.6, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.7, flee: 4, depth: [ 0.15, 0.6 ], homeRadius: 25, amp: 0, freq: [ 0.3, 0.25 ], ceiling: - 0.25, band: [ 3, 12 ] },
 	// bay
 	tarpon: { model: 'tarpon', length: [ 1.3, 1.8 ], mode: 'cruise', cruise: 0.3, max: 1.2, burst: 3, accel: 1, sep: 1.5, nbr: 3, wSep: 2, wAli: 0.8, wCoh: 0.5, wGoal: 0.7, flee: 5, depth: [ 0.3, 0.7 ], homeRadius: 25, amp: 0.04, freq: [ 0.5, 0.7 ], band: [ 4, 14 ] },
+	snook: { model: 'snook', length: [ 0.45, 0.72 ], mode: 'patrol', cruise: 0.75, max: 2.3, burst: 5.5, accel: 3, sep: 1.8, nbr: 4, wAli: 1.1, wCoh: 0.7, wGoal: 0.8, flee: 4.2, depth: [ 0.18, 0.55 ], homeRadius: 12, amp: 0.06, freq: [ 1.2, 0.8 ], minDepth: 0.8, band: [ 1.2, 7 ] },
+	permit: { model: 'permit', length: [ 0.35, 0.62 ], mode: 'school', cruise: 0.9, max: 2.6, burst: 6, accel: 3.5, sep: 2, nbr: 5, wAli: 1.5, wCoh: 0.9, wGoal: 0.8, flee: 4.5, depth: [ 0.12, 0.48 ], homeRadius: 14, amp: 0.06, freq: [ 1.4, 0.8 ], minDepth: 0.75, band: [ 1, 8 ] },
+	lionfish: { model: 'lionfish', length: [ 0.18, 0.28 ], mode: 'lurk', cruise: 0.12, max: 0.7, burst: 1.6, accel: 0.8, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.7, flee: 2.5, depth: [ 0.02, 0.08 ], homeRadius: 2, amp: 0.035, freq: [ 0.5, 0.6 ], minDepth: 1.4, band: [ 2, 11 ] },
 	needlefish: { model: 'needlefish', length: [ 0.5, 0.8 ], mode: 'surface', cruise: 0.9, max: 2.5, burst: 6, accel: 3, sep: 3, nbr: 4, wSep: 3, wAli: 1, wCoh: 0.5, wGoal: 0.9, flee: 4, homeRadius: 25, amp: 0.05, freq: [ 1.2, 0.7 ], ceiling: - 0.12, minDepth: 1.0, band: [ 1.8, 12 ] },
 	mullet: { model: 'mullet', length: [ 0.3, 0.4 ], mode: 'jumper', cruise: 0.8, max: 2.2, burst: 5, accel: 3, sep: 1.8, nbr: 5, wAli: 1.5, wCoh: 1, wGoal: 0.8, flee: 4, depth: [ 0.3, 0.9 ], homeRadius: 14, amp: 0.07, freq: [ 1.5, 0.9 ], ceiling: - 0.25, minDepth: 1.2, band: [ 1.8, 4.5 ] },
 	fry: { model: 'silverside', length: [ 0.045, 0.065 ], mode: 'fry', cruise: 2, max: 4, burst: 14, accel: 9, sep: 1.6, nbr: 8, wSep: 7, wAli: 2.4, wCoh: 1.6, wGoal: 0.9, flee: 3.2, depth: [ 0.3, 0.8 ], homeRadius: 6, amp: 0.11, freq: [ 3.5, 1.2 ], ceiling: - 0.2, minDepth: 0.5, band: [ 0.5, 3.5 ] },
@@ -394,6 +397,18 @@ export class FishSchools {
 		place( 'barracuda', 1, { x: WORLD.pier.x + 6, z: WORLD.pier.zEnd - 4, r: 8, band: [ 3, 8 ] } );
 		for ( const c of [ 3, 2, 1 ] ) place( 'needlefish', c, { x: 30, z: 30, r: 60, band: [ 2, 12 ] } );
 		for ( const c of [ 9, 7 ] ) place( 'mullet', c, { x: 20, z: 5, r: 70 } );
+
+		// ---- Turtle Key: a protected island channel, with permit on the flats and resident snook
+		const key = WORLD.turtleKey;
+		place( 'snook', 4, { x: key.center.x - 82, z: key.center.z + 4, r: 22, band: [ 1.2, 7 ] } );
+		place( 'turtle', 1, { x: key.center.x, z: key.center.z + 100, r: 18, band: [ 3, 12 ] } );
+		place( 'permit', 4, { x: WORLD.pelicanCay.center.x, z: WORLD.pelicanCay.center.z + 78, r: 22, band: [ 1, 8 ] } );
+		place( 'lionfish', 4, { x: WORLD.reef.center.x, z: WORLD.reef.center.z + 50, r: 12, band: [ 2, 11 ] } );
+
+		// ---- Mangrove Reach: snook on the island's creek mouths, tarpon in the outer channel
+		const reach = WORLD.mangroveReach;
+		place( 'snook', 5, { x: reach.center.x + 66, z: reach.center.z + 4, r: 20, band: [ 1.2, 7 ] } );
+		place( 'tarpon', 2, { x: reach.center.x - 6, z: reach.center.z + 108, r: 28, band: [ 4, 14 ] } );
 
 		// fry along the beach, just outside the breakers (or inside sheltered water)
 		for ( const [ c, x ] of [ [ 90, - 60 ], [ 70, - 10 ], [ 80, 30 ], [ 60, 110 ], [ 70, 150 ] ] ) place( 'fry', c, { x, z: 0, r: 30 } );
