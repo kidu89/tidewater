@@ -10,7 +10,7 @@ Capacitor packages the game and its assets inside the app. The full 3D island us
 
 ### Install the high-fidelity mobile PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open the link in Chrome on Android or Safari on iOS and use that browser's **Install app** or **Add to Home Screen** menu. The 1.0.12 Android APK source also opens this page in Chrome on Android 12+, bypassing the embedded WebView; if Chrome is unavailable it keeps the bundled game. On Android 12+ this needs internet for the first launch. Let the first load finish while online; the service worker caches the app shell and game assets as they load, allowing later offline launches. The first shader compilation may still take time. On iOS, full 3D requires Safari/WebKit 26 or newer with WebGPU available. If the installed app shows Canvas mode, its browser engine or GPU did not provide a usable adapter; **GRAPHICS INFO** reports the reason.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open the link in Chrome on Android or Safari on iOS and use that browser's **Install app** or **Add to Home Screen** menu. The 1.0.13 Android APK source also opens this page in Chrome on Android 12+, bypassing the embedded WebView; if Chrome is unavailable it keeps the bundled game. On Android 12+ this needs internet for the first launch. Let the first load finish while online; the version 1.0.13 service worker cache refreshes the app shell and game assets as they load, allowing later offline launches. The first shader compilation may still take time. On iOS, full 3D requires Safari/WebKit 26 or newer with WebGPU available. If the installed app shows Canvas mode, its browser engine or GPU did not provide a usable adapter; **GRAPHICS INFO** reports the reason.
 
 On Android versions before 12, the APK remains fully bundled and starts the local Canvas mode because Chrome's documented WebGPU support does not cover those versions. That fallback is playable but is not visually equivalent to 3D, so do not use it to claim visual parity on Android 10 or other unsupported browser/GPU combinations.
 
@@ -36,7 +36,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-Android version **1.0.12** (version code **13**), package `com.fishingfree.game`, minimum API 24 and target API 36, built successfully in [Actions run 36899442319](https://github.com/kidu89/tidewater/actions/runs/36899442319). Download its `Fishing-Free-Android-APK` artifact (54.6 MB; digest `sha256:d64c8865785833399775e5c10a8078ab519f171b6c58361cac7178927dd5ceff`), extract `app-debug.apk` from the downloaded ZIP, then send that APK to the phone. This debug APK has not been installed on the Samsung A52. On Android 12+, it opens the deployed game in Chrome; first launch requires internet, then the PWA cache can support later offline launches. The artifact is not a Play Store release. Because each GitHub-hosted debug build may use a different debug signing key, installing over a previous debug APK may require uninstalling the old app first; that can erase the local save.
+Android version **1.0.13** (version code **14**), package `com.fishingfree.game`, minimum API 24 and target API 36, built successfully in [Actions run 36911231911](https://github.com/kidu89/tidewater/actions/runs/36911231911). Download its `Fishing-Free-Android-APK` artifact (52.1 MB; digest `sha256:7f1fbc3d42d5890e7410a175fe19e1fdf1a929a0c21def542aef803c5ba1d4ed`), extract `app-debug.apk` from the downloaded ZIP, then send that APK to the phone. Before upload, CI passed ZIP integrity, APK signature, 4-byte alignment, package ID, version and minimum-API checks. The APK has not been installed or gameplay-checked on the Samsung A52. On Android 12+, it opens the deployed game in Chrome; first launch requires internet, then the PWA cache can support later offline launches. The artifact is debug-signed for device checks, not a Play Store release. Because each GitHub-hosted debug build may use a different debug signing key, installing over a previous debug APK may require uninstalling the old app first; that can erase the local save.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
@@ -49,7 +49,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Source metadata is now app version **1.0.12**, build **13**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Source metadata is now app version **1.0.13**, build **14**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.
@@ -74,3 +74,4 @@ The full 3D mode gives touch devices a movement joystick, a drag-to-look region,
 Touch devices start 3D mode with a reduced rendering profile: 68% internal resolution, with volumetric clouds, caustics and the shoreline simulation disabled. Add `?fullQuality` to the app URL to opt back into the full desktop rendering profile. This is a starting point; tune it using real low-, mid- and high-end phones before release.
 
 Game assets are packaged locally and saves remain in the app's local storage. The first run still compiles a large number of shaders, so measure cold-start time and memory use on devices with modest GPUs.
+
