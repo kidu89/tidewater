@@ -285,8 +285,18 @@ export class Game {
 		for ( const v of this.vendors ) v.update( dt, p.mode === 'walk' ? p.position : null );
 		this.updateVendors( inp, p );
 
-		// prompts when the player has nothing to say
-		if ( ! p.prompt && can ) p.prompt = this.prompt();
+		// A swimmer or a walker far from the boat may not be able to get back aboard.
+		// Surface the emergency tow here instead of making stranded players discover it in the help screen.
+		const boat = app.boatCtl;
+		const boatDx = p.position.x - boat.position.x, boatDz = p.position.z - boat.position.z;
+		const separated = p.mode === 'swim' || ( p.mode === 'walk' && boatDx * boatDx + boatDz * boatDz > 60 * 60 && ! p.busy );
+		if ( ! p.prompt && ( can || p.mode === 'swim' ) ) {
+
+			p.prompt = separated
+				? { key: 'B', text: 'Separated from the boat? Call an emergency tow to the harbor' }
+				: can ? this.prompt() : null;
+
+		}
 
 		const aboard = p.mode === 'boat' || p.mode === 'deck';
 		// the catch card's live fish portrait (or one queued thumbnail)

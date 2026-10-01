@@ -10,6 +10,7 @@ if ( /[?&]bench\b/.test( location.search ) ) {
 }
 
 const bench = /[?&]bench\b/.test( location.search );
+const WEBGPU_PROBE_TIMEOUT_MS = 10000;
 
 const loaderArt = document.querySelector( '.loader-art' );
 if ( loaderArt ) {
@@ -21,6 +22,7 @@ if ( loaderArt ) {
 async function findWebGPUAdapter() {
 
 	if ( ! navigator.gpu ) return null;
+	const deadline = performance.now() + WEBGPU_PROBE_TIMEOUT_MS;
 	// Prefer the full WebGPU feature level. On recent Android Chromium builds, the compatibility
 	// level can also expose a GPU through OpenGL ES when the default Vulkan adapter is unavailable.
 	for ( const options of [
@@ -28,12 +30,23 @@ async function findWebGPUAdapter() {
 		{ featureLevel: 'compatibility', powerPreference: 'high-performance' },
 		{ featureLevel: 'compatibility' },
 	] ) {
+		const remaining = deadline - performance.now();
+		if ( remaining <= 0 ) return null;
+		let timeout;
 
 		try {
-			const adapter = await navigator.gpu.requestAdapter( options );
+			// Some Android WebViews expose navigator.gpu but never settle requestAdapter().
+			// Bound the whole probe so an unsupported device reaches touch mode instead of
+			// sitting on the loading screen indefinitely.
+			const adapter = await Promise.race( [
+				navigator.gpu.requestAdapter( options ),
+				new Promise( ( resolve ) => { timeout = setTimeout( () => resolve( null ), remaining ); } ),
+			] );
 			if ( adapter ) return adapter;
 		} catch {
 			// Keep trying without a preference for Android WebViews that reject adapter options.
+		} finally {
+			clearTimeout( timeout );
 		}
 
 	}
