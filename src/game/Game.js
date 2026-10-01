@@ -42,7 +42,13 @@ export class Game {
 		// boat upgrades: engine (thrust / top speed) and deck floodlights for night fishing
 		const b = app.boatCtl;
 		this._engineBase = { maxThrust: b.maxThrust, pitchSpeed: b.pitchSpeed };
-		b.onCapsizeRecover = () => this.toast( 'The boat righted itself after the rough water', 3200 );
+		this._recoveryPromptT = 0;
+		b.onCapsizeRecover = () => {
+
+			this._recoveryPromptT = 15;
+			this.toast( 'The boat righted itself after the rough water · press B for a harbor tow', 4200 );
+
+		};
 		this.floods = [];
 		if ( app.localLights ) this.addFloodlights( app.localLights, app.boat );
 		this._fuelOut = false;
@@ -282,6 +288,7 @@ export class Game {
 		p.busy = rod.lineInWater || rod.state === 'windup';
 
 		this.updateBoat( dt );
+		this._recoveryPromptT = Math.max( 0, this._recoveryPromptT - dt );
 
 		// the traders
 		for ( const v of this.vendors ) v.update( dt, p.mode === 'walk' ? p.position : null );
@@ -291,16 +298,23 @@ export class Game {
 		// tow prompt when the hull has stayed aground, including after a capsize recovery on the shore.
 		const boat = app.boatCtl;
 		const boatDx = p.position.x - boat.position.x, boatDz = p.position.z - boat.position.z;
-		const separated = p.mode === 'swim' || ( p.mode === 'walk' && boatDx * boatDx + boatDz * boatDz > 60 * 60 && ! p.busy );
+		const walkSeparated = p.mode === 'walk' && ! boat.moored && boatDx * boatDx + boatDz * boatDz > 32 * 32 && ! p.busy;
+		const separated = p.mode === 'swim' || walkSeparated;
+		const recentCapsize = this._recoveryPromptT > 0 && ( p.mode === 'walk' || p.mode === 'swim' );
 		if ( ! app.freeCam && boat.stranded && ! boat.moored && ! p.busy ) {
 
 			p.prompt = { key: 'B', text: 'Boat grounded? Call an emergency tow back to the harbor' };
 
+		} else if ( ! p.prompt && ! app.freeCam && ! p.busy && ( separated || recentCapsize ) ) {
+
+			p.prompt = {
+				key: 'B',
+				text: recentCapsize ? 'Boat capsized? Return yourself and the boat to the harbor' : 'Separated from the boat? Call an emergency tow to the harbor',
+			};
+
 		} else if ( ! p.prompt && ( can || p.mode === 'swim' ) ) {
 
-			p.prompt = separated
-				? { key: 'B', text: 'Separated from the boat? Call an emergency tow to the harbor' }
-				: can ? this.prompt() : null;
+			p.prompt = can ? this.prompt() : null;
 
 		}
 
@@ -645,3 +659,4 @@ export class Game {
 	}
 
 }
+
