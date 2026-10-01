@@ -15,7 +15,7 @@ The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe`
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.
 
-The owner’s public fork is `kidu89/tidewater`, and the open GitHub browser session is signed in as its owner, `kidu89`. The former GitHub integration authenticated as `apistol` and is not used. The local clone's `origin` points to `kidu89/tidewater`, but Git Credential Manager has no usable credential on this host, so no source or workflow changes have been pushed and Actions has not run yet. Do not target the former account or upstream repository.
+The owner's public repository is `kidu89/tidewater`. The release source and workflows are pushed to `main` at commit `54d5e9980c5a2df63675afdb0fa8f1fd98b16dda`. Windows build and startup smoke-test run `36860135612` succeeded and produced the `Fishing-Free-Windows-x64` artifact. The game is not yet a Steam build upload: Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
 
 ## Publish through SteamPipe
 
@@ -51,6 +51,6 @@ The Steam App ID, depot IDs, SteamCMD credentials, store art, store description,
 - **Working title:** Fishing Free. The name is generic and may be difficult to search; clear the title and trademark before store submission.
 - **Legal:** keep the root MIT `LICENSE`, `CREDITS.md`, and third-party notices. The web build copies the source notices into `dist/legal/`, which is included in the desktop package.
 - **Graphics:** the default path needs a usable WebGPU adapter. On unsupported hardware the game switches to the touch-first Canvas fishing game. That mode has not yet been accepted as equivalent to the full 3D game and must be redesigned or validated before mobile release.
-- **Windows runtime:** the 1.0.4 x64 package builds locally, but a release runtime check is still pending. The development host's restricted workspace ACL prevents Electron's sandbox from reading the package when launched from the checkout. The Actions smoke test now stages the package under `Program Files` (the expected install-permission context) and still needs a successful run on a GitHub Windows runner.
+- **Windows runtime:** the 1.0.4 x64 package builds locally. The development host's restricted workspace ACL prevents Electron's sandbox from reading the package when launched from the checkout. Actions run `36860135612` succeeded after staging under `Program Files`, launching the app and verifying its bundled page over loopback. A Steam install and overlay test on a real Windows machine remain outstanding.
 - **Controller:** there is no native gamepad mapping yet. Provide and test a Steam Input keyboard/mouse layout before claiming controller support.
 - **Store assets:** final capsule art, library assets, screenshots from the shipping build, trailer, localization, support contact and privacy disclosures still need an owner-approved release pass.

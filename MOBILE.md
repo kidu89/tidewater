@@ -45,7 +45,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. The open GitHub browser session is signed in as the owner of `kidu89/tidewater`. The former GitHub integration authenticated as `apistol` and is not used. The workflow has not been pushed because Git Credential Manager has no usable credential on this host. Once the source is pushed to `kidu89/tidewater`, add these repository secrets under **Settings → Secrets and variables → Actions** before running it:
+The workflow at `.github/workflows/ios-ipa.yml` is pushed to `kidu89/tidewater` and uses a GitHub-hosted macOS runner with Xcode. To produce an installable IPA, add these repository secrets under **Settings → Secrets and variables → Actions** before running it:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.
