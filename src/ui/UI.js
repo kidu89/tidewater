@@ -2166,6 +2166,19 @@ export class UI {
 						${ row( k( 'F1' ) + k( '?' ), 'This sheet' ) }
 						${ row( k( 'Esc' ), 'Release the mouse' ) }
 					</section>
+					<section>
+						<h3>Standard gamepad</h3>
+						${ row( k( 'Left stick' ), 'Move, swim and steer' ) }
+						${ row( k( 'Right stick' ), 'Look around' ) }
+						${ row( k( 'A' ), 'Interact, confirm or continue' ) }
+						${ row( k( 'B' ), 'Emergency tow or close a panel' ) }
+						${ row( k( 'X', 'Y' ), 'Rod · journal' ) }
+						${ row( k( 'LB', 'RB' ), 'Sprint / boost · boat camera' ) }
+						${ row( k( 'LT', 'RT' ), 'Retrieve line · cast, strike or reel' ) }
+						${ row( k( 'L3', 'R3' ), 'Jump / surface · dive' ) }
+						${ row( k( 'Start' ), 'Open settings · close the current panel' ) }
+						${ row( k( 'D-pad' ), 'Move or navigate open panels' ) }
+					</section>
 				</div>
 				<div class="tw-help-guide">
 					<span><b>How to play:</b> catch fish, sell them to Joe at the fish stand by the pier, and buy upgrades from Marta at the chandlery by the boathouse. Both are on the map (lower right).</span>
@@ -2190,7 +2203,7 @@ export class UI {
 			<div class="tw-start-inner">
 				${ brandMark( 'tw-start-mark' ) }
 			<div class="tw-start-title">FISHING FREE</div>
-				<button type="button" class="tw-start-cta"><span class="tw-start-pulse" aria-hidden="true"></span>${ icon( 'mouse' ) }<span>Click to explore</span></button>
+				<button type="button" class="tw-start-cta"><span class="tw-start-pulse" aria-hidden="true"></span>${ icon( 'mouse' ) }<span>Click or press A to explore</span></button>
 				<div class="tw-start-keys">
 					<span><span class="tw-wasd"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>Move</span>
 					<span><kbd class="tw-kbd-ico">${ icon( 'mouse' ) }</kbd>Look</span>

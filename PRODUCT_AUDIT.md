@@ -31,7 +31,7 @@ The best order is **Windows/Steam closed build → validate the first 20–30 mi
 
 - The fishing category is established and crowded. Fishing Planet is free-to-play and advertises multiplayer, in-app purchases and extensive content. DREDGE sells a distinctive authored adventure at a premium price. Fishing Free must lead with its quiet tropical exploration, real-time scenery and solo catch loop rather than claim to beat either on scale or realism.
 - “Fishing Free” is descriptive, difficult to distinguish in search and may be confused with “free fishing games.” Treat it as a working title until Steam app-name, domain and trademark checks are complete.
-- A premium-looking renderer raises expectations for camera feel, framerate, content density and controller support. The desktop game currently has no native gamepad mapping. Do not list controller or Steam Deck support until it has been tested.
+- A premium-looking renderer raises expectations for camera feel, framerate, content density and controller support. Standard-mapped gamepad controls are implemented for play and basic menus, but they have not been checked on a physical controller or Steam Deck. Do not list verified controller or Steam Deck support until those checks pass.
 - A screenshot of `chrome://gpu` showing WebGPU hardware acceleration only describes that Chrome build/device. It does not prove a Capacitor WebView can create the adapter the game needs. Android 10, Android 12, browser Chrome and Android System WebView must be recorded separately.
 - The first full 3D launch compiles many shaders. If the first playable cast takes too long, mobile ratings, Steam reviews and sharing will suffer. Measure cold starts after reinstall and after cache warm-up.
 
@@ -123,7 +123,7 @@ For digital features consumed inside a Play-distributed Android app, the current
 
 Store prices, policies, title availability, platform coverage and review counts are volatile. Recheck them immediately before a pricing decision or submission.
 
-## Current release candidate — 1 October 2026 (version 1.0.6)
+## Last verified release artifacts — 1 October 2026 (version 1.0.6)
 
 - Current app source and release workflows are on `main` at commit `d61c72a344866a77c27fd2aa27056698c4dfa94b`. GitHub Pages run `36871617734` deployed that commit. The repository still carries GitHub's `forked from dgreenheck/tidewater` marker; required upstream license, credits and asset notices are preserved.
 - The local Android debug APK is `Fishing-Free-Android-1.0.6-debug.apk`, package `com.fishingfree.game`, version code 7, min API 24 and target API 36. It is 54,833,204 bytes with SHA-256 `F017EEFD2AD1D83FEAC34A2E6FA14169B521E2897C5CD0FF6C5A9EA9FB9E6047`. It installed and launched on the Android 16 x86_64 emulator. The emulator has no WebGPU adapter, so the app enters the local Canvas fishing mode. Physical installation and graphics behavior on the Samsung A52 remain unverified.
@@ -133,6 +133,13 @@ Store prices, policies, title availability, platform coverage and review counts 
 - The owner has rejected the Canvas fallback's visual quality. Mobile graphics parity is an unresolved product blocker. A more capable renderer and real-device validation are needed; the existing Canvas mode is only a functional fallback.
 - The Actions workflows now use Node 24-compatible releases for checkout, Node setup and artifact upload; the Pages workflow also uses the current Pages actions and has explicit `actions: read` permission. The latest Android, Windows and Pages workflows all passed without the earlier Node 20 deprecation warnings.
 - Steam submission, a signed iOS build, store billing, and real-player market validation remain outstanding. Current monetization advice is a hypothesis, not measured willingness to pay or a revenue forecast.
+
+## Current source candidate — version 1.0.7 (not yet released)
+
+- The source version is now 1.0.7, Android version code 8 and iOS build 8. The 1.0.6 Android and Windows artifacts listed above do not contain these newer source changes; no 1.0.7 store release has been published.
+- Standard-mapped gamepad support now covers movement, swimming, boat steering, camera look, fishing triggers, interactions, modal navigation and the first-start prompt. The production web build succeeds. No physical-controller or Steam Deck run has been recorded, so the controls remain unverified on hardware.
+- The existing Canvas mobile fallback still fails the owner's visual-quality requirement. Version 1.0.7 does not resolve mobile renderer parity, and it must not be treated as the final Android or iOS release.
+- Next release evidence: build and smoke-test the 1.0.7 Windows folder in GitHub Actions, then validate it with a physical controller; address mobile renderer parity and real-device startup before marking mobile ready.
 
 ## Earlier local verification — 1 October 2026 (version 1.0.4)
 

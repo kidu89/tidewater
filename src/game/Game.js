@@ -197,7 +197,9 @@ export class Game {
 		}
 
 		// mouse edges (the left button also looks around while the pointer isn't captured)
-		const lmb = inp.mouseDown && inp.enabled, rmb = inp.rightDown && inp.enabled;
+		const pad = inp.gamepadAxes;
+		const lmb = ( inp.mouseDown || pad.rightTrigger > 0.35 ) && inp.enabled;
+		const rmb = ( inp.rightDown || pad.leftTrigger > 0.35 ) && inp.enabled;
 		const lDown = lmb && ! this._lmb, lUp = ! lmb && this._lmb, rDown = rmb && ! this._rmb;
 		this._lmb = lmb;
 		this._rmb = rmb;

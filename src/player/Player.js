@@ -206,12 +206,11 @@ export class Player {
 		const inp = this.input;
 		_fwd.set( - Math.sin( this.yaw ), 0, - Math.cos( this.yaw ) );
 		_right.set( - _fwd.z, 0, _fwd.x );
-		const wish = new THREE.Vector3();
-		if ( inp.down( 'KeyW' ) ) wish.add( _fwd );
-		if ( inp.down( 'KeyS' ) ) wish.sub( _fwd );
-		if ( inp.down( 'KeyD' ) ) wish.add( _right );
-		if ( inp.down( 'KeyA' ) ) wish.sub( _right );
-		if ( wish.lengthSq() > 0 ) wish.normalize();
+		const gp = inp.gamepadAxes;
+		const moveX = THREE.MathUtils.clamp( ( inp.down( 'KeyD' ) ? 1 : 0 ) - ( inp.down( 'KeyA' ) ? 1 : 0 ) + gp.moveX, - 1, 1 );
+		const moveY = THREE.MathUtils.clamp( ( inp.down( 'KeyW' ) ? 1 : 0 ) - ( inp.down( 'KeyS' ) ? 1 : 0 ) - gp.moveY, - 1, 1 );
+		const wish = _wish.set( 0, 0, 0 ).addScaledVector( _fwd, moveY ).addScaledVector( _right, moveX );
+		if ( wish.lengthSq() > 1 ) wish.normalize();
 
 		const depth = this.waterH - this.position.y; // water depth at the feet
 		const wade = THREE.MathUtils.clamp( depth / 1.2, 0, 1 );
@@ -304,14 +303,13 @@ export class Player {
 		// look-relative movement (diving follows the view)
 		_fwd.set( 0, 0, - 1 ).applyEuler( _e.set( this.pitch, this.yaw, 0 ) );
 		_right.set( - Math.cos( this.yaw ), 0, Math.sin( this.yaw ) ).negate();
-		const wish = new THREE.Vector3();
-		if ( inp.down( 'KeyW' ) ) wish.add( _fwd );
-		if ( inp.down( 'KeyS' ) ) wish.sub( _fwd );
-		if ( inp.down( 'KeyD' ) ) wish.add( _right );
-		if ( inp.down( 'KeyA' ) ) wish.sub( _right );
+		const gp = inp.gamepadAxes;
+		const moveX = THREE.MathUtils.clamp( ( inp.down( 'KeyD' ) ? 1 : 0 ) - ( inp.down( 'KeyA' ) ? 1 : 0 ) + gp.moveX, - 1, 1 );
+		const moveY = THREE.MathUtils.clamp( ( inp.down( 'KeyW' ) ? 1 : 0 ) - ( inp.down( 'KeyS' ) ? 1 : 0 ) - gp.moveY, - 1, 1 );
+		const wish = _wish.set( 0, 0, 0 ).addScaledVector( _fwd, moveY ).addScaledVector( _right, moveX );
 		if ( inp.down( 'Space' ) ) wish.y += 1;
 		if ( inp.down( 'KeyC' ) || inp.down( 'ControlLeft' ) ) wish.y -= 1;
-		if ( wish.lengthSq() > 0 ) wish.normalize();
+		if ( wish.lengthSq() > 1 ) wish.normalize();
 
 		const atSurface = this.floating && p.y > surfaceY - 0.45;
 		// at the surface W along a level view keeps you on top; looking down dives
@@ -598,11 +596,11 @@ export class Player {
 		_fwd.set( sy, 0, cy );
 		_right.set( - cy, 0, sy );
 		_wish.set( 0, 0, 0 );
-		if ( inp.down( 'KeyW' ) ) _wish.add( _fwd );
-		if ( inp.down( 'KeyS' ) ) _wish.sub( _fwd );
-		if ( inp.down( 'KeyD' ) ) _wish.add( _right );
-		if ( inp.down( 'KeyA' ) ) _wish.sub( _right );
-		if ( _wish.lengthSq() > 0 ) _wish.normalize();
+		const gp = inp.gamepadAxes;
+		const moveX = THREE.MathUtils.clamp( ( inp.down( 'KeyD' ) ? 1 : 0 ) - ( inp.down( 'KeyA' ) ? 1 : 0 ) + gp.moveX, - 1, 1 );
+		const moveY = THREE.MathUtils.clamp( ( inp.down( 'KeyW' ) ? 1 : 0 ) - ( inp.down( 'KeyS' ) ? 1 : 0 ) - gp.moveY, - 1, 1 );
+		_wish.set( 0, 0, 0 ).addScaledVector( _fwd, moveY ).addScaledVector( _right, moveX );
+		if ( _wish.lengthSq() > 1 ) _wish.normalize();
 		const speed = ( inp.down( 'ShiftLeft' ) ? 2.6 : 1.6 );
 		const k = 1 - Math.exp( - 12 * dt );
 		const v = this.deckVel;
@@ -740,12 +738,15 @@ export class Player {
 
 		}
 
-		let throttle = 0;
-		if ( inp.down( 'KeyW' ) ) throttle = inp.down( 'ShiftLeft' ) ? 1 : 0.7;
-		if ( inp.down( 'KeyS' ) ) throttle = - 0.6;
-		let steer = 0;
+		const gp = inp.gamepadAxes;
+		let throttle = gp.moveY < - 0.2 ? - gp.moveY : gp.moveY > 0.2 ? - gp.moveY : 0;
+		if ( inp.down( 'KeyW' ) ) throttle = inp.down( 'ShiftLeft' ) ? 1 : Math.max( throttle, 0.7 );
+		if ( inp.down( 'KeyS' ) ) throttle = Math.min( throttle, - 0.6 );
+		let steer = - gp.moveX;
 		if ( inp.down( 'KeyA' ) ) steer += 1;
 		if ( inp.down( 'KeyD' ) ) steer -= 1;
+		steer = THREE.MathUtils.clamp( steer, - 1, 1 );
+		if ( throttle > 0 && inp.down( 'ShiftLeft' ) ) throttle = 1;
 		b.setInput( throttle, steer, dt );
 		this.prompt = { key: 'E', text: 'Leave helm   ·   V  camera' };
 

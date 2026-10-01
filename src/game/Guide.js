@@ -97,6 +97,7 @@ const CARDS = [
 			${ row( k( 'B' ), 'Call an emergency tow back to the harbor if the boat gets into trouble' ) }
 			${ row( k( 'F1' ), 'All controls, and this guide again' ) }
 		</div>
+		<p><b>Standard gamepad:</b> Left stick to move and steer, right stick to look, <kbd>A</kbd> to interact, <kbd>X</kbd> for the rod, <kbd>Y</kbd> for the journal, <kbd>LB</kbd> to sprint/boost, <kbd>LT</kbd>/<kbd>RT</kbd> to retrieve or fish, and <kbd>Start</kbd> for settings.</p>
 		<div class="gm-guide-where">
 			<div class="is-joe"><i></i><span><b>Joe</b> · fish stand by the pier</span><em data-where="joe"></em></div>
 			<div class="is-marta"><i></i><span><b>Marta</b> · chandlery by the boathouse</span><em data-where="marta"></em></div>

@@ -32,7 +32,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The current app version is **1.0.6** (Android version code **7**), package `com.fishingfree.game`, minimum API 24 and target API 36. Run **Actions → Build Fishing Free Android APK → Run workflow** and choose `debug-apk`. The run attaches `Fishing-Free-Android-APK`, a debug-signed APK for sideloading and device checks. The successful run for the current workflow is [36871713285](https://github.com/kidu89/tidewater/actions/runs/36871713285); its artifact is retained for 14 days. This is not a Play Store release artifact.
+The current source version is **1.0.7** (Android version code **8**), package `com.fishingfree.game`, minimum API 24 and target API 36. The earlier [1.0.6 build](https://github.com/kidu89/tidewater/actions/runs/36871713285) is an old artifact; run **Actions → Build Fishing Free Android APK → Run workflow** on the latest pushed source and choose `debug-apk` to produce the 1.0.7 debug APK for sideloading and device checks. This is not a Play Store release artifact.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
@@ -45,7 +45,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` is pushed to `kidu89/tidewater` and uses a GitHub-hosted macOS runner with Xcode. Xcode metadata is aligned to app version **1.0.6**, build **7**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Xcode metadata is aligned to app version **1.0.7**, build **8**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.

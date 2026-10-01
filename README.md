@@ -102,6 +102,8 @@ The project includes a Steam-ready Windows desktop shell, a Capacitor mobile she
 | P | Photo mode |
 | F1 or ? | All controls |
 
+**Standard gamepad:** left stick to move, swim, steer and control speed; right stick to look; A interact/confirm; B emergency tow or back; X rod; Y journal; LB sprint/boost; RB boat camera; LT retrieve an empty line; RT cast, strike or reel; L3 jump/surface; R3 dive; Start opens settings. D-pad navigates open panels.
+
 ### Fishing
 
 Walk the deck of the boat while it drifts, or fish from the pier and the beach. Cast, wait for the bobber

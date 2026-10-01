@@ -606,6 +606,7 @@ fn terrainWetness( xz: vec2f, h: f32 ) -> vec2f {
 		G.dt.value = dt;
 		G.time.value += dt;
 		if ( s.timeSpeed !== 0 ) s.timeOfDay = ( s.timeOfDay + dt * s.timeSpeed + 24 ) % 24;
+		this.input.updateGamepad( dt );
 
 		// ---- player / boat (boat physics first so the cameras follow this frame's pose)
 		if ( this.input.hit( 'KeyF' ) ) this.setFreeCam( ! this.freeCam );
