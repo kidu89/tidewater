@@ -9,9 +9,10 @@ import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
 
 /**
- * Opens the high-fidelity hosted PWA in Chrome on Android 12+, where Chrome's WebGPU
- * implementation can use the phone GPU even when Android System WebView cannot.
- * Older devices and devices without Chrome keep the bundled, offline-capable APK path.
+ * Opens the hosted game in Chrome on Android 10+, letting the full browser try WebGPU
+ * even when Android System WebView cannot. Android 10 support is best-effort; the page
+ * selects its playable fallback if Chrome cannot create a WebGPU adapter. Older devices
+ * and devices without Chrome keep the bundled, offline-capable APK path.
  */
 public class MainActivity extends BridgeActivity {
 
@@ -22,7 +23,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return;
 
         Intent chromeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_GAME_URL));
         chromeIntent.setPackage(CHROME_PACKAGE);
@@ -35,3 +36,4 @@ public class MainActivity extends BridgeActivity {
         }
     }
 }
+
