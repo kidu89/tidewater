@@ -32,7 +32,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The current app version is **1.0.6** (Android version code **7**), package `com.fishingfree.game`, minimum API 24 and target API 36. Run **Actions → Build Fishing Free Android APK → Run workflow** and choose `debug-apk`. The run attaches `Fishing-Free-Android-APK`, a debug-signed APK for sideloading and device checks. It is not a Play Store release artifact.
+The current app version is **1.0.6** (Android version code **7**), package `com.fishingfree.game`, minimum API 24 and target API 36. Run **Actions → Build Fishing Free Android APK → Run workflow** and choose `debug-apk`. The run attaches `Fishing-Free-Android-APK`, a debug-signed APK for sideloading and device checks. The successful run for the current workflow is [36871713285](https://github.com/kidu89/tidewater/actions/runs/36871713285); its artifact is retained for 14 days. This is not a Play Store release artifact.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 

@@ -15,7 +15,7 @@ The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe`
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.
 
-The owner's public repository is `kidu89/tidewater`. The release source and workflows are pushed to `main` at commit `1820444fbfb93247fa0a4c2bb9b89526f794ae4c` (app version 1.0.6). Windows build and startup smoke-test run `36868686225` succeeded and produced the `Fishing-Free-Windows-x64` artifact (202 MB; digest `sha256:8d201d44f6f7a902b837b85ba57b2f56b99fe4aa74e90cb8cf3b14ef41895f58`). The game is not yet a Steam build upload: Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
+The owner's public repository is `kidu89/tidewater`. The release source and workflows are pushed to `main` at commit `d61c72a344866a77c27fd2aa27056698c4dfa94b` (app version 1.0.6). Windows build and startup smoke-test run `36871764858` succeeded and produced the `Fishing-Free-Windows-x64` artifact (202 MB; digest `sha256:36dd2baa8846f80bb590f84343ce6b5de95b6786226347dbb6ccf9d62445cf07`). The game is not yet a Steam build upload: Steamworks App ID, depot ID, store assets, approval and SteamPipe upload are still required.
 
 ## Publish through SteamPipe
 
