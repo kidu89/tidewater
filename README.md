@@ -21,7 +21,7 @@ breach. It runs directly on WebGPU and WGSL with its own small rendering engine,
 
 ## Windows, Android and iOS
 
-The project includes a Steam-ready Windows desktop shell, a Capacitor mobile shell and touch controls. See [STEAM.md](STEAM.md) for the Windows package and Steam depot steps, [MOBILE.md](MOBILE.md) for mobile builds, and [PRODUCT_AUDIT.md](PRODUCT_AUDIT.md) for the release risks, growth plan and monetization recommendation.
+The project includes a Steam-ready Windows desktop shell, a Capacitor mobile shell, and an installable browser PWA for phones whose browser supports WebGPU. See [STEAM.md](STEAM.md) for the Windows package and Steam depot steps, [MOBILE.md](MOBILE.md) for APK, IPA and PWA install details, and [PRODUCT_AUDIT.md](PRODUCT_AUDIT.md) for release risks, growth plans and monetization recommendations.
 
 ## Features
 

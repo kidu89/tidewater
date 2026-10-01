@@ -1,14 +1,18 @@
 # Fishing Free — Android and iOS build
 
-Capacitor packages the game and its assets inside the app. The full 3D island uses WebGPU. If the phone's browser engine cannot provide a WebGPU adapter, the app starts an included touch-first fishing game rendered with Canvas 2D. Both modes use bundled local assets and run without a game website or an internet connection.
+Capacitor packages the game and its assets inside the app. The full 3D island uses WebGPU. If the embedded phone WebView cannot provide a WebGPU adapter, the APK starts an included touch-first fishing game rendered with Canvas 2D. That fallback is playable but does not preserve the 3D visuals. For phones where the browser supports WebGPU but its embedded WebView does not, Fishing Free is also being prepared as an installable web app (PWA) that runs in the full browser engine and caches files for later offline launches.
 
 ## Requirements
 
-- Android API 24 or later can install the package. The full 3D mode requires a supported GPU and a WebView that exposes WebGPU; the OS version alone does not guarantee this. Chrome documents WebGPU on Android 12+ with Qualcomm or ARM GPUs from Chrome 121, but that does not prove the embedded System WebView returns an adapter. The optional **GRAPHICS INFO** report records the WebView engine and adapter attempts. See [Chrome's Android WebGPU announcement](https://developer.chrome.com/blog/new-in-webgpu-121/).
-- iOS builds run the same Canvas mode when WKWebView does not expose a usable WebGPU adapter, and use full 3D when one is available. The project targets iOS 15.0 with Capacitor 8.
+- Android API 24 or later can install the APK. Chrome documents WebGPU on Android 12+ with Qualcomm or ARM GPUs from Chrome 121. The embedded System WebView can have different support, so the bundled APK may still choose Canvas mode. The PWA route uses Chrome itself on Android and is the preferred high-fidelity path on supported phones. Android 10, as shown on the Huawei device report, is below Chrome's documented Android 12 WebGPU support; do not expect the 3D renderer there. See [Chrome's Android WebGPU announcement](https://developer.chrome.com/blog/new-in-webgpu-121/).
+- The game PWA can be added to the home screen from Safari on iOS. Apple's WebKit documents WebGPU in Safari 26, available on iOS 26; older iOS/WKWebView releases may use the Canvas fallback. See [WebKit's WebGPU demos and support notes](https://webkit.org/demos/webgpu/).
 - Android builds require Android Studio and its SDK. iOS builds and signing require macOS with Xcode.
 
-The app checks whether WebGPU is available before loading the large 3D renderer. Phones without an adapter skip shader compilation and start the local Canvas fishing mode directly inside the app. This fallback is playable, but it is not visually equivalent to the full 3D game and still needs a higher-fidelity mobile renderer before the mobile release is considered ready. There is no browser redirect and no external game URL.
+### Install the high-fidelity mobile PWA
+
+After the Pages deployment containing the PWA changes completes, open [Fishing Free](https://kidu89.github.io/tidewater/) in Chrome on Android or Safari on iOS and use that browser's **Install app** or **Add to Home Screen** menu. On Android this uses Chrome's renderer, which can expose WebGPU on supported Android 12+ devices even when the app's embedded WebView cannot. Let the first load finish while online; the service worker then caches the app shell and the game assets as they load for subsequent offline use. The first shader compilation may still take time. On iOS, full 3D requires Safari/WebKit 26 or newer with WebGPU available. If the installed app shows Canvas mode, its browser engine or GPU did not provide a usable adapter; **GRAPHICS INFO** reports the reason.
+
+The APK remains fully bundled and offline-first. It checks WebGPU before loading the large 3D renderer, then starts the local Canvas mode when the WebView has no adapter. This fallback is playable but is not visually equivalent to 3D, so do not use it to claim visual parity on Android 10 or other unsupported browser/GPU combinations.
 
 ## Create native projects
 
@@ -32,7 +36,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The latest verified package is **1.0.10** (Android version code **11**), package `com.fishingfree.game`, minimum API 24 and target API 36. It lowers the whale's breach arc and triggers its re-entry splash at the waterline, alongside the stranded-boat tow prompt from 1.0.9. Android Actions run [`36890236881`](https://github.com/kidu89/tidewater/actions/runs/36890236881) produced the 51.7 MB APK (digest `sha256:ea9e2753af910aa033fa2c1e920f811f6106f73fe70b235c3daa9582c6e51045`). This artifact is debug-signed, not a Play Store release, and has not been tested on a physical phone. The optional local graphics report still does not fix the Canvas fallback or establish WebGPU support in Android System WebView.
+The latest verified APK is **1.0.10** (Android version code **11**), package `com.fishingfree.game`, minimum API 24 and target API 36. Android Actions run [`36890236881`](https://github.com/kidu89/tidewater/actions/runs/36890236881) produced the 51.7 MB debug APK (digest `sha256:ea9e2753af910aa033fa2c1e920f811f6106f73fe70b235c3daa9582c6e51045`). It has not been tested on a physical phone. Source version 1.0.11 adds the installable browser PWA and offline cache; the PWA has not yet been deployed or installed on the Samsung A52. The debug APK is not a Play Store release.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
@@ -45,7 +49,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Xcode metadata is aligned to app version **1.0.10**, build **11**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Source metadata is now app version **1.0.11**, build **12**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists yet. To produce one, add these repository secrets under **Settings → Secrets and variables → Actions** before running the workflow:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.

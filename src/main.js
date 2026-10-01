@@ -12,6 +12,11 @@ if ( /[?&]bench\b/.test( location.search ) ) {
 const bench = /[?&]bench\b/.test( location.search );
 const WEBGPU_PROBE_TIMEOUT_MS = 10000;
 
+if ( ! bench && ! import.meta.env.DEV && 'serviceWorker' in navigator ) {
+	navigator.serviceWorker.register( `${ import.meta.env.BASE_URL }sw.js`, { scope: import.meta.env.BASE_URL } )
+		.catch( ( error ) => console.warn( '[Fishing Free] Offline cache could not be enabled.', error ) );
+}
+
 function browserGraphicsDetails( reason = '' ) {
 
 	const ua = navigator.userAgent || '';
