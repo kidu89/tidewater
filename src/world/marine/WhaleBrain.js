@@ -17,6 +17,7 @@ const SURFACE_SPEED = 1.5;
 const BREACH_LAUNCH_ACCEL = 4.2; // m/s²: lift the back clear while keeping the body close to the water
 const BREACH_MAX_RISE_SPEED = 7.5; // m/s: limit the airborne arc so the whale cannot appear to fly
 const BREACH_MAX_HEIGHT = 0.25; // m above the queried surface, for a low, heavy breach
+const BREACH_MAX_PITCH = 0.38; // rad: keep the 14.5 m body from pitching almost upright
 const TAU = Math.PI * 2;
 
 const _e = new THREE.Euler();
@@ -481,7 +482,10 @@ export class WhaleBrain {
 		}
 		const k = Math.min( 1, dt * 1.2 );
 		this.speed += ( target.speed - this.speed ) * Math.min( 1, dt * 0.5 );
-		const pitchT = Math.atan2( this.vy, Math.max( this.speed, 0.5 ) ) * 0.8 + ( target.pitch || 0 );
+		let pitchT = Math.atan2( this.vy, Math.max( this.speed, 0.5 ) ) * 0.8 + ( target.pitch || 0 );
+		// Limit the whole animal's rotation as well as the root height. Otherwise the long body
+		// can swing several metres into the air and read as flight even though its root is capped.
+		if ( target.breach ) pitchT = THREE.MathUtils.clamp( pitchT, - BREACH_MAX_PITCH, BREACH_MAX_PITCH );
 		this.pitch += ( pitchT - this.pitch ) * Math.min( 1, dt * ( target.breach ? 2.5 : target.fluke ? 1.1 : 0.9 ) );
 		this.arch += ( ( target.arch || 0 ) - this.arch ) * k;
 		this.follow += ( ( target.follow ?? 0.85 ) - this.follow ) * Math.min( 1, dt * ( target.fluke ? 1.5 : 0.8 ) );
@@ -523,3 +527,4 @@ function mulberry( a ) {
 	};
 
 }
+
