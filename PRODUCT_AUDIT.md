@@ -168,6 +168,12 @@ Store prices, policies, title availability, platform coverage and review counts 
 - The intended Samsung A52 path is Chrome's standalone PWA, which avoids relying on Android System WebView for WebGPU. Chrome documents mobile Android WebGPU support on Android 12+ with Qualcomm or ARM GPUs; the user's Huawei screenshot identifies Android 10 and is below that documented support floor. Safari 26 added WebGPU for iOS 26, so older iOS devices still have the Canvas fallback. Sources: [Chrome Android WebGPU support](https://developer.chrome.com/blog/new-in-webgpu-121/) and [WebKit WebGPU demo/support page](https://webkit.org/demos/webgpu/).
 - The 1.0.11 source assigns Android version code 12 and iOS build 12. The corresponding debug APK and signed IPA have not been built. The PWA does not replace Play App Signing, App Store signing, or approval.
 
+## Android Chrome handoff — version 1.0.12 source (pending package and device check)
+
+- On Android 12+, the launcher now opens the deployed PWA in the installed Chrome app so the game can use Chrome's WebGPU path instead of depending on Android System WebView. If Chrome cannot be opened, the bundled Capacitor/Canvas game remains the fallback. This preserves the user's sideloaded-APK installation path while routing the Samsung A52 toward the intended renderer.
+- This handoff launches a hosted page: the first launch needs internet, and the PWA service worker caches assets as they load for later offline launches. Android versions before 12 continue to use the bundled Canvas game because Chrome's published WebGPU support begins at Android 12 on supported Qualcomm/ARM GPUs.
+- Source version is 1.0.12, Android version code 13 and iOS build 13. The Android package has not yet been built, installed, or checked on a physical A52; the external Chrome launch and WebGPU adapter acquisition are still device gates. The PWA itself was deployed and its manifest/worker/assets returned HTTP 200 in the 1.0.11 deployment.
+
 ## Earlier local verification — 1 October 2026 (version 1.0.4)
 
 - `npm run build` completes with Vite 8.3.0. `npm test` passes the fishing/game-logic checks, headless WebGPU engine smoke test and whale-breach regression check. The whale peaks at 1.31 m above the water, then returns below the surface. The smoke test writes to the OS temporary directory instead of assuming `/tmp`.

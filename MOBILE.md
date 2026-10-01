@@ -10,9 +10,9 @@ Capacitor packages the game and its assets inside the app. The full 3D island us
 
 ### Install the high-fidelity mobile PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open the link in Chrome on Android or Safari on iOS and use that browser's **Install app** or **Add to Home Screen** menu. On Android this uses Chrome's renderer, which can expose WebGPU on supported Android 12+ devices even when the app's embedded WebView cannot. Let the first load finish while online; the service worker then caches the app shell and the game assets as they load for subsequent offline use. The first shader compilation may still take time. On iOS, full 3D requires Safari/WebKit 26 or newer with WebGPU available. If the installed app shows Canvas mode, its browser engine or GPU did not provide a usable adapter; **GRAPHICS INFO** reports the reason.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open the link in Chrome on Android or Safari on iOS and use that browser's **Install app** or **Add to Home Screen** menu. The 1.0.12 Android APK source also opens this page in Chrome on Android 12+, bypassing the embedded WebView; if Chrome is unavailable it keeps the bundled game. On Android 12+ this needs internet for the first launch. Let the first load finish while online; the service worker caches the app shell and game assets as they load, allowing later offline launches. The first shader compilation may still take time. On iOS, full 3D requires Safari/WebKit 26 or newer with WebGPU available. If the installed app shows Canvas mode, its browser engine or GPU did not provide a usable adapter; **GRAPHICS INFO** reports the reason.
 
-The APK remains fully bundled and offline-first. It checks WebGPU before loading the large 3D renderer, then starts the local Canvas mode when the WebView has no adapter. This fallback is playable but is not visually equivalent to 3D, so do not use it to claim visual parity on Android 10 or other unsupported browser/GPU combinations.
+On Android versions before 12, the APK remains fully bundled and starts the local Canvas mode because Chrome's documented WebGPU support does not cover those versions. That fallback is playable but is not visually equivalent to 3D, so do not use it to claim visual parity on Android 10 or other unsupported browser/GPU combinations.
 
 ## Create native projects
 
@@ -36,7 +36,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The latest verified APK is **1.0.10** (Android version code **11**), package `com.fishingfree.game`, minimum API 24 and target API 36. Android Actions run [`36890236881`](https://github.com/kidu89/tidewater/actions/runs/36890236881) produced the 51.7 MB debug APK (digest `sha256:ea9e2753af910aa033fa2c1e920f811f6106f73fe70b235c3daa9582c6e51045`). It has not been tested on a physical phone. Source version 1.0.11 adds the installable browser PWA and offline cache; the PWA has not yet been deployed or installed on the Samsung A52. The debug APK is not a Play Store release.
+The latest verified APK is **1.0.10** (Android version code **11**), package `com.fishingfree.game`, minimum API 24 and target API 36. Android Actions run [`36890236881`](https://github.com/kidu89/tidewater/actions/runs/36890236881) produced the 51.7 MB debug APK; it has not been tested on a physical phone. Version 1.0.11 deployed the PWA. Version 1.0.12 source changes the Android 12+ APK to launch the PWA through Chrome; its APK build and Samsung A52 install have not yet been verified. The debug APK is not a Play Store release.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
