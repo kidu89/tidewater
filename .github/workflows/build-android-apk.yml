@@ -46,6 +46,29 @@ jobs:
         if: github.event_name != 'workflow_dispatch' || inputs.artifact == 'debug-apk'
         run: bash android/gradlew --no-daemon -p android assembleDebug
 
+      - name: Verify debug APK before upload
+        if: github.event_name != 'workflow_dispatch' || inputs.artifact == 'debug-apk'
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK_PATH='android/app/build/outputs/apk/debug/app-debug.apk'
+          test -s "$APK_PATH"
+          unzip -tq "$APK_PATH"
+
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -n 1)"
+          ZIPALIGN="$(find "$ANDROID_HOME/build-tools" -type f -name zipalign | sort -V | tail -n 1)"
+          if [[ -z "$APKSIGNER" || -z "$AAPT" || -z "$ZIPALIGN" ]]; then
+            echo '::error::Android build-tools apksigner, aapt or zipalign was not found.'
+            exit 1
+          fi
+
+          "$APKSIGNER" verify --verbose "$APK_PATH"
+          "$ZIPALIGN" -c -v 4 "$APK_PATH"
+          BADGING="$("$AAPT" dump badging "$APK_PATH")"
+          grep -Fq "package: name='com.fishingfree.game' versionCode='14' versionName='1.0.13'" <<< "$BADGING"
+          grep -Fq "sdkVersion:'24'" <<< "$BADGING"
+
       - name: Upload sideloadable APK
         if: github.event_name != 'workflow_dispatch' || inputs.artifact == 'debug-apk'
         uses: actions/upload-artifact@v7
@@ -125,3 +148,4 @@ jobs:
         if: always() && github.event_name == 'workflow_dispatch' && inputs.artifact == 'play-release'
         shell: bash
         run: rm -f "$RUNNER_TEMP/fishing-free-upload-key.jks"
+
