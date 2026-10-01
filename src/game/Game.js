@@ -287,12 +287,16 @@ export class Game {
 		for ( const v of this.vendors ) v.update( dt, p.mode === 'walk' ? p.position : null );
 		this.updateVendors( inp, p );
 
-		// A swimmer or a walker far from the boat may not be able to get back aboard.
-		// Surface the emergency tow here instead of making stranded players discover it in the help screen.
+		// A swimmer or a walker far from the boat may not be able to get back aboard. Also surface a
+		// tow prompt when the hull has stayed aground, including after a capsize recovery on the shore.
 		const boat = app.boatCtl;
 		const boatDx = p.position.x - boat.position.x, boatDz = p.position.z - boat.position.z;
 		const separated = p.mode === 'swim' || ( p.mode === 'walk' && boatDx * boatDx + boatDz * boatDz > 60 * 60 && ! p.busy );
-		if ( ! p.prompt && ( can || p.mode === 'swim' ) ) {
+		if ( ! app.freeCam && boat.stranded && ! boat.moored && ! p.busy ) {
+
+			p.prompt = { key: 'B', text: 'Boat grounded? Call an emergency tow back to the harbor' };
+
+		} else if ( ! p.prompt && ( can || p.mode === 'swim' ) ) {
 
 			p.prompt = separated
 				? { key: 'B', text: 'Separated from the boat? Call an emergency tow to the harbor' }

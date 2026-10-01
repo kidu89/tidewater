@@ -122,6 +122,8 @@ export class BoatController {
 		this._acc = 0;
 		this._age = 0; // s since the latest read-back was issued
 		this._capsizeT = 0;
+		this._groundedT = 0;
+		this.stranded = false;
 		this.onCapsizeRecover = null;
 
 		this.bowWorld = new THREE.Vector3();
@@ -265,6 +267,14 @@ export class BoatController {
 
 		}
 
+		// A righted boat can still be aground on the island. Detect a persistently shallow, nearly
+		// motionless hull so the game can show the harbor-tow action instead of leaving the player
+		// to discover the key in the controls guide.
+		const depthAtCenter = surface - this.terrain.heightAt( this.position.x, this.position.z );
+		const grounded = ! this.moored && depthAtCenter < 1.25 && this.wetFraction < 0.55 && this.speed < 0.8;
+		this._groundedT = grounded ? Math.min( 4, this._groundedT + Math.min( dt, 0.1 ) ) : Math.max( 0, this._groundedT - Math.min( dt, 0.1 ) * 2 );
+		this.stranded = this._groundedT >= 1.5;
+
 	}
 
 	surfaceHeight() {
@@ -300,6 +310,8 @@ export class BoatController {
 		this._acc = 0;
 		this._age = 0;
 		this._capsizeT = 0;
+		this._groundedT = 0;
+		this.stranded = false;
 		this.model.setThrottle( 0 );
 		this.model.setSteering( 0 );
 		this.model.setPropellerRPM( 0 );
@@ -509,6 +521,8 @@ export class BoatController {
 		this._acc = 0;
 		this._age = 0;
 		this._capsizeT = 0;
+		this._groundedT = 0;
+		this.stranded = false;
 		this.model.setThrottle( 0 );
 		this.model.setSteering( 0 );
 		this.model.setPropellerRPM( 0 );
