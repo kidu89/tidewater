@@ -1,6 +1,7 @@
 param(
 	[string] $InputPath = 'docs/steam-assets-draft-v2/source-concept.png',
-	[string] $OutputDirectory = 'docs/steam-assets-draft-v2'
+	[string] $OutputDirectory = 'docs/steam-assets-draft-v2',
+	[switch] $Force
 )
 
 $ErrorActionPreference = 'Stop'
@@ -37,6 +38,10 @@ function Get-CenteredCrop([int] $Width, [int] $Height) {
 
 function Write-LibraryImage([string] $Name, [int] $Width, [int] $Height, [bool] $AddTitle) {
 	$targetPath = Join-Path $outputPath $Name
+	if ((Test-Path -LiteralPath $targetPath -PathType Leaf) -and -not $Force) {
+		Write-Verbose "Keeping existing draft: $targetPath (use -Force to replace it)"
+		return
+	}
 	$bitmap = [System.Drawing.Bitmap]::new($Width, $Height, [System.Drawing.Imaging.PixelFormat]::Format24bppRgb)
 	$graphics = [System.Drawing.Graphics]::FromImage($bitmap)
 	$graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
@@ -72,6 +77,7 @@ function Write-LibraryImage([string] $Name, [int] $Width, [int] $Height, [bool] 
 }
 
 try {
+	Write-LibraryImage 'vertical-capsule-748x896.png' 748 896 $true
 	Write-LibraryImage 'library-capsule-600x900.png' 600 900 $true
 	Write-LibraryImage 'library-hero-3840x1240.png' 3840 1240 $false
 } finally {
