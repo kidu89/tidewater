@@ -16,7 +16,7 @@ import com.getcapacitor.BridgeActivity;
  */
 public class MainActivity extends BridgeActivity {
 
-    private static final String WEB_GAME_URL = "https://kidu89.github.io/tidewater/?source=installed-app&appVersion=1.0.15";
+    private static final String WEB_GAME_URL = "https://kidu89.github.io/tidewater/?source=installed-app&appVersion=1.0.16";
     private static final String CHROME_PACKAGE = "com.android.chrome";
 
     @Override

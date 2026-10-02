@@ -42,11 +42,11 @@ export class Game {
 		// boat upgrades: engine (thrust / top speed) and deck floodlights for night fishing
 		const b = app.boatCtl;
 		this._engineBase = { maxThrust: b.maxThrust, pitchSpeed: b.pitchSpeed };
-		this._recoveryPromptT = 0;
+		this._capsizeRecoveryPending = false;
 		b.onCapsizeRecover = () => {
 
-			this._recoveryPromptT = 15;
-			this.toast( 'The boat righted itself after the rough water · press B for a harbor tow', 4200 );
+			this._capsizeRecoveryPending = true;
+			this.toast( 'The boat righted itself · tap the harbor rescue prompt or press B to return', 5200 );
 
 		};
 		this.floods = [];
@@ -288,8 +288,6 @@ export class Game {
 		p.busy = rod.lineInWater || rod.state === 'windup';
 
 		this.updateBoat( dt );
-		this._recoveryPromptT = Math.max( 0, this._recoveryPromptT - dt );
-
 		// the traders
 		for ( const v of this.vendors ) v.update( dt, p.mode === 'walk' ? p.position : null );
 		this.updateVendors( inp, p );
@@ -299,18 +297,16 @@ export class Game {
 		const boat = app.boatCtl;
 		const boatDx = p.position.x - boat.position.x, boatDz = p.position.z - boat.position.z;
 		const walkSeparated = p.mode === 'walk' && ! boat.moored && boatDx * boatDx + boatDz * boatDz > 32 * 32 && ! p.busy;
+		if ( p.mode === 'boat' || p.mode === 'deck' ) this._capsizeRecoveryPending = false;
+		const capsizedAndSeparated = this._capsizeRecoveryPending && ( p.mode === 'walk' || p.mode === 'swim' );
 		const separated = p.mode === 'swim' || walkSeparated;
-		const recentCapsize = this._recoveryPromptT > 0 && ( p.mode === 'walk' || p.mode === 'swim' );
-		if ( ! app.freeCam && boat.stranded && ! boat.moored && ! p.busy ) {
+		const needsTow = ( boat.stranded && ! boat.moored ) || separated || capsizedAndSeparated;
+		if ( ! app.freeCam && ! p.busy && needsTow ) {
 
-			p.prompt = { key: 'B', text: 'Boat grounded? Call an emergency tow back to the harbor' };
-
-		} else if ( ! p.prompt && ! app.freeCam && ! p.busy && ( separated || recentCapsize ) ) {
-
-			p.prompt = {
-				key: 'B',
-				text: recentCapsize ? 'Boat capsized? Return yourself and the boat to the harbor' : 'Separated from the boat? Call an emergency tow to the harbor',
-			};
+			const text = capsizedAndSeparated ? 'Capsized · tap or press B for harbor rescue'
+				: boat.stranded && ! boat.moored ? 'Grounded · tap or press B for harbor tow'
+					: 'Separated · tap or press B for harbor tow';
+			p.prompt = { key: 'B', text, action: () => this.towToHarbor() };
 
 		} else if ( ! p.prompt && ( can || p.mode === 'swim' ) ) {
 
@@ -340,6 +336,7 @@ export class Game {
 
 		const app = this.app, p = app.player, b = app.boatCtl;
 		const wasDriving = b.driven;
+		this._capsizeRecoveryPending = false;
 		this.cancelLine( true );
 		this.endLanding();
 		this.rod.equip( false );

@@ -1954,6 +1954,23 @@ export class UI {
 		this.promptKey = h( 'kbd', 'tw-prompt-key' );
 		this.promptText = h( 'span', 'tw-prompt-text' );
 		this.promptEl.append( this.promptKey, this.promptText );
+		this._pAction = null;
+		this.promptEl.addEventListener( 'click', ( e ) => {
+
+			if ( ! this._pAction ) return;
+			e.preventDefault();
+			e.stopPropagation();
+			this._pAction();
+
+		} );
+		this.promptEl.addEventListener( 'keydown', ( e ) => {
+
+			if ( ! this._pAction || ( e.code !== 'Enter' && e.code !== 'Space' ) ) return;
+			e.preventDefault();
+			e.stopPropagation();
+			this._pAction();
+
+		} );
 
 		// bottom-left: boat instruments
 		this.boatEl = this._buildBoat();
@@ -2730,10 +2747,25 @@ export class UI {
 
 	}
 
-	// setPrompt( 'E', 'Board boat' ) shows it; setPrompt( null ) hides it.
-	setPrompt( key, text ) {
+	// setPrompt( 'E', 'Board boat' ) shows it; an optional action also makes the prompt touchable.
+	setPrompt( key, text, action = null ) {
 
 		const on = key != null && key !== '';
+		this._pAction = typeof action === 'function' ? action : null;
+		const actionable = !! this._pAction;
+		this.promptEl.classList.toggle( 'tw-interactive', actionable );
+		this.promptEl.classList.toggle( 'is-action', actionable );
+		if ( actionable ) {
+
+			this.promptEl.setAttribute( 'role', 'button' );
+			this.promptEl.setAttribute( 'tabindex', '0' );
+
+		} else {
+
+			this.promptEl.removeAttribute( 'role' );
+			this.promptEl.removeAttribute( 'tabindex' );
+
+		}
 		if ( on ) {
 
 			const k = String( key ), t = text == null ? '' : String( text );
@@ -2744,6 +2776,8 @@ export class UI {
 				this.promptKey.textContent = k;
 				this.promptKey.classList.toggle( 'is-wide', k.length > 1 );
 				this.promptText.textContent = t;
+				if ( actionable ) this.promptEl.setAttribute( 'aria-label', `${ k}: ${ t }` );
+				else this.promptEl.removeAttribute( 'aria-label' );
 				this.promptEl.classList.remove( 'is-bump' );
 				void this.promptEl.offsetWidth;
 				this.promptEl.classList.add( 'is-bump' );
