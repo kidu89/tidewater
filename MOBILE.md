@@ -36,7 +36,7 @@ npx cap open ios
 
 ## Build an Android APK with GitHub Actions
 
-The local 1.0.15 Android release candidate (version code 16; package `com.fishingfree.game`; min API 24; target API 36) is 55,259,498 bytes with SHA-256 `003711E4E43AF7E1B8FC6A017996BCD10398888968EA11041A0A333EE435BE0C`. Signature v2, 4-byte alignment and manifest checks pass. It installed and launched on an Android 16 x86_64 emulator; Chrome displayed its first-run screen. No physical Samsung A52 or Huawei gameplay check has been completed. This is a debug-signed test APK, not a Play Store release. The remote Actions artifact is still 1.0.14 until a 1.0.15 tag build completes. A different debug key may require uninstalling an older build first, which can erase its local save.
+The local 1.0.15 Android release candidate (version code 16; package `com.fishingfree.game`; min API 24; target API 36) is 55,259,498 bytes with SHA-256 `003711E4E43AF7E1B8FC6A017996BCD10398888968EA11041A0A333EE435BE0C`. Signature v2, 4-byte alignment and manifest checks pass. It installed and launched on an Android 16 x86_64 emulator; Chrome displayed its first-run screen. No physical Samsung A52 or Huawei gameplay check has been completed. This is a debug-signed test APK, not a Play Store release. GitHub Actions run [37053852405](https://github.com/kidu89/tidewater/actions/runs/37053852405) built and uploaded `Fishing-Free-Android-APK` (about 54.6 MB; digest `sha256:f3ecceb94593c2193e7f6d78444c66c2bd68dce47ffe60a0f2b4dcf7df82adcb`). A different debug key may require uninstalling an older build first, which can erase its local save.
 
 For a signed Play release, choose `play-release` and add these repository secrets first:
 
