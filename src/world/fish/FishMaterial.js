@@ -481,6 +481,12 @@ function surface( prop, lodFade ) {
 		let bars = smoothstep( 0.6, 0.9, sin( z * 95.0 ) ) * smoothstep( 0.0, -0.3, h ) * smoothstep( 0.2, 0.1, z ) * bodyK;
 		c = mix( c, vec3f( 0.85, 0.88, 0.9 ), bars * 0.35 );
 		c = mix( c, vec3f( 0.55, 0.48, 0.16 ), select( 0.0, 0.85, P == ${ PA( 'FINLET' ) } ) );
+	} else if ( pat == ${ PT( 'wahoo' ) } ) {
+		// wahoo: a blue-green back, silver flanks and irregular cobalt bars down both sides
+		let wobble = ( fishVnoise( vec2f( z * 13.0, h * 3.0 ) + seed * 7.0 ) - 0.5 ) * 0.22;
+		let bars = smoothstep( 0.5, 0.82, sin( z * 188.0 + wobble ) ) * smoothstep( 0.48, 0.33, z ) * smoothstep( -0.46, -0.31, z ) * ( 1.0 - tBelly * 0.82 ) * bodyK;
+		c = mix( c, vec3f( 0.035, 0.22, 0.48 ), bars * 0.88 );
+		c = mix( c, vec3f( 0.04, 0.2, 0.32 ), smoothstep( 0.28, 0.52, h ) * bodyK * 0.42 );
 	} else if ( pat == ${ PT( 'mahi' ) } ) {
 		// mahi-mahi: blue-green back, golden flanks with scattered blue spots
 		let cell = floor( vec2f( z, y ) * 55.0 );
