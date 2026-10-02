@@ -22,7 +22,7 @@ Cast from a tropical pier, steer out to reef and island waters, and fill your fi
 
 Leave the harbor and explore the warm waters around a small island. Cast from the beach or pier, fish over the reef, or take your boat to Pelican Cay, Turtle Key and Mangrove Reach. The sky and water shift through the day, and different fish favor different places and hours.
 
-Read the bite, manage line tension through the fight, then bring your catch back to Joe. Earn in-game money, improve your rod and boat, and take on lasting harbor contracts that lead you toward new waters. Add 22 tropical species to your field guide, set personal records and keep exploring at your own pace.
+Read the bite, manage line tension through the fight, then bring your catch back to Joe. Earn in-game money, improve your rod and boat, and take on lasting harbor contracts that lead you toward new waters. Add 23 tropical species to your field guide, set personal records and keep exploring at your own pace.
 
 Fishing Free is a solo fishing and island exploration game built around short trips and an unhurried pace. Walk the shore, take the helm, find a new spot, or settle in for one more cast.
 
@@ -30,7 +30,7 @@ Fishing Free is a solo fishing and island exploration game built around short tr
 
 - Explore the harbor and three chartable destinations: Pelican Cay, Turtle Key and Mangrove Reach.
 - Fish eight habitat types, from beach shallows and the pier to reef, mangrove creeks and offshore water.
-- Catch 22 tropical species whose preferred habitats, active hours, sizes and fighting strength differ.
+- Catch 23 tropical species whose preferred habitats, active hours, sizes and fighting strength differ.
 - Play through a timing-and-line-tension catch fight, then record species, sizes and personal bests.
 - Sell fish, complete permanent contracts and spend earned in-game money on fishing and boat upgrades.
 - Walk the island or pilot the boat; recover from a capsize or stranding with the harbor tow.
