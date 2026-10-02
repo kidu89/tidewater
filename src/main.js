@@ -49,13 +49,20 @@ async function findWebGPUAdapter() {
 	if ( ! navigator.gpu ) return null;
 	const deadline = performance.now() + WEBGPU_PROBE_TIMEOUT_MS;
 	const probe = globalThis.__fishingFreeWebGPUProbe = { attempts: [], result: 'Searching for a graphics adapter.' };
-	// Prefer the full WebGPU feature level. On recent Android Chromium builds, the compatibility
-	// level can also expose a GPU through OpenGL ES when the default Vulkan adapter is unavailable.
-	for ( const [ label, options ] of [
+	const androidVersion = Number( navigator.userAgent.match( /Android\s+(\d+)/i )?.[ 1 ] || 0 );
+	const coreOptions = [
 		[ 'High-performance', { powerPreference: 'high-performance' } ], [ 'Default', {} ], [ 'Low-power', { powerPreference: 'low-power' } ],
+	];
+	const compatibilityOptions = [
 		[ 'Compatibility high-performance', { featureLevel: 'compatibility', powerPreference: 'high-performance' } ],
 		[ 'Compatibility', { featureLevel: 'compatibility' } ],
-	] ) {
+	];
+	// Android 10/11 devices may expose WebGPU through Chrome's OpenGL ES compatibility
+	// backend rather than core Vulkan. Try that first so a slow core request cannot starve it.
+	const optionsToTry = androidVersion > 0 && androidVersion < 12
+		? [ ...compatibilityOptions, ...coreOptions ]
+		: [ ...coreOptions, ...compatibilityOptions ];
+	for ( const [ label, options ] of optionsToTry ) {
 		const remaining = deadline - performance.now();
 		if ( remaining <= 0 ) {
 			probe.result = 'The adapter search reached its 10-second time limit.';
@@ -65,12 +72,11 @@ async function findWebGPUAdapter() {
 		let timedOut = false;
 
 		try {
-			// Some Android WebViews expose navigator.gpu but never settle requestAdapter().
-			// Bound the whole probe so an unsupported device reaches touch mode instead of
-			// sitting on the loading screen indefinitely.
+			// Keep one stalled backend probe from consuming the full search window. This
+			// leaves time for the remaining backend and power-preference combinations.
 			const adapter = await Promise.race( [
 				navigator.gpu.requestAdapter( options ),
-				new Promise( ( resolve ) => { timeout = setTimeout( () => { timedOut = true; resolve( null ); }, remaining ); } ),
+				new Promise( ( resolve ) => { timeout = setTimeout( () => { timedOut = true; resolve( null ); }, Math.min( 2500, remaining ) ); } ),
 			] );
 			if ( adapter ) {
 				probe.attempts.push( `${ label }: adapter found` );
