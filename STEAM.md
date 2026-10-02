@@ -19,7 +19,7 @@ The local version 1.0.13 package was built successfully with `npm run desktop:pa
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.
 
-The owner's public repository is `kidu89/tidewater`. The newest Windows Actions package is run [`36982834802`](https://github.com/kidu89/tidewater/actions/runs/36982834802) on `main` commit `acc7f85`; the executable reports app version 1.0.13. Packaging, executable-presence and packaged-startup checks passed, then uploaded `Fishing-Free-Windows-x64` (202 MB; digest `sha256:82c2c4f0e1979d91f62269122656ae67a0c1a2518916afe3d87c85809ba8521b`). The smoke test confirms the bundled game page responds over loopback, not that the 3D scene, Steam overlay or controller works on a retail PC. CI artifacts are not Steam uploads. Steamworks App ID, depot ID, store approval and SteamPipe upload are still required.
+The owner's public repository is `kidu89/tidewater`. The newest Windows Actions package is run [`36990151854`](https://github.com/kidu89/tidewater/actions/runs/36990151854) on `main` commit `bb41bd0`; the executable reports app version 1.0.13. Packaging, executable-presence and packaged-startup checks passed, then uploaded `Fishing-Free-Windows-x64` (202 MB; digest `sha256:e5b31f77e714e6d7b82af8ed1be37cc83b1e1d502e0ae10d41872f67bcae1720`). The smoke test confirms the bundled game page responds over loopback, not that the 3D scene, Steam overlay or controller works on a retail PC. CI artifacts are not Steam uploads. Steamworks App ID, depot ID, store approval and SteamPipe upload are still required.
 
 ## Publish through SteamPipe
 
