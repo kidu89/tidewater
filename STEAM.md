@@ -15,6 +15,8 @@ The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe`
 
 The 1.0.15 x64 candidate was built from the clean checkout of current `main` plus the reviewed release fixes. The parent workspace archive `Fishing-Free-1.0.15-Windows-x64-2026-10-02-release-candidate.zip` is 213,485,521 bytes (SHA-256 `ACE43B30A52BB5DEAFBE6B92CD1968EE20C4F169B934B3D8FE86BAF7D36FA628`). Its ZIP entries fully decompressed and contain `Fishing Free.exe` and `resources/app.asar`; the executable metadata reads 1.0.15. It is unsigned. The GitHub packaging and startup workflow passed. A clean retail-PC, controller and Steam-client check remain before SteamPipe.
 
+The local workspace also contains a 1.0.16 x64 build at `release/1.0.16/win-unpacked`, created from local commit `b008e97` (not yet pushed). `Fishing Free.exe` reports 1.0.16.0 (245,780,992 bytes; SHA-256 `61E1E6E5029A6B08D254D8C1A7B7FEE450BD47A568F4DF7027162E864BCF013B`); `resources/app.asar` is 57,879,773 bytes (SHA-256 `906FAB251DD0F126C963BA0C8CEFAA3AB93DA6B9198CB1F17C08D1C915F472CF`). It is unsigned and has not been launched on a retail Windows PC or through Steam. Treat it as a local candidate, not a published or Steam-tested release.
+
 ## Build it with GitHub Actions
 
 Run **Actions → Build Fishing Free for Steam (Windows) → Run workflow**. The run uploads `Fishing-Free-Windows-x64`, containing the same `win-unpacked` folder. The workflow can also be started by pushing a `desktop-v*` tag.

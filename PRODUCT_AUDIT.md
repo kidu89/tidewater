@@ -15,6 +15,14 @@ This checkpoint supersedes status statements in the historical build notes below
 - **Gameplay:** the 600-second terrain-aware whale simulation passes: the route stays over water, the root stays below sea level, clearance stays above 2.12 m, and breach pitch is 4.6°. The headless breach capture no longer shows the former flying silhouette. Boat-recovery play still needs hands-on confirmation.
 - **iOS:** the owner has a personal Apple ID but no Apple Developer Program membership. There is no signed IPA, certificate, provisioning profile or team ID available for the GitHub workflow. Safari PWA is the current iPhone route; App Store/TestFlight distribution remains blocked on membership and signing setup.
 - **Steam:** Windows Actions has produced a Steam depot folder, but no Steamworks App/depot IDs, approved store page, SteamPipe upload, or clean Steam-client install have been supplied or completed.
+
+## Local release work not yet published — 2 October 2026
+
+- The workspace has unpublished local commit `b008e97`, which adds persistent, touch-operable recovery after a boat capsize and updates app metadata to 1.0.16. The `npm run build` completed successfully; Vite still reports the known non-fatal `LocalLights.js` static/dynamic import warning.
+- A local Windows x64 folder was packaged at `release/1.0.16/win-unpacked`. `Fishing Free.exe` reports version 1.0.16.0 (245,780,992 bytes; SHA-256 `61E1E6E5029A6B08D254D8C1A7B7FEE450BD47A568F4DF7027162E864BCF013B`); `resources/app.asar` is 57,879,773 bytes (SHA-256 `906FAB251DD0F126C963BA0C8CEFAA3AB93DA6B9198CB1F17C08D1C915F472CF`). The package is unsigned and has not been launched on a retail PC or through Steam.
+- The prior 1.0.15 Windows folder was restored from the recorded candidate archive after an interrupted output-directory attempt; archive SHA-256 matches `ACE43B30A52BB5DEAFBE6B92CD1968EE20C4F169B934B3D8FE86BAF7D36FA628`, and its executable reports 1.0.15.
+- Commit `b008e97` and the 1.0.16 web update are not on GitHub Pages yet. The published PWA, Actions artifacts and mobile packages therefore remain at their previously verified versions. No new APK or signed IPA was built in this step.
+
 ## Executive decision
 
 **Continue to controlled testing; do not announce a release date or buy user acquisition yet.** The 1.0.15 source, Windows and Android packages, and Pages deployment are live and their CI checks passed, but there are no measured sales, retention or conversion results. Highest priority is physical Android graphics verification and an independent Windows/Steam-client install. Emulator installation does not establish usable WebGPU or acceptable phone graphics. No paid mobile release or signed iOS distribution is ready.
