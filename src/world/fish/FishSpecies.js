@@ -24,7 +24,7 @@
 export const PATTERN = {
 	silverside: 0, chromis: 1, grunt: 2, yellowtail: 3, tang: 4, sergeant: 5, wrasse: 6, parrot: 7,
 	angel: 8, barracuda: 9, redSnapper: 10, grouper: 11, tuna: 12, mahi: 13, mullet: 14, needlefish: 15,
-	jack: 16, tarpon: 17, stingray: 18, eagleRay: 19, turtle: 20, bonefish: 21, snook: 22, permit: 23, lionfish: 24,
+	jack: 16, tarpon: 17, stingray: 18, eagleRay: 19, turtle: 20, bonefish: 21, snook: 22, permit: 23, lionfish: 24, wahoo: 25,
 };
 
 const spiny = ( from, to, rays, h, rake, notch = 0.16 ) => ( { from, to, rays, spiny: true, h, rake, notch } );
@@ -381,6 +381,26 @@ SPECIES.lionfish = {
 	],
 	pectoral: { u: 0.28, y: 0, len: 0.3, base: 0.04, rays: 20, shape: 'rounded', spread: 0.82 },
 };
+SPECIES.wahoo = {
+	...SPECIES.tuna,
+	pattern: PATTERN.wahoo,
+	body: 0.84,
+	sec: 2.05,
+	top: [ [ 0, 0.002 ], [ 0.025, 0.014 ], [ 0.08, 0.034 ], [ 0.16, 0.056 ], [ 0.28, 0.079 ], [ 0.4, 0.087 ], [ 0.5, 0.082 ], [ 0.62, 0.068 ], [ 0.74, 0.045 ], [ 0.86, 0.026 ], [ 0.95, 0.014 ], [ 1, 0.012 ] ],
+	bot: [ [ 0, 0.002 ], [ 0.025, 0.012 ], [ 0.08, 0.03 ], [ 0.16, 0.05 ], [ 0.28, 0.071 ], [ 0.4, 0.078 ], [ 0.5, 0.074 ], [ 0.62, 0.061 ], [ 0.74, 0.041 ], [ 0.86, 0.024 ], [ 0.95, 0.013 ], [ 1, 0.011 ] ],
+	wid: [ [ 0, 0.002 ], [ 0.04, 0.018 ], [ 0.12, 0.04 ], [ 0.25, 0.058 ], [ 0.4, 0.066 ], [ 0.55, 0.06 ], [ 0.7, 0.044 ], [ 0.85, 0.027 ], [ 0.95, 0.022 ], [ 1, 0.016 ] ],
+	mouth: { corner: 0.13, y: - 0.008, tip: - 0.004, protrude: 0.006 },
+	eye: { u: 0.13, y: 0.025, r: 0.021 },
+	opercle: 0.28,
+	dorsal: [ spiny( 0.28, 0.48, 16, [ [ 0, 0.065 ], [ 0.3, 0.06 ], [ 1, 0.014 ] ], [ 0.45, 0.8 ], 0.1 ), soft( 0.53, 0.62, 12, [ [ 0, 0.075 ], [ 0.5, 0.04 ], [ 1, 0.012 ] ], [ 0.75, 1.1 ] ) ],
+	anal: [ soft( 0.58, 0.68, 12, [ [ 0, 0.07 ], [ 0.5, 0.04 ], [ 1, 0.012 ] ], [ 0.75, 1.1 ] ) ],
+	pectoral: { u: 0.32, y: 0.0, len: 0.16, base: 0.025, rays: 12, shape: 'falcate', spread: 0.32 },
+	caudal: { shape: 'forked', len: 0.2, span: 0.23, fork: 0.2, rays: 19 },
+	finlets: { from: 0.68, to: 0.95, dorsal: 8, ventral: 8 },
+	iris: 0x4b9db3,
+	irid: 0.95,
+	metal: 0.72,
+};
 
 // Skin colours (sRGB): back, flank, belly, fins, fin edges; the shader adds the species'
 // markings (stripes, bars, spots) on top.
@@ -410,4 +430,5 @@ export const SKIN = {
 	snook: { back: 0x344a4d, flank: 0xaab9b7, belly: 0xe1e7e4, fin: 0x647a78, edge: 0x202e32, rough: 0.28 },
 	permit: { back: 0x59676d, flank: 0xc5d0d0, belly: 0xf0f1e9, fin: 0x637d82, edge: 0x35484d, rough: 0.3 },
 	lionfish: { back: 0x8e3028, flank: 0xd86f54, belly: 0xe7b590, fin: 0xaa4938, edge: 0xf0d6af, rough: 0.42 },
+	wahoo: { back: 0x155873, flank: 0x98c6ce, belly: 0xe8f0ee, fin: 0x347f99, edge: 0x16445d, rough: 0.24 },
 };
