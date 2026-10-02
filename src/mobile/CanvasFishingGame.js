@@ -91,7 +91,7 @@ export class CanvasFishingGame {
 					<div class="tw-lite__brand"><span class="tw-lite__eyebrow">AN ISLAND FISHING GAME</span><strong>FISHING FREE</strong></div>
 					<div class="tw-lite__header-actions">
 						<div class="tw-lite__cash"><span>WALLET</span><strong data-cash>$0</strong></div>
-						<button class="tw-lite__log-button" type="button" data-log aria-label="Open fish log">LOGBOOK <span data-log-count>0/22</span></button>
+						<button class="tw-lite__log-button" type="button" data-log aria-label="Open fish log">LOGBOOK <span data-log-count>0/${ Object.keys( FISH ).length }</span></button>
 					</div>
 				</header>
 				<div class="tw-lite__toast" role="status" aria-live="polite" data-message></div>
