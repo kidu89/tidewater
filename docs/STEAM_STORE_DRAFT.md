@@ -69,11 +69,11 @@ Record a 45–60 second trailer from the final Windows build: harbor and changin
 ## Release decisions still open
 
 - Clear the working title and document the rights to all capsule and trailer assets.
-- Choose the commercial model and enter final Steam pricing. The product audit proposes a bounded free demo with a one-time paid full game; its earlier USD 6.99–9.99 range is a test hypothesis, not an approved price.
+- Choose the commercial model and enter final Steam pricing. The product audit proposes a bounded free demo with a one-time paid full game; USD 4.99–7.99 is a test hypothesis, not an approved price. Consider a higher price only if playtests demonstrate enough content and replay value.
 - Decide whether a demo is worth maintaining. If offered, give it a satisfying, clearly bounded fishing loop and test the save handoff before publishing.
 - Confirm minimum Windows version and GPU requirements using a clean install. The current 3D renderer needs a usable WebGPU adapter; do not claim universal GPU compatibility.
 - Test first launch, shader compilation time, save persistence, display scaling, window controls, sleep/resume, the Steam overlay and controller input on a clean Windows 10/11 machine.
-- Make a fresh Windows build from the final release commit. The last recorded Windows artifact is version 1.0.13 and predates the Android 1.0.14 handoff change.
+- The latest Windows candidate is version 1.0.15 from commit `bd3887e`, packaged and startup-smoke-tested by [GitHub Actions run 37053852529](https://github.com/kidu89/tidewater/actions/runs/37053852529). Create a fresh Windows build from the final approved release commit before SteamPipe; this candidate still needs clean retail-PC and Steam-client verification.
 - Complete Steamworks partner onboarding, Steam Direct, the app and Windows depot setup, store/build review, SteamPipe upload, Coming Soon period and owner-triggered release.
 
 ## Valve references
