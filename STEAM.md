@@ -4,6 +4,10 @@ The current store-page copy, verified feature list and media/release checklist a
 
 The game is packaged as an Electron desktop app. It runs the bundled Vite build from a loopback-only local server, so the game does not depend on a website being online. The renderer has Node integration disabled, uses context isolation and sandboxing, blocks navigation away from the game, and only opens explicitly linked HTTPS pages in the system browser.
 
+## Product identity and source notices
+
+The public repository is owned by `kidu89`, and the game UI, package metadata and executable are branded **Fishing Free**. The `tidewater` repository slug and legacy browser-storage keys remain for URL and save compatibility; they are not product labels. Keep the upstream MIT copyright/license notice and all third-party asset credits in source and shipping builds. Those notices preserve the source and asset licenses; they are not publisher branding.
+
 ## Build the Steam folder locally
 
 ```powershell
@@ -16,6 +20,8 @@ The Steam-ready x64 folder is `release/win-unpacked/`. Launch `Fishing Free.exe`
 The 1.0.15 x64 candidate was built from the clean checkout of current `main` plus the reviewed release fixes. The parent workspace archive `Fishing-Free-1.0.15-Windows-x64-2026-10-02-release-candidate.zip` is 213,485,521 bytes (SHA-256 `ACE43B30A52BB5DEAFBE6B92CD1968EE20C4F169B934B3D8FE86BAF7D36FA628`). Its ZIP entries fully decompressed and contain `Fishing Free.exe` and `resources/app.asar`; the executable metadata reads 1.0.15. It is unsigned. The GitHub packaging and startup workflow passed. A clean retail-PC, controller and Steam-client check remain before SteamPipe.
 
 The local workspace also contains a 1.0.16 x64 build at `release/1.0.16/win-unpacked`, created from local commit `b008e97` (not yet pushed). `Fishing Free.exe` reports 1.0.16.0 (245,780,992 bytes; SHA-256 `61E1E6E5029A6B08D254D8C1A7B7FEE450BD47A568F4DF7027162E864BCF013B`); `resources/app.asar` is 57,879,773 bytes (SHA-256 `906FAB251DD0F126C963BA0C8CEFAA3AB93DA6B9198CB1F17C08D1C915F472CF`). It is unsigned and has not been launched on a retail Windows PC or through Steam. Treat it as a local candidate, not a published or Steam-tested release.
+
+On 3 October, an additional 1.0.16 candidate was packaged after stabilizing the Electron server origin so browser saves use the same `127.0.0.1:43761` origin across launches; the app also focuses its existing window on a second launch. The folder is `release/1.0.16/win-unpacked-stable-origin/`; the handoff archive is `release/1.0.16/Fishing-Free-1.0.16-Windows-x64-stable-save-candidate.zip` (215,890,966 bytes; SHA-256 `8AE178F8BA77C0E424C6A5178C338A3A9E73F22605C84ED4D41D57BFB994B714`). The executable reports 1.0.16.0 (245,780,992 bytes; SHA-256 `76372538E110FE810929BEB1E714B90353F51F6359007D9B05653FABDC839ACE`); `resources/app.asar` is 57,880,529 bytes (SHA-256 `013C3FB0F7A25E9F3957015BB43102D8014C8B964C8175C64C0E2D977CB8EBF4`). Electron Builder completed, and the packaged `desktop/main.cjs` byte-for-byte matches source. This candidate is unsigned. Save persistence across an actual close/reopen, clean-PC startup, Steam overlay, controller, Steam Cloud and Steam-client installation have not been verified.
 
 ## Build it with GitHub Actions
 

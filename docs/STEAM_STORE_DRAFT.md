@@ -60,7 +60,7 @@ Capture the actual game, with no marketing text or edited-in features. Confirm e
 
 An internal capsule art draft now exists in `docs/steam-assets-draft-v2/`: main 1232×706, header 920×430 and small capsule 462×174. Its source concept is `docs/steam-assets-draft-v2/source-concept.png`; `scripts/build-steam-capsules.ps1` recreates the exact-size exports and adds the title with the repository's Oswald font. The background is AI-generated using the in-game beach capture only as visual reference. These are concept assets, not approved store art. Clear the title and get owner approval before Steam submission. The library set still needs a 600×900 capsule, 3840×1240 hero and transparent title logo. Store capsules may show the game's artwork, name and official subtitle only. The library hero is artwork only. Do not put discounts, review scores, extra feature claims or calls to action on base capsules.
 
-The existing `public/ui/keyart.jpg` (2560×1440) is not listed in `CREDITS.md` and its source/license is not documented in this repository. Do not submit or republish it as Steam art until its provenance and commercial-use rights are confirmed. The CC0 models, MIT code and other assets listed in `CREDITS.md` have their own notices; preserve those notices in the shipping build.
+The existing `public/ui/keyart.jpg` (2560×1440) is an in-game scene capture introduced by upstream commit `1438b1a`, which also added the root MIT license. It is not a third-party photograph. It remains game-loading art, not a final Steam capsule; use screenshots captured from the approved shipping build for store media, and preserve the root MIT notice plus separate third-party asset credits.
 
 ### Trailer
 

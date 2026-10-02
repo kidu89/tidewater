@@ -3,6 +3,12 @@
 The code in this repository is released under the MIT license (see `LICENSE`). The third-party
 assets below keep their own licences.
 
+## Loading-screen art: `public/ui/keyart.jpg`
+
+This 2560×1440 image is a capture of the game's own rendered beach scene, introduced in repository
+commit `1438b1a` alongside the root MIT license. It is used as in-game loading art, not as a Steam
+store capsule. The visible models and textures retain the asset licences credited below.
+
 ## Audio: `public/audio/`
 
 42 field recordings from [Freesound](https://freesound.org), all released under

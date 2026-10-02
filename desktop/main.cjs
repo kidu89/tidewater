@@ -1,9 +1,11 @@
-const { app, BrowserWindow, shell } = require( 'electron' );
+const { app, BrowserWindow, dialog, shell } = require( 'electron' );
 const fs = require( 'node:fs' );
 const http = require( 'node:http' );
 const path = require( 'node:path' );
 
 const HOST = '127.0.0.1';
+// Keep this origin stable between launches: localStorage is keyed by scheme, host, and port.
+const PORT = 43761;
 const MIME = {
 	'.avif': 'image/avif', '.bin': 'application/octet-stream', '.css': 'text/css; charset=utf-8',
 	'.glb': 'model/gltf-binary', '.gltf': 'model/gltf+json', '.html': 'text/html; charset=utf-8',
@@ -16,6 +18,7 @@ const MIME = {
 
 let server;
 let gameOrigin;
+let mainWindow;
 
 function safePath( requestUrl, webRoot ) {
 	let pathname;
@@ -80,17 +83,16 @@ function createAssetServer() {
 	} );
 	return new Promise( ( resolve, reject ) => {
 		server.once( 'error', reject );
-		server.listen( 0, HOST, () => {
+		server.listen( PORT, HOST, () => {
 			server.removeListener( 'error', reject );
-			const address = server.address();
-			gameOrigin = `http://${ HOST }:${ address.port }`;
+			gameOrigin = `http://${ HOST }:${ PORT }`;
 			resolve();
 		} );
 	} );
 }
 
 function openGameWindow() {
-	const window = new BrowserWindow( {
+	mainWindow = new BrowserWindow( {
 		width: 1600,
 		height: 960,
 		minWidth: 960,
@@ -107,34 +109,50 @@ function openGameWindow() {
 			spellcheck: false,
 		},
 	} );
-	window.once( 'ready-to-show', () => window.show() );
-	window.webContents.setWindowOpenHandler( ( { url } ) => {
+	mainWindow.once( 'ready-to-show', () => mainWindow.show() );
+	mainWindow.once( 'closed', () => { mainWindow = null; } );
+	mainWindow.webContents.setWindowOpenHandler( ( { url } ) => {
 		try {
 			if ( new URL( url ).protocol === 'https:' ) shell.openExternal( url );
 		} catch { /* Ignore invalid external links. */ }
 		return { action: 'deny' };
 	} );
-	window.webContents.on( 'will-navigate', ( event, url ) => {
+	mainWindow.webContents.on( 'will-navigate', ( event, url ) => {
 		if ( url.startsWith( `${ gameOrigin }/` ) ) return;
 		event.preventDefault();
 		try {
 			if ( new URL( url ).protocol === 'https:' ) shell.openExternal( url );
 		} catch { /* Ignore invalid external links. */ }
 	} );
-	window.loadURL( `${ gameOrigin }/` );
+	mainWindow.loadURL( `${ gameOrigin }/` );
 }
 
-app.whenReady().then( async () => {
-	app.setName( 'Fishing Free' );
-	await createAssetServer();
-	openGameWindow();
-	app.on( 'activate', () => {
-		if ( BrowserWindow.getAllWindows().length === 0 ) openGameWindow();
-	} );
-} ).catch( ( error ) => {
-	console.error( '[Fishing Free] Could not start the desktop game.', error );
+const hasSingleInstanceLock = app.requestSingleInstanceLock();
+if ( ! hasSingleInstanceLock ) {
 	app.quit();
-} );
+} else {
+	app.on( 'second-instance', () => {
+		if ( ! mainWindow ) return;
+		if ( mainWindow.isMinimized() ) mainWindow.restore();
+		mainWindow.focus();
+	} );
+
+	app.whenReady().then( async () => {
+		app.setName( 'Fishing Free' );
+		await createAssetServer();
+		openGameWindow();
+		app.on( 'activate', () => {
+			if ( BrowserWindow.getAllWindows().length === 0 ) openGameWindow();
+		} );
+	} ).catch( ( error ) => {
+		console.error( '[Fishing Free] Could not start the desktop game.', error );
+		const message = error.code === 'EADDRINUSE'
+			? 'The local game port is already in use. Close the program using it, then reopen Fishing Free.'
+			: 'The game could not start. Restart Fishing Free and try again.';
+		dialog.showErrorBox( 'Fishing Free could not start', message );
+		app.quit();
+	} );
+}
 
 app.on( 'window-all-closed', () => {
 	if ( process.platform !== 'darwin' ) app.quit();
