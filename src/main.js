@@ -68,7 +68,8 @@ async function findWebGPUAdapter() {
 			probe.result = 'The adapter search reached its 10-second time limit.';
 			return null;
 		}
-		let timeout;
+		
+		const attemptTimeoutMs = androidVersion > 0 && androidVersion < 12 && label.startsWith( 'Compatibility' ) ? 4500 : 2500;let timeout;
 		let timedOut = false;
 
 		try {
@@ -76,7 +77,7 @@ async function findWebGPUAdapter() {
 			// leaves time for the remaining backend and power-preference combinations.
 			const adapter = await Promise.race( [
 				navigator.gpu.requestAdapter( options ),
-				new Promise( ( resolve ) => { timeout = setTimeout( () => { timedOut = true; resolve( null ); }, Math.min( 2500, remaining ) ); } ),
+				new Promise( ( resolve ) => { timeout = setTimeout( () => { timedOut = true; resolve( null ); }, Math.min( attemptTimeoutMs, remaining ) ); } ),
 			] );
 			if ( adapter ) {
 				probe.attempts.push( `${ label }: adapter found` );
