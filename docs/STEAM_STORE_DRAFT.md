@@ -1,6 +1,6 @@
 # Fishing Free — Steam store page draft
 
-**Status:** Internal copy draft, 1 October 2026. This is not a live Steam page. The name, price, store art and final Windows build still need release approval.
+**Status:** Internal copy draft, 2 October 2026. This is not a live Steam page. The name, price, store art and final Windows build still need release approval.
 
 ## Store identity
 
@@ -58,7 +58,7 @@ Capture the actual game, with no marketing text or edited-in features. Confirm e
 
 ### Capsules and library art
 
-Create new source files after the game title is cleared and the key art's origin is documented. Valve's current store sizes include the 920×430 header, 462×174 small capsule and 1232×706 main capsule; the library set includes a 600×900 capsule, 3840×1240 hero and transparent title logo. Store capsules may show the game's artwork, name and official subtitle only. The library hero is artwork only. Do not put discounts, review scores, extra feature claims or calls to action on base capsules.
+An internal capsule art draft now exists in `docs/steam-assets-draft-v2/`: main 1232×706, header 920×430 and small capsule 462×174. Its source concept is `docs/steam-assets-draft-v2/source-concept.png`; `scripts/build-steam-capsules.ps1` recreates the exact-size exports and adds the title with the repository's Oswald font. The background is AI-generated using the in-game beach capture only as visual reference. These are concept assets, not approved store art. Clear the title and get owner approval before Steam submission. The library set still needs a 600×900 capsule, 3840×1240 hero and transparent title logo. Store capsules may show the game's artwork, name and official subtitle only. The library hero is artwork only. Do not put discounts, review scores, extra feature claims or calls to action on base capsules.
 
 The existing `public/ui/keyart.jpg` (2560×1440) is not listed in `CREDITS.md` and its source/license is not documented in this repository. Do not submit or republish it as Steam art until its provenance and commercial-use rights are confirmed. The CC0 models, MIT code and other assets listed in `CREDITS.md` have their own notices; preserve those notices in the shipping build.
 
