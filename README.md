@@ -28,7 +28,7 @@ The project includes a Steam-ready Windows desktop shell, a Capacitor mobile she
 **Fishing**
 - A spinning rod and reel that cast, reel and bend under load, with the bail, rotor and crank animated.
 - Bites that depend on the water (shallows, pier, reef, bay, deep water), depth and time of day, across
-  22 Caribbean species.
+  23 Caribbean species.
 - A line-tension fight: keep the tension in the green band, ease off when the fish runs.
 - A full-screen catch card with the fish's length and weight, a fish log with records, and a cooler.
 - A field guide that tracks undiscovered species, habitat and activity clues, and personal records.
