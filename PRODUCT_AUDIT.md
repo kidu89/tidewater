@@ -22,7 +22,7 @@ The best order is **Windows/Steam closed build → validate the first 20–30 mi
 
 - A browser-first custom WebGPU/WGSL island fishing game with a high-end ocean, atmosphere, day/night, boat, wildlife and photo mode.
 - A repeatable fishing encounter: choose habitat and time, cast, wait, hook, manage line tension, land the fish, then decide whether to keep or sell it.
-- Persistent solo progression: 22 species, logbook and records, contracts, 18 achievements, gear upgrades, boat fuel, and four destinations (the home island, Pelican Cay, Turtle Key and Mangrove Reach).
+- Persistent solo progression: 23 species, logbook and records, 11 permanent contracts, 22 achievements, gear upgrades, boat fuel, and four destinations (the home island, Pelican Cay, Turtle Key and Mangrove Reach).
 - Local save data and offline play. No account, cloud-save service, economy server or live matchmaking.
 - Catch-card sharing and a friend-duel prototype. The hosted duel API is optional and scores are self-reported; it is not secure enough for ranked play, prizes or purchases.
 - A Capacitor Android/iOS wrapper. A touch-first Canvas fishing mode is bundled when WebGPU cannot supply an adapter; that is a compatibility path, not a visual equivalent to the main renderer.
