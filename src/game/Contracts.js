@@ -50,6 +50,12 @@ export const CONTRACTS = [
 		format: ( n ) => n ? 'Lionfish recorded' : 'Try a slow cast along the reef at night',
 	},
 	{
+		id: 'wahoo-run', icon: '💨', title: 'Blue Streak',
+		description: 'Land a wahoo from the offshore drop-off.', target: 1, reward: 360,
+		current: ( state ) => state.log.wahoo?.count || 0,
+		format: ( n ) => n ? 'Wahoo recorded' : 'Try the deep drop-off at dawn or dusk',
+	},
+	{
 		id: 'mangrove-reach-survey', icon: '🌿', title: 'Tidal Forest Survey',
 		description: 'Navigate southwest and discover Mangrove Reach.', target: 1, reward: 260,
 		current: ( state ) => state.career.locations.includes( 'mangrove-reach' ) ? 1 : 0,
