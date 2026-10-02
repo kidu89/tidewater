@@ -65,6 +65,7 @@ const BEHAVIOUR = {
 	grouper: { model: 'grouper', length: [ 0.6, 0.85 ], mode: 'lurk', cruise: 0.15, max: 1.2, burst: 3, accel: 1.5, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.8, flee: 3, depth: [ 0.0, 0.05 ], homeRadius: 2.5, amp: 0.04, freq: [ 0.6, 0.6 ], band: [ 5, 16 ] },
 	barracuda: { model: 'barracuda', length: [ 1.0, 1.35 ], mode: 'solo', cruise: 0.15, max: 1.2, burst: 3, accel: 1.2, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.6, depth: [ 0.3, 0.6 ], homeRadius: 10, amp: 0.035, freq: [ 0.5, 0.8 ], band: [ 4, 16 ] },
 	jack: { model: 'jack', length: [ 0.4, 0.6 ], mode: 'patrol', cruise: 1.1, max: 2.6, burst: 5, accel: 3, sep: 2, nbr: 5, wAli: 1.4, wCoh: 0.9, wGoal: 0.9, flee: 4, depth: [ 0.25, 0.6 ], homeRadius: 20, amp: 0.07, freq: [ 1.6, 0.8 ], band: [ 6, 20 ] },
+	wahoo: { model: 'wahoo', length: [ 1.05, 1.55 ], mode: 'patrol', cruise: 1.25, max: 3.8, burst: 8, accel: 6, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.9, flee: 6.5, depth: [ 0.35, 0.68 ], homeRadius: 24, amp: 0.075, freq: [ 1.7, 0.85 ], band: [ 10, 18 ] },
 	eagleRay: { model: 'eagleRay', length: [ 1.6, 2.0 ], mode: 'cruise', cruise: 0.35, max: 0.9, burst: 1.8, accel: 0.8, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.8, flee: 5, depth: [ 0.25, 0.55 ], homeRadius: 30, amp: 0.13, freq: [ 0.45, 0.2 ], band: [ 6, 20 ] },
 	stingray: { model: 'stingray', length: [ 0.9, 1.3 ], mode: 'glide', cruise: 0.3, max: 0.8, burst: 1.6, accel: 0.8, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.8, flee: 3.5, depth: [ 0, 0 ], homeRadius: 14, amp: 0.05, freq: [ 0.9, 0.5 ], band: [ 2.5, 16 ] },
 	turtle: { model: 'turtle', length: [ 0.9, 1.1 ], mode: 'turtle', cruise: 0.3, max: 0.8, burst: 1.4, accel: 0.6, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.7, flee: 4, depth: [ 0.15, 0.6 ], homeRadius: 25, amp: 0, freq: [ 0.3, 0.25 ], ceiling: - 0.25, band: [ 3, 12 ] },
@@ -378,6 +379,13 @@ export class FishSchools {
 		for ( const c of [ 9, 6 ] ) {
 
 			const g = place( 'jack', c, dropZone );
+			if ( g ) g.zone.path = drop;
+
+		}
+		// Wahoo patrol alone along the offshore slope; the pair is separated by pickSpot().
+		for ( let i = 0; i < 2; i ++ ) {
+
+			const g = place( 'wahoo', 1, dropZone );
 			if ( g ) g.zone.path = drop;
 
 		}
