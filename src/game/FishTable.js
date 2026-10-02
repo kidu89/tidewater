@@ -35,3 +35,26 @@ export const FISH = {
 	wahoo: { name: 'Wahoo', sci: 'Acanthocybium solandri', lw: [ 0.0051, 3.0 ], model: 'wahoo', habitat: { deep: 1 }, kg: [ 4, 22 ], price: 18, fight: 0.96, stamina: 19, time: 'dawnDusk', rarity: 0.24 },
 	mahi: { name: 'Mahi-mahi', sci: 'Coryphaena hippurus', lw: [ 0.0079, 3.0 ], model: 'mahi', habitat: { deep: 0.8 }, kg: [ 4, 18 ], price: 14, fight: 0.8, stamina: 15, time: 'day', rarity: 0.4 },
 	tarpon: { name: 'Tarpon', sci: 'Megalops atlanticus', lw: [ 0.0077, 3.02 ], model: 'tarpon', habitat: { pier: 0.35, bay: 0.5, shallows: 0.15, mangrove: 0.85 }, kg: [ 10, 45 ], price: 4, fight: 1, stamina: 24, time: 'night', rarity: 0.2 },
+	snook: { name: 'Common snook', sci: 'Centropomus undecimalis', lw: [ 0.0092, 3.02 ], model: 'snook', habitat: { key: 1, mangrove: 0.9, bay: 0.35, shallows: 0.2 }, kg: [ 0.8, 11 ], price: 10, fight: 0.72, stamina: 12, time: 'dawnDusk', rarity: 0.48 },
+	permit: { name: 'Atlantic permit', sci: 'Trachinotus falcatus', lw: [ 0.0121, 3.02 ], model: 'permit', habitat: { key: 0.55, cay: 0.85, shallows: 0.25 }, kg: [ 0.6, 14 ], price: 15, fight: 0.82, stamina: 15, time: 'day', rarity: 0.34 },
+	lionfish: { name: 'Red lionfish', sci: 'Pterois volitans', lw: [ 0.018, 3.0 ], model: 'lionfish', habitat: { reef: 0.85, key: 0.12 }, kg: [ 0.18, 0.9 ], price: 18, fight: 0.18, stamina: 3, time: 'night', rarity: 0.32 },
+};
+
+export const FISH_IDS = Object.keys( FISH );
+
+// $ value of a fish; trophy-sized ones fetch a bit more per kg
+export function fishValue( id, kg ) {
+
+	const f = FISH[ id ];
+	const t = ( kg - f.kg[ 0 ] ) / Math.max( f.kg[ 1 ] - f.kg[ 0 ], 1e-6 );
+	return Math.max( 1, Math.round( f.price * kg * ( 1 + 0.25 * Math.max( 0, t - 0.7 ) / 0.3 ) ) );
+
+}
+
+// total length (cm) of a fish of `kg`, from its species' length-weight relation
+export function fishLengthCm( id, kg ) {
+
+	const [ a, b ] = FISH[ id ].lw;
+	return Math.pow( Math.max( kg, 0.001 ) * 1000 / a, 1 / b );
+
+}
