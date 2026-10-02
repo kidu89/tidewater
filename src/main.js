@@ -68,8 +68,11 @@ async function findWebGPUAdapter() {
 			probe.result = 'The adapter search reached its 10-second time limit.';
 			return null;
 		}
-		
-		const attemptTimeoutMs = androidVersion > 0 && androidVersion < 12 && label.startsWith( 'Compatibility' ) ? 4500 : 2500;let timeout;
+		const isOlderAndroidCompatibilityAttempt = androidVersion > 0 && androidVersion < 12 && label.startsWith( 'Compatibility' );
+		// The OpenGL ES compatibility adapter can take longer to initialize on Android 10/11.
+		// Give that path more time without extending the overall 10-second probe deadline.
+		const attemptTimeoutMs = isOlderAndroidCompatibilityAttempt ? 4500 : 2500;
+		let timeout;
 		let timedOut = false;
 
 		try {

@@ -8,16 +8,18 @@ import * as THREE from '../../engine/index.js';
 // (the body follows the route), stroke phase / amplitude, arch, head pitch, flipper rotations,
 // and events: blow intensity (0..1) and fluke-lift (drips).
 
-// route (x, z) through the bay, checked against TerrainData
-// passes ~130 m off the beach and ~65 m from the pier head; >= 8.8 m of water everywhere
-const ROUTE = [ [ 70, 300 ], [ 60, 200 ], [ 35, 120 ], [ 5, 88 ], [ - 25, 100 ], [ - 52, 128 ], [ - 75, 178 ], [ - 52, 262 ], [ - 10, 330 ] ];
+// route (x, z) around Pelican Cay and the bay mouth; the spline stays off dry land
+const ROUTE = [ [ 80, 330 ], [ 120, 290 ], [ 150, 180 ], [ 100, 120 ], [ 20, 90 ], [ - 45, 115 ], [ - 120, 150 ], [ - 160, 230 ], [ - 170, 320 ], [ - 100, 390 ], [ 20, 400 ], [ 80, 350 ] ];
 const SURFACE_AT = 0.25; // route fraction where the surfacing sequence starts (heading in toward the beach)
 const CRUISE_SPEED = 2.6; // m/s underwater
 const SURFACE_SPEED = 1.5;
 const BREACH_LAUNCH_ACCEL = 4.2; // m/s²: lift the back clear while keeping the body close to the water
 const BREACH_MAX_RISE_SPEED = 7.5; // m/s: limit the airborne arc so the whale cannot appear to fly
-const BREACH_MAX_HEIGHT = 0.25; // m above the queried surface, for a low, heavy breach
-const BREACH_MAX_PITCH = 0.38; // rad: keep the 14.5 m body from pitching almost upright
+const BREACH_MAX_HEIGHT = - 0.65; // keep the root submerged; only the back and shoulder clear the water
+const BREACH_MAX_PITCH = 0.08; // rad: the long body must stay nearly level instead of hanging in the air
+const BREACH_MAX_ROLL = 0.5; // rad: expose the shoulder without rolling the whole whale onto its back
+const ROOT_CLEARANCE = 2.5; // m from the seafloor to the whale's centre when the shelf is shallow
+const MIN_ROOT_DEPTH = 0.45; // m below water, so seabed avoidance can never lift the whale out
 const TAU = Math.PI * 2;
 
 const _e = new THREE.Euler();
@@ -42,6 +44,7 @@ export class WhaleBrain {
 		this.roll = 0;
 		this.rollV = 0;
 		this.breachRoll = 0; // twist in the air during a breach
+		this.breachSplashed = false;
 		this.breaches = 0; // counters of breach events (read by the water marks)
 		this.splashes = 0;
 		this.bob = 0;
@@ -331,8 +334,8 @@ export class WhaleBrain {
 
 		}
 
-		// now and then (about every other surfacing, i.e. every few minutes) a breach: sound, then
-		// drive up and launch two thirds of the body out of the water, twist, fall back on the side
+		// now and then (about every other surfacing, i.e. every few minutes) a shallow breach: the
+		// shoulder and back rise clear, then the whale rolls back under with a heavy splash
 		if ( this.rand() < ( this.forceBreach ? 1 : 0.5 ) ) {
 
 			k.push( { t: 7, depth: 9, pitch: - 0.2, arch: 0, follow: 0.6, speed: 2.4, stroke: 0.1 } );
@@ -359,6 +362,7 @@ export class WhaleBrain {
 		if ( ! s || s.keys[ s.i + 1 ]?.breach !== expect ) return;
 		s.i ++;
 		s.t = 0;
+		if ( expect === 'air' ) this.breachSplashed = false;
 		this.breaches ++;
 
 	}
@@ -441,7 +445,8 @@ export class WhaleBrain {
 		let floor = - 1e9;
 		// look ahead along the heading so the whale rises before the seabed does
 		for ( const d of [ - 9, - 5, 0, 5, 10, 16, 24 ] ) floor = Math.max( floor, this.floorAt( x + sy * d, z + cy * d ) );
-		const yT = Math.max( this.water - target.depth, floor + 5.2 );
+		const availableDepth = Math.max( MIN_ROOT_DEPTH, this.water - floor - ROOT_CLEARANCE );
+		const yT = this.water - Math.min( target.depth, availableDepth );
 		const w = target.fluke ? 1.0 : 0.7;
 		let ay = ( yT - this.y ) * w * w - 2 * w * this.vy;
 		if ( target.breach === 'launch' ) {
@@ -455,14 +460,15 @@ export class WhaleBrain {
 
 			// ballistic above the water (buoyancy and drag take over below), twisting onto the side
 			ay = this.vy > 0 || this.y > this.water - 1 ? - 9.81 : ( yT - this.y ) * 0.5 - 1.5 * this.vy;
-			// Cap the remaining upward energy as well as launch speed. This keeps a delayed water
-			// query or a low frame rate from turning the breach into a long, hovering flight.
+			// Cap the remaining upward energy as well as launch speed. Keep the body root below the
+			// surface so the long whale cannot rise as a flat airborne silhouette, even with a delayed
+			// water query or a low frame rate.
 			const riseRoom = Math.max( 0, this.water + BREACH_MAX_HEIGHT - this.y );
 			this.vy = Math.min( this.vy, Math.sqrt( 2 * 9.81 * riseRoom ) );
-			this.breachRoll += ( 1.9 - this.breachRoll ) * Math.min( 1, dt * 1.2 );
-			if ( this.vy < 0 && this.y < this.water + 0.25 && ! this.seq.splashed ) {
+			this.breachRoll += ( BREACH_MAX_ROLL - this.breachRoll ) * Math.min( 1, dt * 1.2 );
+			if ( this.vy < 0 && this.y < this.water + 0.25 && ! this.breachSplashed ) {
 
-				this.seq.splashed = true;
+				this.breachSplashed = true;
 				this.splashes ++;
 
 			}
@@ -473,7 +479,7 @@ export class WhaleBrain {
 		this.vy += ay * dt;
 		this.y += this.vy * dt;
 		// hard floor: never closer than ~3.3 m (belly ~1.9 m) above the seabed under the body
-		const hard = floor + 4.6;
+		const hard = Math.min( this.water - MIN_ROOT_DEPTH, floor + ROOT_CLEARANCE - 0.4 );
 		if ( this.y < hard ) {
 
 			this.y = hard;
@@ -487,6 +493,7 @@ export class WhaleBrain {
 		// can swing several metres into the air and read as flight even though its root is capped.
 		if ( target.breach ) pitchT = THREE.MathUtils.clamp( pitchT, - BREACH_MAX_PITCH, BREACH_MAX_PITCH );
 		this.pitch += ( pitchT - this.pitch ) * Math.min( 1, dt * ( target.breach ? 2.5 : target.fluke ? 1.1 : 0.9 ) );
+		if ( target.breach ) this.pitch = THREE.MathUtils.clamp( this.pitch, - BREACH_MAX_PITCH, BREACH_MAX_PITCH );
 		this.arch += ( ( target.arch || 0 ) - this.arch ) * k;
 		this.follow += ( ( target.follow ?? 0.85 ) - this.follow ) * Math.min( 1, dt * ( target.fluke ? 1.5 : 0.8 ) );
 		this.strokeAmp += ( ( target.stroke ?? 0.1 ) - this.strokeAmp ) * Math.min( 1, dt * 0.6 );
@@ -527,4 +534,3 @@ function mulberry( a ) {
 	};
 
 }
-

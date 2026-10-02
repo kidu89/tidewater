@@ -2,16 +2,18 @@
 // at the surface (from the air) and underwater (side view), plus a close-up of the head.
 //   node test/life-whale.mjs [outDir]
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { setupLife, groundMesh } from './life-harness.mjs';
 import * as E from '../src/engine/index.js';
 
 const OUT = process.argv[ 2 ] || '/tmp';
 const W = + ( process.env.W || 2560 ), H = + ( process.env.H || 1267 );
 // local files through fetch (the browser path of Whale.load / loadTexture)
-const ROOT = new URL( '../public', import.meta.url ).pathname;
+const ROOT = fileURLToPath( new URL( '../public/', import.meta.url ) );
 globalThis.fetch = async ( url ) => {
 
-	const buf = readFileSync( ROOT + url );
+	const buf = readFileSync( join( ROOT, url.replace( /^[/\\]+/, '' ) ) );
 	return { json: async () => JSON.parse( buf.toString() ), arrayBuffer: async () => buf.buffer.slice( buf.byteOffset, buf.byteOffset + buf.byteLength ) };
 
 };
@@ -73,6 +75,20 @@ L.water.material.side = 'double';
 await view( 'underwater', ( f, s ) => s.clone().multiplyScalar( - 18 ).setY( P.y - 1.5 ), () => new E.Vector3( 0, P.y - 1, 0 ), 50 );
 // 3. close-up of the head (tubercles, skin maps)
 await view( 'head', ( f, s ) => f.clone().multiplyScalar( 7 ).add( s.clone().multiplyScalar( 3.5 ) ).setY( P.y + 2.5 ), ( f ) => f.clone().multiplyScalar( 3 ).setY( P.y + 0.3 ), 40 );
+// A controlled shallow breach for visual review: the root stays underwater and the body stays
+// nearly level, so the silhouette can be checked against the water rather than only by telemetry.
+b.y = - 9;
+b.vy = 0;
+b.pitch = 0;
+b.breachRoll = 0;
+b.seq = {
+	keys: [
+		{ t: 7, depth: 9, pitch: 0.45, arch: 0, follow: 0.3, speed: 3.5, stroke: 0.14, breach: 'launch' },
+		{ t: 6, depth: 2, pitch: 0, arch: 0, follow: 0.3, speed: 2.5, stroke: 0.05, breach: 'air' },
+	],
+	i: 0, t: 0, blown: false,
+};
+await view( 'breach', ( f, s ) => f.clone().multiplyScalar( 12 ).add( s.clone().multiplyScalar( 14 ) ).setY( 4 ), ( f ) => f.clone().multiplyScalar( - 1 ).setY( 0 ), 45, 180 );
 // 4. motion vectors (swimming)
 // (static camera, no sea: only the whale's own motion shows)
 L.showVelocity = true;
