@@ -13,11 +13,11 @@ const ROUTE = [ [ 80, 330 ], [ 120, 290 ], [ 150, 180 ], [ 100, 120 ], [ 20, 90 
 const SURFACE_AT = 0.25; // route fraction where the surfacing sequence starts (heading in toward the beach)
 const CRUISE_SPEED = 2.6; // m/s underwater
 const SURFACE_SPEED = 1.5;
-const BREACH_LAUNCH_ACCEL = 4.2; // m/s²: lift the back clear while keeping the body close to the water
-const BREACH_MAX_RISE_SPEED = 7.5; // m/s: limit the airborne arc so the whale cannot appear to fly
-const BREACH_MAX_HEIGHT = - 0.9; // keep most of the back immersed; only its crown reaches the surface
+const BREACH_LAUNCH_ACCEL = 3.2; // m/s²: a restrained push toward the surface
+const BREACH_MAX_RISE_SPEED = 3.8; // m/s: keep the whale's exit slow and close to the water
+const BREACH_MAX_HEIGHT = - 1.1; // root height: only the crown can break the surface
 const BREACH_MAX_PITCH = 0.025; // rad: keep the long body level so its ends cannot read as airborne
-const BREACH_MAX_ROLL = 0.35; // rad: a restrained shoulder roll without exposing the whole flank
+const BREACH_MAX_ROLL = 0.18; // rad: keep the long body upright through its low surface roll
 const ROOT_CLEARANCE = 2.5; // m from the seafloor to the whale's centre when the shelf is shallow
 const MIN_ROOT_DEPTH = 0.45; // m below water, so seabed avoidance can never lift the whale out
 const TAU = Math.PI * 2;
@@ -239,7 +239,7 @@ export class WhaleBrain {
 			if ( air ) {
 
 				sweep = 0.45;
-				lift = 0.7;
+				lift = 0.12;
 				twist = 0.3;
 				stiff = 2.5;
 

@@ -30,6 +30,7 @@ whale.seq = {
 let peak = whale.y;
 let maxPitch = Math.abs( whale.pitch );
 let maxRoll = Math.abs( whale.breachRoll );
+let maxFinLift = 0;
 let returnedBelowSurface = false;
 for ( let i = 0; i < 15 * 60; i ++ ) {
 
@@ -40,6 +41,7 @@ for ( let i = 0; i < 15 * 60; i ++ ) {
 
 		maxPitch = Math.max( maxPitch, Math.abs( whale.pitch ) );
 		maxRoll = Math.max( maxRoll, Math.abs( whale.breachRoll ) );
+		for ( const fin of whale.fin ) maxFinLift = Math.max( maxFinLift, Math.abs( fin.lift ) );
 
 	}
 	if ( i > 8 * 60 && whale.y < whale.water ) returnedBelowSurface = true;
@@ -47,9 +49,10 @@ for ( let i = 0; i < 15 * 60; i ++ ) {
 }
 
 ok( whale.breaches === 1, 'the breach transitions from launch to air once' );
-ok( peak < - 0.4, `the whale's body root remains submerged (${ peak.toFixed( 2 ) } m)` );
+ok( peak < - 0.8, `the whale's body root remains submerged (${ peak.toFixed( 2 ) } m)` );
 ok( maxPitch < 0.1, `the long body stays nearly level through the breach (${ ( maxPitch * 180 / Math.PI ).toFixed( 1 ) }°)` );
-ok( maxRoll < 0.6, `the whale does not roll onto its back (${ ( maxRoll * 180 / Math.PI ).toFixed( 1 ) }°)` );
+ok( maxRoll < 0.35, `the whale stays upright through the low breach (${ ( maxRoll * 180 / Math.PI ).toFixed( 1 ) }°)` );
+ok( maxFinLift < 0.3, 'the pectoral fins stay near the surface' );
 ok( returnedBelowSurface, 'the whale settles back below the surface after the breach' );
 
 const terrain = new TerrainData();

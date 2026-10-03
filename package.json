@@ -1,6 +1,6 @@
 {
   "name": "fishing-free",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "A scenic tropical island fishing game.",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5189",
@@ -68,5 +68,6 @@
       ],
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
-  }
+  },
+  "androidVersionCode": 26
 }

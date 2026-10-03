@@ -467,7 +467,7 @@ export class CanvasFishingGame {
 	showGraphicsDetails() {
 
 		const labels = {
-			mode: 'Rendering mode', osVersion: 'Operating system', engineVersion: 'Browser engine',
+			appVersion: 'Game version', mode: 'Rendering mode', osVersion: 'Operating system', engineVersion: 'Browser engine',
 			secureContext: 'Secure graphics context', webgpuApi: 'WebGPU API', adapterProbe: 'Adapter result',
 			adapterAttempts: 'Adapter attempts', reason: 'Fallback reason',
 		};
