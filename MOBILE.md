@@ -1,18 +1,16 @@
 # Fishing Free — Android and iOS build
 
-The main island game keeps its original WebGPU 3D renderer. Android APKs run the version bundled with the app, so they include that release and can start offline. The app tries 3D first. If a native Android WebView returns no WebGPU adapter, Fishing Free now opens Scenic Fishing automatically so the player reaches the touch game instead of staying on a graphics error. Other browser launches retain the diagnostics and manual fallback button. Scenic Fishing uses actual 3D game captures and a touch fishing loop; it is a fallback, not realtime 3D.
+Fishing Free keeps its original WebGPU 3D world on devices that support it. When a phone or tablet cannot create a usable WebGPU adapter, Android/iPhone browsers and native mobile builds now open Scenic Fishing automatically so the player can continue. Desktop still shows the diagnostics and manual fallback option. Scenic Fishing uses high-resolution captures from the game world, ambient motion and a touch fishing loop; it is an alternative to realtime 3D for devices whose graphics stack cannot run the full renderer.
 
 ## Requirements
 
-- The latest published debug APK is [Actions run #17](https://github.com/kidu89/tidewater/actions/runs/37097701494), version 1.0.16 / code 17, package com.fishingfree.game, min API 24 and target API 36. Its 52.1 MB artifact passed CI package, signature and alignment checks, but it has not been installed on either the Samsung A52 or Huawei phone. The current local source changes are unpublished and are not inside that APK. Chrome documents WebGPU for Android 12+ on supported Qualcomm/ARM phones; Android 10/11 remain unverified. A green chrome://gpu row does not guarantee the game receives a usable adapter. See [Chrome's Android WebGPU announcement](https://developer.chrome.com/blog/new-in-webgpu-121/) and [Chrome's compatibility-mode notes](https://developer.chrome.com/blog/new-in-webgpu-146/).
-- The game PWA can be added to the home screen from Safari on iOS. Apple's WebKit documents WebGPU in Safari 26, available on iOS 26. Older iOS/WKWebView releases may show the graphics compatibility screen until a supported WebGPU path is available. See [WebKit's WebGPU demos and support notes](https://webkit.org/demos/webgpu/).
+- Latest verified Android sideload candidate: [Actions run #21](https://github.com/kidu89/tidewater/actions/runs/37143779891), Fishing Free 1.0.23 / code 23, package `com.fishingfree.game`, min API 24, target API 36. CI verified package structure, signature and alignment; physical Samsung A52/Huawei testing remains unverified. Version 1.0.24 adds automatic Scenic Fishing startup for unsupported mobile browsers; the new APK is awaiting its GitHub Actions build and physical-phone check.
+- The game PWA can be added to the home screen from Safari on iOS. Apple's WebKit documents WebGPU in Safari 26, available on iOS 26. Older iOS/WKWebView releases use Scenic Fishing automatically if they cannot create a WebGPU adapter. See [WebKit's WebGPU demos and support notes](https://webkit.org/demos/webgpu/).
 - Android builds require Android Studio and its SDK. iOS builds and signing require macOS with Xcode.
 
-### Install the high-fidelity mobile PWA
+### Install on a phone with the PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open it in Chrome on Android or Safari on iOS and use the browser's **Install app** or **Add to Home Screen** menu. The 1.0.16 Android app opens the hosted page in Chrome on Android 10 and newer, bypassing Android System WebView; the first Chrome launch needs internet. The service worker caches the app shell and game assets after they load. First shader compilation may take time. On supported devices, the full 3D renderer starts after Chrome returns a usable WebGPU adapter. On Android 10, the current source explains that the phone is below Chrome's documented support floor; if graphics initialization fails, it displays a scenic error screen and device report instead of switching to the rejected 2D presentation. These startup changes are still local and unpublished.
-
-
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open it in Chrome on Android or Safari on iOS and use the browser's **Install app** or **Add to Home Screen** menu. Supported devices start the full 3D renderer. If a mobile browser cannot start WebGPU, the upcoming 1.0.24 source automatically opens Scenic Fishing; no graphics setting or manual switch is needed after that deployment. The PWA needs internet on first load, then its service worker caches the app shell and game assets for later starts. Native Android APKs bundle the game assets and can start offline.
 
 ## Create native projects
 
@@ -36,9 +34,9 @@ npx cap open ios
 
 ## Latest Android APK from GitHub Actions
 
-The latest verified Android artifact is [Actions run #17](https://github.com/kidu89/tidewater/actions/runs/37097701494), built from commit `415f418`: Fishing Free 1.0.16, version code 17, package `com.fishingfree.game`, min API 24 and target API 36. GitHub reports a 52.1 MB artifact with digest `sha256:8bca1fd0dd0a3e14bd92a02f375160b4ea4ee4f309a0583af9658e700082ce48`. CI verified the package ID, minimum API, APK signature and 4-byte alignment; no physical phone install or graphics test has been completed. This is a debug sideload APK, not a Play release.
+The latest verified Android artifact is [Actions run #21](https://github.com/kidu89/tidewater/actions/runs/37143779891), built from commit `4c851f9`: Fishing Free 1.0.23, version code 23, package `com.fishingfree.game`, min API 24 and target API 36. Its 57.7 MB debug APK passed CI package, signature and alignment checks; it has not been installed or graphics-tested on a physical phone. The 1.0.24 candidate in this source adds automatic fallback on unsupported mobile browsers and is awaiting its Android build.
 
-To get the published APK: open the run link, download the Fishing-Free-Android-APK artifact, extract the ZIP, and use the .apk inside it. On Android 10+, the app opens the live web game in Chrome; Pages run [#73](https://github.com/kidu89/tidewater/actions/runs/37096939938) deployed commit 415f418. That published build predates the current local startup-screen change. It needs internet on first launch. Supported Android 12+ devices attempt full WebGPU 3D; Android 10 is below Chrome's documented support floor. A chrome://gpu acceleration row alone does not prove a WebGPU adapter can start.
+To get the 1.0.23 APK, open the Actions run link, download the Fishing-Free-Android-APK artifact, and extract the APK from the downloaded artifact. The 1.0.24 build will appear as a separate Actions artifact when its workflow completes. The 1.0.24 source adds automatic Scenic Fishing fallback after browser WebGPU failure; physical-phone verification is still needed.
 
 GitHub debug APKs may be signed with a different temporary key on different workflow runs. Android may require uninstalling an older debug build before installing a differently signed one; uninstalling erases that app's local save. Back up the save before doing this if it matters.
 
@@ -53,7 +51,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current local source metadata is app version **1.0.19**, build **20**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership; Apple lists it at US$99 per year. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current source metadata is app version **1.0.24**, build **24**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership; Apple lists it at US$99 per year. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.

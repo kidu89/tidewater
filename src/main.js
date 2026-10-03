@@ -131,13 +131,18 @@ function showGraphicsError( reason ) {
 	actions.append( retry, scenicButton, reportButton, copy );
 	panel.append( actions, report );
 
-	// Android and iOS WebViews can lack a usable WebGPU adapter. Keep full 3D as
-	// the first choice, then start the playable fallback for native mobile apps.
+	// Mobile browsers and native apps can lack a usable WebGPU adapter. Keep full
+	// 3D as the first choice, then open the playable fallback instead of stranding
+	// phone players on the diagnostics screen. Desktop keeps a manual choice.
 	const nativePlatform = Capacitor.getPlatform();
 	const isNativeMobileApp = Capacitor.isNativePlatform() && [ 'android', 'ios' ].includes( nativePlatform );
-	if ( isNativeMobileApp ) {
+	const userAgent = navigator.userAgent || '';
+	const isMobileBrowser = /Android|iPhone|iPad|iPod/i.test( userAgent ) ||
+		( navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 );
+	if ( isNativeMobileApp || isMobileBrowser ) {
+		const mobileClient = isNativeMobileApp ? nativePlatform + ' app' : 'mobile browser';
 		if ( status ) status.textContent = '3D graphics are unavailable here. Opening Scenic Fishing…';
-		if ( note ) note.textContent = 'The game could not start its 3D renderer in this ' + nativePlatform + ' app, so it is opening the playable scenic mode.';
+		if ( note ) note.textContent = 'The game could not start its 3D renderer in this ' + mobileClient + ', so it is opening the playable scenic mode.';
 		void scenicButton.click();
 	}
 
