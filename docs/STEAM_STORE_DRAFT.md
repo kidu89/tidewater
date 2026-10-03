@@ -76,7 +76,7 @@ Record a 45–60 second trailer from the final Windows build: harbor and changin
 - Decide whether a demo is worth maintaining. If offered, give it a satisfying, clearly bounded fishing loop and test the save handoff before publishing.
 - Confirm minimum Windows version and GPU requirements using a clean install. The current 3D renderer needs a usable WebGPU adapter; do not claim universal GPU compatibility.
 - Test first launch, shader compilation time, save persistence, display scaling, window controls, sleep/resume, the Steam overlay and controller input on a clean Windows 10/11 machine.
-- Windows release candidate 1.0.21 contains the dry-boardwalk harbor-rescue fix. The packaged app was launched locally with WebGPU and the stranded-player recovery was manually verified; Steam Client, clean retail-PC and controller checks remain. A fresh GitHub Actions Windows build is pending for this commit before SteamPipe.
+- Windows candidate 1.0.21 includes the dry-boardwalk harbor-rescue fix. GitHub Actions [run #19](https://github.com/kidu89/tidewater/actions/runs/37137237263) passed the packaged-startup smoke check on commit `4a6fec0`; its 214,624,239-byte artifact expires 17 October 2026. The local package was also launched with WebGPU and the rescue behavior was manually verified. Steam Client, clean retail-PC and controller checks remain; this build is not a SteamPipe upload.
 - Complete Steamworks partner onboarding, Steam Direct, the app and Windows depot setup, store/build review, SteamPipe upload, Coming Soon period and owner-triggered release.
 
 ## Valve references

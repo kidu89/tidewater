@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 def configuredVersionCode = System.getenv('ANDROID_VERSION_CODE')
-def fishingFreeVersionCode = configuredVersionCode ? configuredVersionCode.toInteger() : 21
+def fishingFreeVersionCode = configuredVersionCode ? configuredVersionCode.toInteger() : 22
 def fishingFreeVersionName = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
 if (fishingFreeVersionCode < 1 || fishingFreeVersionCode > 2100000000) {
     throw new GradleException("ANDROID_VERSION_CODE must be between 1 and 2100000000; received '${configuredVersionCode}'.")

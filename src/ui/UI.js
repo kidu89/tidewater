@@ -1884,6 +1884,8 @@ export class UI {
 		this._sparkAcc = 0;
 		this._sparkT = 0;
 		this._statsT = 0;
+		const debugParams = new URLSearchParams( location.search );
+		this._showStats = debugParams.has( 'stats' ) || debugParams.has( 'bench' );
 		this._lvl = 'good';
 		this._lastAct = performance.now();
 		this._idle = false;
@@ -1924,6 +1926,7 @@ export class UI {
 		// top-left: frame rate, then brand + traversal mode
 		const tl = h( 'div', 'tw-tl' );
 		const stats = this.statsEl = h( 'div', 'tw-stats tw-glass', { 'data-level': 'good', 'aria-hidden': 'true' } );
+		if ( ! this._showStats ) stats.style.display = 'none';
 		stats.innerHTML = `
 			<div class="tw-stats-main"><span class="tw-fps">--</span><span class="tw-fps-unit">fps</span></div>
 			<canvas class="tw-spark"></canvas>
@@ -2962,6 +2965,8 @@ export class UI {
 	}
 
 	setStats( s = {} ) {
+
+		if ( ! this._showStats ) return;
 
 		const num = ( v ) => ( typeof v === 'number' && isFinite( v ) ? v : NaN );
 		let fps = num( s.fps ), frameMs = num( s.frameMs );

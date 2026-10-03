@@ -13,7 +13,7 @@ breach. It runs directly on WebGPU and WGSL with its own small rendering engine,
 
 ## Requirements
 
-- A browser with WebGPU: a recent Chrome, Edge or Safari.
+- Full 3D requires a recent browser with a working WebGPU adapter. Android WebView and older Android graphics backends can lack an adapter even when the GPU status page reports hardware acceleration; the phone scenic mode is a fallback, not realtime 3D.
 - A capable GPU. It targets 60 fps at 2560×1267 on an Apple M5 Pro, and dynamic resolution scales
   the render down on slower machines.
 - The first load compiles several hundred shaders, which can take a minute or more. Later visits are
@@ -28,11 +28,11 @@ The project includes a Steam-ready Windows desktop shell, a Capacitor mobile she
 **Fishing**
 - A spinning rod and reel that cast, reel and bend under load, with the bail, rotor and crank animated.
 - Bites that depend on the water (shallows, pier, reef, bay, deep water), depth and time of day, across
-  23 Caribbean species.
+  24 Caribbean species.
 - A line-tension fight: keep the tension in the green band, ease off when the fish runs.
 - A full-screen catch card with the fish's length and weight, a fish log with records, and a cooler.
 - A field guide that tracks undiscovered species, habitat and activity clues, and personal records.
-- Three boat-reachable island destinations: Pelican Cay's flats, Turtle Key's rocky channel, and Mangrove Reach's tidal islets.
+- Four boat-reachable island destinations: Pelican Cay's flats, Turtle Key's rocky channel, Mangrove Reach's tidal islets, and Sunspire Atoll's outer shelf.
 - A persistent solo objective tracker that guides players through harbor contracts and then the full species collection.
 - Asynchronous friend challenges: share a catch, compete on the same species, and send the result back by link.
 - Joe's fish stand buys your catch; Marta's chandlery sells line, reels, rods, a bigger hold, fuel, a rebuilt
