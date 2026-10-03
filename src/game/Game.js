@@ -350,7 +350,9 @@ export class Game {
 		b.reset();
 		if ( wasDriving && app.audio ) app.audio.engineStop();
 
-		const dockWalk = new Vector3( WORLD.pier.x, 0, WORLD.pier.zEnd - 12 );
+		// The pier head is over deep water. Reuse the dry boardwalk spawn so a
+		// rescued player does not immediately fall back into the sea.
+		const dockWalk = WORLD.start.position;
 		const ground = Math.max( app.terrainData.heightAt( dockWalk.x, dockWalk.z ), app.colliders.groundHeightAt( dockWalk.x, dockWalk.z, 50 ) );
 		p.position.set( dockWalk.x, ground, dockWalk.z );
 		p.velocity.set( 0, 0, 0 );
