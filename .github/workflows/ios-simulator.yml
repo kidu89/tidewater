@@ -1,0 +1,40 @@
+name: Build Fishing Free iOS Simulator
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-simulator:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Build the web game and sync Capacitor
+        run: |
+          npm ci
+          npm run mobile:sync:ios
+      - name: Build unsigned iOS Simulator app
+        env:
+          DERIVED_DATA: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath $DERIVED_DATA CODE_SIGNING_ALLOWED=NO build
+          APP_PATH=$DERIVED_DATA/Build/Products/Debug-iphonesimulator/App.app
+          test -d $APP_PATH
+          ditto -c -k --sequesterRsrc --keepParent $APP_PATH $RUNNER_TEMP/Fishing-Free-iOS-Simulator.zip
+      - name: Upload simulator build
+        uses: actions/upload-artifact@v7
+        with:
+          name: Fishing-Free-iOS-Simulator
+          path: ${{ runner.temp }}/Fishing-Free-iOS-Simulator.zip
+          if-no-files-found: error
+          retention-days: 14
