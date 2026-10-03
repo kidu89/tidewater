@@ -1,4 +1,5 @@
 import './core/BenchSeed.js';
+import { Capacitor } from '@capacitor/core';
 
 // ?bench runs in background tabs too (automation): rAF does not fire in a hidden page.
 if ( /[?&]bench\b/.test( location.search ) ) {
@@ -130,14 +131,13 @@ function showGraphicsError( reason ) {
 	actions.append( retry, scenicButton, reportButton, copy );
 	panel.append( actions, report );
 
-	// Android's embedded WebView may not expose WebGPU even on capable phones.
-	// Keep full 3D as the first choice, then start the playable scenic fallback
-	// automatically in the native Android app instead of leaving players at an error.
-	const userAgent = navigator.userAgent || '';
-	const isAndroidWebView = /Android/i.test( userAgent ) && /;\s*wv\)/i.test( userAgent );
-	if ( isAndroidWebView ) {
+	// Android and iOS WebViews can lack a usable WebGPU adapter. Keep full 3D as
+	// the first choice, then start the playable fallback for native mobile apps.
+	const nativePlatform = Capacitor.getPlatform();
+	const isNativeMobileApp = Capacitor.isNativePlatform() && [ 'android', 'ios' ].includes( nativePlatform );
+	if ( isNativeMobileApp ) {
 		if ( status ) status.textContent = '3D graphics are unavailable here. Opening Scenic Fishing…';
-		if ( note ) note.textContent = 'The game could not start its 3D renderer in this Android app, so it is opening the playable scenic mode.';
+		if ( note ) note.textContent = 'The game could not start its 3D renderer in this ' + nativePlatform + ' app, so it is opening the playable scenic mode.';
 		void scenicButton.click();
 	}
 
