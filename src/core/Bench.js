@@ -240,6 +240,7 @@ export class Bench {
 		for ( const name of views ) {
 
 			this.pose( name );
+			app.post.lens.reset();
 			G.time.value = 1000;
 			await this._frames( warm, dt );
 			this.frames = [];
@@ -292,6 +293,7 @@ export class Bench {
 		for ( const name of views ) {
 
 			this.pose( name );
+			app.post.lens.reset();
 			app.post.outputTexture = this._out;
 			try {
 
