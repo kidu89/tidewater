@@ -2776,7 +2776,7 @@ export class UI {
 				this.promptKey.textContent = k;
 				this.promptKey.classList.toggle( 'is-wide', k.length > 1 );
 				this.promptText.textContent = t;
-				if ( actionable ) this.promptEl.setAttribute( 'aria-label', `${ k}: ${ t }` );
+				if ( actionable ) this.promptEl.setAttribute( 'aria-label', k + ': ' + t );
 				else this.promptEl.removeAttribute( 'aria-label' );
 				this.promptEl.classList.remove( 'is-bump' );
 				void this.promptEl.offsetWidth;
