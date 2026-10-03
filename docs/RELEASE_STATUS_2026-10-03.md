@@ -1,16 +1,16 @@
 # Fishing Free — verified release status
 
-**Checked:** 3 October 2026 after commit `4a6fec0cbff6d44c96e70ddca622b28285500dcd`. This snapshot supersedes the older version and run claims in the historical notes below.
+**Checked:** 3 October 2026 after commit `750aac2b66eb9a8c4ac636598857aaf701df3ded`. This snapshot supersedes the older version and run claims in the historical notes below.
 
-**New local candidate:** 1.0.22 hides the FPS/frame-time panel during normal play and retains it for diagnosis with ?stats or ?bench. The local production build succeeds; Android and Windows Actions rebuilds are pending.
+**Latest candidate:** version 1.0.22 hides the FPS/frame-time panel during normal play and keeps diagnostics available through ?stats or ?bench. The web, Android and Windows GitHub Actions builds passed.
 
 ## Current builds and deployments
 
 | Target | Current evidence | What it proves | What remains unverified |
 |---|---|---|---|
-| Repository / Pages | GitHub API: owner `kidu89`, `fork: false`; `main` at [`4a6fec0`](https://github.com/kidu89/tidewater/commit/4a6fec0cbff6d44c96e70ddca622b28285500dcd). [Pages run #19](https://github.com/kidu89/tidewater/actions/runs/37137110597) succeeded. | The independent user-owned repository and current web source deploy successfully. Product-facing title is Fishing Free. | It is not a Steam release or a device graphics test. Preserve MIT and third-party attribution.
-| Android 1.0.21 | [Actions run #19](https://github.com/kidu89/tidewater/actions/runs/37137237378) succeeded. APK: 57,732,514 bytes, package `com.fishingfree.game`, version code 21, min API 24, SHA-256 `94CBF28B29FB995759375C229F17B2FB6DEA60BF268634B394C48F7E5DEDCA85`. | CI checked APK structure, signature, zip alignment, package ID, minimum API and version name. The direct APK is saved as `Fishing-Free-1.0.21-Android.apk` in the workspace parent; it is a debug-signed sideload build. | It has not been installed on the physical Samsung A52 or Huawei. It is not a Play Store build. Full realtime WebGPU on the A52 is unverified; the scenic photo mode is only a fallback.
-| Windows x64 1.0.21 | [Actions run #19](https://github.com/kidu89/tidewater/actions/runs/37137237263) succeeded on the same commit. The Steam-folder artifact is 214,624,239 bytes, digest `sha256:705b12cbef0daa8b05eec6c04e7556e76e15dc9eb4e58dd07a0210a9f6a1020c`; it expires 17 October 2026. | CI verified the executable, started the packaged game from a staged folder and received the bundled page over loopback. The local 1.0.21 candidate also rendered WebGPU and the harbor tow was manually checked. | No clean retail-PC or Steam-client install, Steam overlay, controller/Deck check or SteamPipe upload has occurred. The CI smoke check does not validate the 3D scene.
+| Repository / Pages | GitHub API: owner `kidu89`, `fork: false`; `main` at [`750aac2`](https://github.com/kidu89/tidewater/commit/750aac2b66eb9a8c4ac636598857aaf701df3ded). [Pages run #78](https://github.com/kidu89/tidewater/actions/runs/37141615034) succeeded. | The independent user-owned repository and current web source deploy successfully. Product-facing title is Fishing Free. | It is not a Steam release or a device graphics test. Preserve MIT and third-party attribution. |
+| Android 1.0.22 | [Actions run #20](https://github.com/kidu89/tidewater/actions/runs/37141614881) succeeded. APK: 57,732,618 bytes, package `com.fishingfree.game`, version code 22, min API 24, SHA-256 `CB1803035FECA70FA5E37CF7CF0CDDDCAEA1CD9282DCDF2DF0750C91D3B10272`. | CI checked APK structure, signature, zip alignment, package ID, minimum API and version name. `Fishing-Free-1.0.22-Android.apk` is saved in the workspace parent; it is a debug-signed sideload build. | Physical Samsung A52 and Huawei graphics remain unverified. It is not a Play Store build; scenic mode is a fallback, not full realtime 3D. |
+| Windows x64 1.0.22 | [Actions run #20](https://github.com/kidu89/tidewater/actions/runs/37141614904) succeeded on the same commit. Artifact: 214,624,351 bytes, digest `sha256:0e9a0f128f514c7e59f89dcd64e9a202bbde8f3b90f6dba6101c7d6dc612d293`; expires 17 October 2026. The executable reports version 1.0.22. | CI verified the executable and packaged startup from the Steam folder. | No clean retail-PC or Steam-client install, Steam overlay, controller/Deck check or SteamPipe upload has occurred. |
 | iOS | No signed IPA; the owner has an Apple ID but no Apple Developer Program membership or signing assets. Earlier [Simulator run #2](https://github.com/kidu89/tidewater/actions/runs/37130457944) produced an unsigned simulator build. | The iOS wrapper can compile for Simulator. | A simulator app cannot be installed on a physical iPhone; device distribution/TestFlight/App Store is not configured.
 
 ## Product, store and business readiness
@@ -18,7 +18,7 @@
 - Current source has 24 fish, four chartable destinations plus the home island, and persistent local solo progression.
 - There are two raw 1.0.21 Steam review captures; one uses Free Camera. This is not the five-screenshot minimum or the final owner-approved store set. The 45–60 second trailer, cleared title, final artwork, Steamworks App/depot IDs, store review and SteamPipe upload remain open.
 - Monetization is not implemented: no billing, ad SDK, paid entitlement or revenue. The recommended first model remains a free complete base game, with any paid Steam/mobile expansion restricted to a genuinely new region after playtests demonstrate retention and demand. This is a hypothesis, not a revenue forecast.
-- The exact 1.0.21 APK and Windows Actions artifacts were built from commit `4a6fec0`. Actions artifacts are temporary downloads and must be retained locally before 17 October 2026 if needed later.
+- The exact 1.0.22 APK and Windows Actions artifacts were built from commit `750aac2`. Their local ZIP/APK files are in the workspace parent; Actions artifacts expire 17 October 2026.
 
 ## Historical local and earlier release notes
 
