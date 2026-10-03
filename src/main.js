@@ -1,5 +1,6 @@
 import './core/BenchSeed.js';
 import { Capacitor } from '@capacitor/core';
+import { CanvasFishingGame } from './mobile/CanvasFishingGame.js';
 
 // ?bench runs in background tabs too (automation): rAF does not fire in a hidden page.
 if ( /[?&]bench\b/.test( location.search ) ) {
@@ -82,28 +83,33 @@ function showGraphicsError( reason ) {
 	scenicButton.className = 'loader-action loader-action-primary';
 	scenicButton.type = 'button';
 	scenicButton.textContent = 'PLAY SCENIC FISHING';
-	scenicButton.addEventListener( 'click', async () => {
+	const openScenicFishing = () => {
 
 		scenicButton.disabled = true;
 		scenicButton.textContent = 'OPENING SCENIC MODE…';
 		try {
 
-			const { CanvasFishingGame } = await import( './mobile/CanvasFishingGame.js' );
 			const appRoot = document.getElementById( 'app' );
 			if ( ! appRoot ) throw new Error( 'The game container is missing.' );
 			window.__mobileFishingGame = new CanvasFishingGame( appRoot, { reason, graphicsDetails: details } ).start();
 			document.getElementById( 'fps' )?.remove();
 			loader.remove();
+			return true;
 
 		} catch ( error ) {
 
 			console.error( '[Fishing Free] Scenic fishing mode could not start.', error );
+			details.fallbackError = error?.message || String( error );
+			if ( status ) status.textContent = 'Scenic Fishing could not start on this build.';
+			if ( note ) note.textContent = 'Tap RETRY SCENIC FISHING. If it still fails, open DEVICE DETAILS and send that report.';
 			scenicButton.disabled = false;
 			scenicButton.textContent = 'RETRY SCENIC FISHING';
+			return false;
 
 		}
 
-	} );
+	};
+	scenicButton.addEventListener( 'click', openScenicFishing );
 	const reportButton = document.createElement( 'button' );
 	reportButton.className = 'loader-action';
 	reportButton.type = 'button';
@@ -138,12 +144,13 @@ function showGraphicsError( reason ) {
 	const isNativeMobileApp = Capacitor.isNativePlatform() && [ 'android', 'ios' ].includes( nativePlatform );
 	const userAgent = navigator.userAgent || '';
 	const isMobileBrowser = /Android|iPhone|iPad|iPod/i.test( userAgent ) ||
-		( navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 );
+		( navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 ) ||
+		( navigator.maxTouchPoints > 0 && globalThis.matchMedia?.( '(pointer: coarse)' ).matches && Math.min( screen.width, screen.height ) < 900 );
 	if ( isNativeMobileApp || isMobileBrowser ) {
 		const mobileClient = isNativeMobileApp ? nativePlatform + ' app' : 'mobile browser';
 		if ( status ) status.textContent = '3D graphics are unavailable here. Opening Scenic Fishing…';
 		if ( note ) note.textContent = 'The game could not start its 3D renderer in this ' + mobileClient + ', so it is opening the playable scenic mode.';
-		void scenicButton.click();
+		openScenicFishing();
 	}
 
 }

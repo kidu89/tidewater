@@ -119,6 +119,8 @@ export class CanvasFishingGame {
 		this.art = this.root.querySelector( '[data-scene-art]' );
 		this.canvas = this.root.querySelector( 'canvas' );
 		this.ctx = this.canvas.getContext( '2d', { alpha: true } );
+		// Photo art and touch fishing remain usable when a legacy WebView cannot allocate a 2D context.
+		if ( ! this.ctx ) this.canvas.hidden = true;
 		this.messageEl = this.root.querySelector( '[data-message]' );
 		this.biteEl = this.root.querySelector( '[data-bite]' );
 		this.actionButton = this.root.querySelector( '[data-action]' );
@@ -195,7 +197,7 @@ export class CanvasFishingGame {
 		this.canvas.height = Math.round( height * dpr );
 		this.canvas.style.width = width + 'px';
 		this.canvas.style.height = height + 'px';
-		this.ctx.setTransform( dpr, 0, 0, dpr, 0, 0 );
+		this.ctx?.setTransform( dpr, 0, 0, dpr, 0, 0 );
 		this.width = width;
 		this.height = height;
 
@@ -537,6 +539,7 @@ export class CanvasFishingGame {
 	draw( time ) {
 
 		const ctx = this.ctx, w = this.width, h = this.height;
+		if ( ! ctx ) return;
 		ctx.clearRect( 0, 0, w, h );
 		const tint = {
 			pier: 'rgba(8,39,48,.035)', cay: 'rgba(202,164,91,.055)', reef: 'rgba(20,147,148,.065)',
