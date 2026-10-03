@@ -55,7 +55,18 @@ export class LensDroplets {
 
 	}
 
-	// compatibility with the three.js version (the composite is lensDroplets() in WGSL)
+	
+		// Clear stale droplets when a capture teleports between independent scenes.
+	reset() {
+
+		this.wet.value = 0;
+		this.age.value = this.duration + 1;
+		this.seed.value = 0;
+		this._wasUnder = false;
+
+	}
+
+// compatibility with the three.js version (the composite is lensDroplets() in WGSL)
 	build() {
 
 		return this.module;
