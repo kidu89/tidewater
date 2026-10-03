@@ -805,6 +805,15 @@ body {
 	transform: translate(-50%, 0);
 }
 
+.tw-prompt.is-action {
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+.tw-prompt.is-action:active {
+	transform: translate(-50%, 1px) scale(0.98);
+}
+
 .tw-root .tw-prompt-key {
 	position: relative;
 	min-width: calc(28 * var(--tw-u));
