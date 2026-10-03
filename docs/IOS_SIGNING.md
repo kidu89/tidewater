@@ -2,7 +2,7 @@
 
 The repository has two separate iOS paths:
 
-- **Simulator build:** run the `Build Fishing Free iOS Simulator` workflow from GitHub Actions. It produces an unsigned `.app` archive for the iOS Simulator. This is useful to confirm that the native iOS wrapper compiles, but it cannot be installed on an iPhone.
+- **Simulator build:** run the `Build Fishing Free iOS Simulator` workflow from GitHub Actions. It produces an unsigned `.app` archive for the iOS Simulator. This is useful to confirm that the native iOS wrapper compiles, but it cannot be installed on an iPhone. The workflow passed on commit 4f298e6 in [run #2](https://github.com/kidu89/tidewater/actions/runs/37130457944); its simulator artifact expires after 14 days.
 - **Installable IPA:** run `Build Fishing Free iOS IPA` after setting up an Apple Developer Program team and the distribution certificate, password, provisioning profile, and team ID secrets required by `.github/workflows/ios-ipa.yml`.
 
 Apple says a free Apple Account can be used to test apps on the account owner's devices through Xcode. That route needs access to a Mac with Xcode and the device; the GitHub-hosted simulator build does not sign or install on a physical phone. Apple requires Developer Program membership for distribution to registered devices, TestFlight, or the App Store; Apple currently lists membership at US$99 per year. The owner has confirmed an Apple ID but no program membership, so the native IPA path is deferred and Safari/PWA remains the available iPhone route.
