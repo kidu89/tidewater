@@ -4,13 +4,13 @@ Fishing Free keeps its original WebGPU 3D world on devices that support it. When
 
 ## Requirements
 
-- Latest verified Android sideload candidate: [Actions run #21](https://github.com/kidu89/tidewater/actions/runs/37143779891), Fishing Free 1.0.23 / code 23, package `com.fishingfree.game`, min API 24, target API 36. CI verified package structure, signature and alignment; physical Samsung A52/Huawei testing remains unverified. Version 1.0.24 adds automatic Scenic Fishing startup for unsupported mobile browsers; the new APK is awaiting its GitHub Actions build and physical-phone check.
+- Latest verified Android sideload APK: [Actions run #22](https://github.com/kidu89/tidewater/actions/runs/37150115502), Fishing Free 1.0.24 / code 24, package `com.fishingfree.game`, min API 24, target API 36. The standalone APK is 57,732,890 bytes, SHA-256 `376DC48B2DAE80A091A5568B4DD615D63C24BE8B6F2124DEAF031A886187B16A`. CI verified its package, signature and alignment; its bundled code includes automatic fallback when a phone browser lacks WebGPU. A real Samsung A52/Huawei install is still unverified.
 - The game PWA can be added to the home screen from Safari on iOS. Apple's WebKit documents WebGPU in Safari 26, available on iOS 26. Older iOS/WKWebView releases use Scenic Fishing automatically if they cannot create a WebGPU adapter. See [WebKit's WebGPU demos and support notes](https://webkit.org/demos/webgpu/).
 - Android builds require Android Studio and its SDK. iOS builds and signing require macOS with Xcode.
 
 ### Install on a phone with the PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open it in Chrome on Android or Safari on iOS and use the browser's **Install app** or **Add to Home Screen** menu. Supported devices start the full 3D renderer. If a mobile browser cannot start WebGPU, the upcoming 1.0.24 source automatically opens Scenic Fishing; no graphics setting or manual switch is needed after that deployment. The PWA needs internet on first load, then its service worker caches the app shell and game assets for later starts. Native Android APKs bundle the game assets and can start offline.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open it in Chrome on Android or Safari on iOS and use the browser's **Install app** or **Add to Home Screen** menu. Supported devices start the full 3D renderer. If a mobile browser cannot start WebGPU, the deployed 1.0.24 source automatically opens Scenic Fishing; no graphics setting or manual switch is needed. The PWA needs internet on first load, then its service worker caches the app shell and game assets for later starts. Native Android APKs bundle the game assets and can start offline.
 
 ## Create native projects
 
@@ -34,9 +34,9 @@ npx cap open ios
 
 ## Latest Android APK from GitHub Actions
 
-The latest verified Android artifact is [Actions run #21](https://github.com/kidu89/tidewater/actions/runs/37143779891), built from commit `4c851f9`: Fishing Free 1.0.23, version code 23, package `com.fishingfree.game`, min API 24 and target API 36. Its 57.7 MB debug APK passed CI package, signature and alignment checks; it has not been installed or graphics-tested on a physical phone. The 1.0.24 candidate in this source adds automatic fallback on unsupported mobile browsers and is awaiting its Android build.
+The latest verified Android artifact is [Actions run #22](https://github.com/kidu89/tidewater/actions/runs/37150115502), built from commit `3b680b2`: Fishing Free 1.0.24, version code 24, package `com.fishingfree.game`, min API 24 and target API 36. The standalone APK is 57,732,890 bytes, SHA-256 `376DC48B2DAE80A091A5568B4DD615D63C24BE8B6F2124DEAF031A886187B16A`; it is debug-signed, not a Play release. CI and local checks verified the APK signature and alignment, and its bundled JavaScript contains automatic mobile fallback. No physical phone has been checked.
 
-To get the 1.0.23 APK, open the Actions run link, download the Fishing-Free-Android-APK artifact, and extract the APK from the downloaded artifact. The 1.0.24 build will appear as a separate Actions artifact when its workflow completes. The 1.0.24 source adds automatic Scenic Fishing fallback after browser WebGPU failure; physical-phone verification is still needed.
+Download the `Fishing-Free-Android-APK` artifact from the Actions run, extract `app-debug.apk`, and send that single APK to the phone. The 1.0.24 debug signing certificate differs from the previous Actions APK, so Android will not update that older install in place. Uninstalling it may erase its local save; back up data first if needed.
 
 GitHub debug APKs may be signed with a different temporary key on different workflow runs. Android may require uninstalling an older debug build before installing a differently signed one; uninstalling erases that app's local save. Back up the save before doing this if it matters.
 
