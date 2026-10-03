@@ -134,7 +134,14 @@ export class TerrainData {
 		const reach = WORLD.mangroveReach;
 		let dReach = ellipseDist( x, z, reach.center.x, reach.center.z, reach.radiusX, reach.radiusZ );
 		for ( const islet of reach.islets ) dReach = smin( dReach, ellipseDist( x, z, islet.center.x, islet.center.z, islet.radiusX, islet.radiusZ ), 14 );
-		let d = smin( smin( smin( smin( dBody, smin( dW, dE, 40 ), 75 ), dCay, 28 ), dKey, 18 ), dReach, 14 );
+		const atoll = WORLD.sunspireAtoll;
+		let dAtoll = ellipseDist( x, z, atoll.center.x, atoll.center.z, atoll.radiusX, atoll.radiusZ );
+		for ( const islet of atoll.islets ) dAtoll = smin( dAtoll, ellipseDist( x, z, islet.center.x, islet.center.z, islet.radiusX, islet.radiusZ ), 12 );
+		let d = smin( dBody, smin( dW, dE, 40 ), 75 );
+		d = smin( d, dCay, 28 );
+		d = smin( d, dKey, 18 );
+		d = smin( d, dReach, 14 );
+		d = smin( d, dAtoll, 12 );
 		d += F.f170 * 34 * ( 1 - 0.9 * bz );
 		if ( bz < 1 ) d += this.noise.fbm( x / 38, z / 38, 3 ) * 7 * ( 1 - bz );
 		d += F.und * 5 * bz; // gentle beach undulation
@@ -279,6 +286,17 @@ export class TerrainData {
 
 				const isletDist = ellipseDist( x, z, islet.center.x, islet.center.z, islet.radiusX, islet.radiusZ );
 				if ( isletDist < 0 ) h += 5.5 * smoothstep( 0, 1, - isletDist / Math.min( islet.radiusX, islet.radiusZ ) );
+
+			}
+
+			// Sunspire's pale limestone crown rises above a broad, shallow reef shelf.
+			const atoll = WORLD.sunspireAtoll;
+			const atollDist = ellipseDist( x, z, atoll.center.x, atoll.center.z, atoll.radiusX, atoll.radiusZ );
+			if ( atollDist < 0 ) h += 13 * smoothstep( 0, 1, - atollDist / Math.min( atoll.radiusX, atoll.radiusZ ) );
+			for ( const islet of atoll.islets ) {
+
+				const isletDist = ellipseDist( x, z, islet.center.x, islet.center.z, islet.radiusX, islet.radiusZ );
+				if ( isletDist < 0 ) h += 7 * smoothstep( 0, 1, - isletDist / Math.min( islet.radiusX, islet.radiusZ ) );
 
 			}
 

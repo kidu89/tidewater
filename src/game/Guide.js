@@ -73,6 +73,7 @@ const CARDS = [
 			<p>Take the boat south to <b>Pelican Cay</b> for a new stretch of shallow flats and bonefish. Its gold marker points the way on the minimap.</p>
 			<p>Continue east to <b>Turtle Key</b> for a rocky island channel, permit on the flats and elusive snook. A teal marker points the way.</p>
 			<p>Venture southwest to <b>Mangrove Reach</b>, a chain of low green islets and sheltered tidal creeks. Look for snook around the creek mouths and tarpon in the deeper channel.</p>
+			<p>Head southeast beyond the keys to <b>Sunspire Atoll</b>, where a sun-bleached reef shelf drops into rocky water. Black grouper hold along the outer edge at dawn and dusk.</p>
 			<p>Sell your catch to <b>Joe</b> at the fish stand by the pier, then spend the money on upgrades from <b>Marta</b> at the chandlery by the boathouse: stronger line, a faster reel, a bigger hold, a fish finder and lights for fishing at night.</p>
 			<p>Open your journal with <b>I</b> to track fish, achievements and optional harbor contracts. Share a catch to challenge a friend to beat the same species.</p>`,
 	},

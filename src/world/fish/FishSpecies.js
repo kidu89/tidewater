@@ -24,7 +24,7 @@
 export const PATTERN = {
 	silverside: 0, chromis: 1, grunt: 2, yellowtail: 3, tang: 4, sergeant: 5, wrasse: 6, parrot: 7,
 	angel: 8, barracuda: 9, redSnapper: 10, grouper: 11, tuna: 12, mahi: 13, mullet: 14, needlefish: 15,
-	jack: 16, tarpon: 17, stingray: 18, eagleRay: 19, turtle: 20, bonefish: 21, snook: 22, permit: 23, lionfish: 24, wahoo: 25,
+	jack: 16, tarpon: 17, stingray: 18, eagleRay: 19, turtle: 20, bonefish: 21, snook: 22, permit: 23, lionfish: 24, wahoo: 25, blackGrouper: 26,
 };
 
 const spiny = ( from, to, rays, h, rake, notch = 0.16 ) => ( { from, to, rays, spiny: true, h, rake, notch } );
@@ -367,6 +367,7 @@ export const SPECIES = {
 // This keeps the fish silhouettes detailed while giving each discovery a distinct colour/pattern.
 SPECIES.snook = { ...SPECIES.tarpon, pattern: PATTERN.snook, body: 0.82, lateral: 0.12, metal: 0.45 };
 SPECIES.permit = { ...SPECIES.jack, pattern: PATTERN.permit, body: 0.78, metal: 0.6 };
+SPECIES.blackGrouper = { ...SPECIES.grouper, pattern: PATTERN.blackGrouper, body: 0.85, sec: 2.3 };
 SPECIES.lionfish = {
 	...SPECIES.angel,
 	pattern: PATTERN.lionfish,
@@ -417,6 +418,7 @@ export const SKIN = {
 	barracuda: { back: 0x36464c, flank: 0xb4bcc0, belly: 0xe6eaec, fin: 0x5a6464, edge: 0x2c3434, rough: 0.3 },
 	redSnapper: { back: 0xb83a3c, flank: 0xd86a6a, belly: 0xeeccc4, fin: 0xcc3c34, edge: 0xb82c24, rough: 0.33 },
 	grouper: { back: 0x7a6248, flank: 0xb49c7c, belly: 0xd8ccb4, fin: 0x6e5a40, edge: 0x3c3024, rough: 0.4 },
+	blackGrouper: { back: 0x252922, flank: 0x55594b, belly: 0x9c9b85, fin: 0x34382e, edge: 0x171a15, rough: 0.48 },
 	tuna: { back: 0x0e1628, flank: 0x66748a, belly: 0xd6dade, fin: 0x1e2630, edge: 0x161a22, rough: 0.28 },
 	mahi: { back: 0x125c6a, flank: 0xcdb52a, belly: 0xefe29a, fin: 0x2c5c9c, edge: 0x1c4c9c, rough: 0.3 },
 	mullet: { back: 0x485856, flank: 0xb4bcbe, belly: 0xe6eaea, fin: 0x848c8c, edge: 0x6c7474, rough: 0.33 },

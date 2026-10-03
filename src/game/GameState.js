@@ -2,6 +2,7 @@ import { FISH, fishValue, fishLengthCm } from './FishTable.js';
 import { defaultUpgrades, gearStats, nextLevel, UPGRADES, FUEL_PRICE } from './Gear.js';
 import { getAchievementProgress, HABITAT_KEYS } from './Achievements.js';
 import { CONTRACTS, CONTRACT_IDS, getContractProgress } from './Contracts.js';
+import { WEEKLY_BRIEFS, getNextUtcMonday, getUtcWeekId, getWeeklyBriefSpec } from './WeeklyBriefs.js';
 
 // Keep the legacy keys so existing saves survive the Fishing Free rebrand.
 const SAVE_KEY = 'tidewater.save.v2';
@@ -45,6 +46,32 @@ export class GameState {
 	get contractProgress() {
 
 		return getContractProgress( this );
+
+	}
+
+	get weeklyBrief() {
+
+		const weekId = getUtcWeekId();
+		const currentSpec = getWeeklyBriefSpec( weekId, this.career.locations );
+		let saved = this.career.weeklyBrief;
+		if ( ! saved || saved.weekId !== weekId || ! WEEKLY_BRIEFS.some( ( brief ) => brief.id === saved.id ) ) {
+
+			saved = this.career.weeklyBrief = { weekId, id: currentSpec.id, progress: 0, claimed: false };
+			this.save();
+
+		}
+
+		const spec = WEEKLY_BRIEFS.find( ( brief ) => brief.id === saved.id ) || currentSpec;
+		const progress = Math.min( spec.target, safeCount( saved.progress ) );
+		return {
+			...spec,
+			weekId,
+			progress,
+			progressText: `${ progress } / ${ spec.target } fish landed`,
+			complete: progress >= spec.target,
+			claimed: !! saved.claimed,
+			resetsAt: getNextUtcMonday(),
+		};
 
 	}
 
@@ -99,6 +126,8 @@ export class GameState {
 		if ( habitat ) {
 			for ( const key of HABITAT_KEYS ) if ( habitat[ key ] >= 0.4 ) this.career.habitats[ key ] ++;
 		}
+		const brief = this.weeklyBrief;
+		if ( ! brief.claimed && ! brief.complete && habitat?.[ brief.habitat ] >= 0.4 ) this.career.weeklyBrief.progress ++;
 		if ( ! kept ) {
 
 			this.save();
@@ -117,7 +146,7 @@ export class GameState {
 
 	discoverLocation( id ) {
 
-		if ( ! [ 'pelican-cay', 'turtle-key', 'mangrove-reach' ].includes( id ) || this.career.locations.includes( id ) ) return false;
+		if ( ! [ 'pelican-cay', 'turtle-key', 'mangrove-reach', 'sunspire-atoll' ].includes( id ) || this.career.locations.includes( id ) ) return false;
 		this.career.locations.push( id );
 		this.save();
 		this.emit();
@@ -134,6 +163,18 @@ export class GameState {
 		this.save();
 		this.emit();
 		return contract;
+
+	}
+
+	claimWeeklyBrief() {
+
+		const brief = this.weeklyBrief;
+		if ( ! brief.complete || brief.claimed ) return null;
+		this.career.weeklyBrief.claimed = true;
+		this.money += brief.reward;
+		this.save();
+		this.emit();
+		return brief;
 
 	}
 
@@ -311,7 +352,7 @@ export class GameState {
 
 function emptyCareer() {
 
-	return { caught: 0, kept: 0, sold: 0, salesValue: 0, records: 0, bestCatchKg: 0, locations: [], habitats: Object.fromEntries( HABITAT_KEYS.map( ( key ) => [ key, 0 ] ) ), claimedContracts: [] };
+	return { caught: 0, kept: 0, sold: 0, salesValue: 0, records: 0, bestCatchKg: 0, locations: [], habitats: Object.fromEntries( HABITAT_KEYS.map( ( key ) => [ key, 0 ] ) ), claimedContracts: [], weeklyBrief: null };
 
 }
 
@@ -322,8 +363,13 @@ function normalizeCareer( career, inventory, log ) {
 		for ( const key of [ 'caught', 'kept', 'sold', 'records' ] ) result[ key ] = safeCount( career[ key ] );
 		result.salesValue = safeNumber( career.salesValue );
 		result.bestCatchKg = safeNumber( career.bestCatchKg );
-		result.locations = Array.isArray( career.locations ) ? career.locations.filter( ( id ) => [ 'pelican-cay', 'turtle-key', 'mangrove-reach' ].includes( id ) ) : [];
+		result.locations = Array.isArray( career.locations ) ? career.locations.filter( ( id ) => [ 'pelican-cay', 'turtle-key', 'mangrove-reach', 'sunspire-atoll' ].includes( id ) ) : [];
 		result.claimedContracts = Array.isArray( career.claimedContracts ) ? career.claimedContracts.filter( ( id ) => CONTRACT_IDS.has( id ) ) : [];
+		const weeklyBrief = career.weeklyBrief;
+		if ( weeklyBrief && typeof weeklyBrief === 'object' && typeof weeklyBrief.weekId === 'string' && /^\d{4}-W\d{2}$/.test( weeklyBrief.weekId ) ) {
+			const spec = WEEKLY_BRIEFS.find( ( brief ) => brief.id === weeklyBrief.id );
+			if ( spec ) result.weeklyBrief = { weekId: weeklyBrief.weekId, id: spec.id, progress: Math.min( spec.target, safeCount( weeklyBrief.progress ) ), claimed: !! weeklyBrief.claimed };
+		}
 		if ( career.habitats && typeof career.habitats === 'object' ) {
 			for ( const key of HABITAT_KEYS ) result.habitats[ key ] = safeCount( career.habitats[ key ] );
 		}

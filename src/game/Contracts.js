@@ -67,6 +67,24 @@ export const CONTRACTS = [
 		current: ( state ) => state.career.habitats.mangrove,
 		format: ( n ) => `${ Math.min( n, 5 ) } / 5 fish landed`,
 	},
+	{
+		id: 'sunspire-atoll-landfall', icon: '🌅', title: 'Outer Reef Expedition',
+		description: 'Navigate southeast and chart Sunspire Atoll.', target: 1, reward: 320,
+		current: ( state ) => state.career.locations.includes( 'sunspire-atoll' ) ? 1 : 0,
+		format: ( n ) => n ? 'Sunspire Atoll charted' : 'Follow the amber marker southeast from the harbor',
+	},
+	{
+		id: 'black-grouper-specimen', icon: '🐟', title: 'Shadow on the Shelf',
+		description: 'Land and record a black grouper from the outer atoll reef.', target: 1, reward: 420,
+		current: ( state ) => state.log.blackGrouper?.count || 0,
+		format: ( n ) => n ? 'Black grouper recorded' : 'Fish the rocky outer shelf at dawn or dusk',
+	},
+	{
+		id: 'sunspire-shelf-catch', icon: '🪨', title: 'Shelf Survey',
+		description: 'Land five fish in Sunspire Atoll waters.', target: 5, reward: 280,
+		current: ( state ) => state.career.habitats.atoll,
+		format: ( n ) => `${ Math.min( n, 5 ) } / 5 fish landed`,
+	},
 ];
 
 export const CONTRACT_IDS = new Set( CONTRACTS.map( ( contract ) => contract.id ) );

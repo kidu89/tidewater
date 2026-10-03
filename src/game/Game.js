@@ -176,6 +176,10 @@ export class Game {
 			const reach = WORLD.mangroveReach, boat = app.boatCtl.position;
 			if ( Math.hypot( boat.x - reach.center.x, boat.z - reach.center.z ) <= reach.discoverRadius ) this.state.discoverLocation( 'mangrove-reach' );
 		}
+		if ( ( p.mode === 'boat' || p.mode === 'deck' ) && ! this.state.career.locations.includes( 'sunspire-atoll' ) ) {
+			const atoll = WORLD.sunspireAtoll, boat = app.boatCtl.position;
+			if ( Math.hypot( boat.x - atoll.center.x, boat.z - atoll.center.z ) <= atoll.discoverRadius ) this.state.discoverLocation( 'sunspire-atoll' );
+		}
 
 		const can = this.canFish;
 		if ( inp.hit( 'KeyR' ) && can && ! this.fight ) {
@@ -297,10 +301,12 @@ export class Game {
 		// tow prompt when the hull has stayed aground, including after a capsize recovery on the shore.
 		const boat = app.boatCtl;
 		const boatDx = p.position.x - boat.position.x, boatDz = p.position.z - boat.position.z;
+		const nearBoat = ( p.mode === 'walk' || p.mode === 'swim' ) && p.nearBoat();
 		const walkSeparated = p.mode === 'walk' && ! boat.moored && boatDx * boatDx + boatDz * boatDz > 32 * 32 && ! p.busy;
 		if ( p.mode === 'boat' || p.mode === 'deck' ) this._capsizeRecoveryPending = false;
-		const capsizedAndSeparated = this._capsizeRecoveryPending && ( p.mode === 'walk' || p.mode === 'swim' );
-		const separated = p.mode === 'swim' || walkSeparated;
+		const capsizedAndSeparated = this._capsizeRecoveryPending && ( p.mode === 'walk' || p.mode === 'swim' ) && ! nearBoat;
+		// Let the existing board prompt win while the swimmer is close enough to climb back aboard.
+		const separated = ( p.mode === 'swim' && ! nearBoat ) || walkSeparated;
 		const needsTow = ( boat.stranded && ! boat.moored ) || separated || capsizedAndSeparated;
 		if ( ! app.freeCam && ! p.busy && needsTow ) {
 
@@ -490,11 +496,13 @@ export class Game {
 		const keyDist = ( Math.hypot( ( b.x - key.center.x ) / key.radiusX, ( b.z - key.center.z ) / key.radiusZ ) - 1 ) * Math.min( key.radiusX, key.radiusZ );
 		const reach = WORLD.mangroveReach;
 		const reachDist = ( Math.hypot( ( b.x - reach.center.x ) / reach.radiusX, ( b.z - reach.center.z ) / reach.radiusZ ) - 1 ) * Math.min( reach.radiusX, reach.radiusZ );
+		const atoll = WORLD.sunspireAtoll;
+		const atollDist = ( Math.hypot( ( b.x - atoll.center.x ) / atoll.radiusX, ( b.z - atoll.center.z ) / atoll.radiusZ ) - 1 ) * Math.min( atoll.radiusX, atoll.radiusZ );
 		const P = this._pier;
 		const rect = ( x0, x1, z0, z1 ) => Math.hypot( Math.max( x0 - b.x, 0, b.x - x1 ), Math.max( z0 - b.z, 0, b.z - z1 ) );
 		const walk = rect( P.x - P.width / 2, P.x + P.width / 2, P.zStart, P.zEnd );
 		const head = rect( P.x - P.headWidth / 2, P.x + P.headWidth / 2, P.zEnd - P.headDepth, P.zEnd );
-		return habitatAt( { depth, reefDist, pierDist: Math.min( walk, head ), cayDist, cayRadius: cay.fishingRadius, keyDist, keyRadius: key.fishingRadius, mangroveDist: reachDist, mangroveRadius: reach.fishingRadius } );
+		return habitatAt( { depth, reefDist, pierDist: Math.min( walk, head ), cayDist, cayRadius: cay.fishingRadius, keyDist, keyRadius: key.fishingRadius, mangroveDist: reachDist, mangroveRadius: reach.fishingRadius, atollDist, atollRadius: atoll.fishingRadius } );
 
 	}
 

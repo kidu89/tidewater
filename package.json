@@ -1,11 +1,13 @@
 {
   "name": "fishing-free",
-  "version": "1.0.16",
+  "version": "1.0.20",
   "description": "A scenic tropical island fishing game.",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5189",
     "build": "vite build && node scripts/copy-legal.mjs",
     "preview": "vite preview",
+    "capture:steam": "npm run capture:steam:browser",
+    "capture:steam:browser": "npm run build && node scripts/capture-steam-screenshots.mjs --external-browser",
     "test": "node test/game-logic.mjs && node test/engine-smoke.mjs && node test/whale-brain.mjs",
     "mobile:add:android": "cap add android",
     "mobile:add:ios": "cap add ios",

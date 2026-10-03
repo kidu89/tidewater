@@ -5,9 +5,9 @@ import { FISH, FISH_IDS } from './FishTable.js';
 //   reefDist  horizontal distance to the reef edge (m, < 0 inside it)
 //   pierDist  horizontal distance to the pier (piles / head) (m)
 // Returns weights per water type (they overlap: a spot can be both pier and bay).
-export function habitatAt( { depth, reefDist, pierDist, cayDist = Infinity, cayRadius = 138, keyDist = Infinity, keyRadius = 116, mangroveDist = Infinity, mangroveRadius = 150 } ) {
+export function habitatAt( { depth, reefDist, pierDist, cayDist = Infinity, cayRadius = 138, keyDist = Infinity, keyRadius = 116, mangroveDist = Infinity, mangroveRadius = 150, atollDist = Infinity, atollRadius = 340 } ) {
 
-	const h = { shallows: 0, reef: 0, pier: 0, bay: 0, deep: 0, cay: 0, key: 0, mangrove: 0 };
+	const h = { shallows: 0, reef: 0, pier: 0, bay: 0, deep: 0, cay: 0, key: 0, mangrove: 0, atoll: 0 };
 	if ( depth < 0.25 ) return h; // on the sand
 	h.shallows = smooth( 3.5, 1.0, depth );
 	h.reef = smooth( 12, - 6, reefDist ) * smooth( 0.8, 2.5, depth );
@@ -17,6 +17,7 @@ export function habitatAt( { depth, reefDist, pierDist, cayDist = Infinity, cayR
 	h.cay = smooth( cayRadius, 22, cayDist ) * smooth( 0.25, 1.4, depth ) * ( 1 - smooth( 9, 16, depth ) );
 	h.key = smooth( keyRadius, 18, keyDist ) * smooth( 0.25, 1.2, depth ) * ( 1 - smooth( 8, 14, depth ) );
 	h.mangrove = smooth( mangroveRadius, 24, mangroveDist ) * smooth( 0.3, 1.4, depth ) * ( 1 - smooth( 10, 18, depth ) );
+	h.atoll = smooth( atollRadius, 34, atollDist ) * smooth( 1.5, 4, depth ) * ( 1 - smooth( 24, 36, depth ) );
 	return h;
 
 }

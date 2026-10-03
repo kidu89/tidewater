@@ -63,6 +63,7 @@ const BEHAVIOUR = {
 	parrot: { model: 'parrot', length: [ 0.3, 0.45 ], mode: 'forage', cruise: 0.55, max: 1.6, burst: 4, accel: 2, sep: 2.2, nbr: 6, wSep: 4, wAli: 0.6, wCoh: 0.5, flee: 4.5, depth: [ 0.02, 0.1 ], homeRadius: 18, amp: 0.05, freq: [ 1.0, 0.6 ], band: [ 2, 12 ] },
 	angel: { model: 'angel', length: [ 0.25, 0.35 ], mode: 'pair', cruise: 0.45, max: 1.4, burst: 3.5, accel: 2, sep: 1.5, nbr: 4, wSep: 3, wAli: 0.8, wCoh: 1.2, depth: [ 0.04, 0.15 ], homeRadius: 3, amp: 0.05, freq: [ 1.0, 0.6 ], band: [ 5, 16 ] },
 	grouper: { model: 'grouper', length: [ 0.6, 0.85 ], mode: 'lurk', cruise: 0.15, max: 1.2, burst: 3, accel: 1.5, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.8, flee: 3, depth: [ 0.0, 0.05 ], homeRadius: 2.5, amp: 0.04, freq: [ 0.6, 0.6 ], band: [ 5, 16 ] },
+	blackGrouper: { model: 'blackGrouper', length: [ 0.95, 1.45 ], mode: 'lurk', cruise: 0.1, max: 0.65, burst: 2.1, accel: 0.9, sep: 1.2, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.55, flee: 3.5, depth: [ 0.08, 0.26 ], homeRadius: 8, amp: 0.03, freq: [ 0.5, 0.7 ], band: [ 10, 22 ] },
 	barracuda: { model: 'barracuda', length: [ 1.0, 1.35 ], mode: 'solo', cruise: 0.15, max: 1.2, burst: 3, accel: 1.2, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.6, depth: [ 0.3, 0.6 ], homeRadius: 10, amp: 0.035, freq: [ 0.5, 0.8 ], band: [ 4, 16 ] },
 	jack: { model: 'jack', length: [ 0.4, 0.6 ], mode: 'patrol', cruise: 1.1, max: 2.6, burst: 5, accel: 3, sep: 2, nbr: 5, wAli: 1.4, wCoh: 0.9, wGoal: 0.9, flee: 4, depth: [ 0.25, 0.6 ], homeRadius: 20, amp: 0.07, freq: [ 1.6, 0.8 ], band: [ 6, 20 ] },
 	wahoo: { model: 'wahoo', length: [ 1.05, 1.55 ], mode: 'patrol', cruise: 1.25, max: 3.8, burst: 8, accel: 6, sep: 1, nbr: 2, wSep: 1, wAli: 0, wCoh: 0, wGoal: 0.9, flee: 6.5, depth: [ 0.35, 0.68 ], homeRadius: 24, amp: 0.075, freq: [ 1.7, 0.85 ], band: [ 10, 18 ] },
@@ -417,6 +418,12 @@ export class FishSchools {
 		const reach = WORLD.mangroveReach;
 		place( 'snook', 5, { x: reach.center.x + 66, z: reach.center.z + 4, r: 20, band: [ 1.2, 7 ] } );
 		place( 'tarpon', 2, { x: reach.center.x - 6, z: reach.center.z + 108, r: 28, band: [ 4, 14 ] } );
+
+		// ---- Sunspire Atoll: black grouper holding on the rocky outer shelf
+		const atoll = WORLD.sunspireAtoll;
+		place( 'blackGrouper', 4, { x: atoll.center.x + 315, z: atoll.center.z - 6, r: 18, band: [ 10, 22 ] } );
+		place( 'grouper', 2, { x: atoll.center.x + 292, z: atoll.center.z + 38, r: 18, band: [ 8, 20 ] } );
+		place( 'eagleRay', 1, { x: atoll.center.x + 255, z: atoll.center.z + 100, r: 22, band: [ 7, 20 ] } );
 
 		// fry along the beach, just outside the breakers (or inside sheltered water)
 		for ( const [ c, x ] of [ [ 90, - 60 ], [ 70, - 10 ], [ 80, 30 ], [ 60, 110 ], [ 70, 150 ] ] ) place( 'fry', c, { x, z: 0, r: 30 } );

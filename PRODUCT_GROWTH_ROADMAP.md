@@ -1,6 +1,6 @@
 # Fishing Free — plan de produs, creștere și monetizare
 
-Acesta este roadmap-ul de lucru pentru transformarea Fishing Free într-un joc mobil care se lansează sustenabil pe Android și iOS. Îl vom urma în ordinea de mai jos: **stabilitate pe dispozitive → prima sesiune reușită → share → progres și revenire → monetizare → extindere**. Nu vom adăuga sisteme online sau monetizare înainte ca jocul de bază să ruleze bine pe telefoanele țintă.
+Acesta este roadmap-ul de lucru pentru Fishing Free. Prioritatea executabilă este **Android → stabilitate pe dispozitive → prima sesiune reușită → share → progres și revenire → monetizare → extindere**. Pe iOS păstrăm versiunea web/PWA ca rută fără taxă de distribuție; IPA-ul instalabil și publicarea în App Store rămân opționale până când există acces la Apple Developer Program și materialele de semnare. Nu adăugăm sisteme online sau monetizare înainte ca jocul de bază să ruleze bine pe telefoanele țintă.
 
 ## 1. Evaluarea produsului actual
 
@@ -10,7 +10,7 @@ Fishing Free este o experiență 3D de pescuit și explorare tropicală. Codul c
 
 1. **Bucla scurtă — pescuitul:** alegi locul, lansezi, aștepți mușcătura, înțepi, gestionezi tensiunea și aduci peștele la mal. Cartela capturii dă imediat nume, specie nouă sau record, lungime și greutate.
 2. **Bucla de sesiune — progresul:** vinzi peștele, cumperi echipament, îmbunătățești cala și barca, apoi ajungi la alte adâncimi și habitate.
-3. **Bucla de colecție — explorarea:** cauți 22 de specii cu habitate și ore active diferite, completezi jurnalul și bați propriile recorduri.
+3. **Bucla de colecție — explorarea:** cauți 24 de specii cu habitate și ore active diferite, completezi jurnalul și bați propriile recorduri.
 
 Pe lângă pescuit, insula are plajă, sat, recif, barcă, fauna mării, zi/noapte, sunet ambiental și Photo Mode. Inventarul, jurnalul, banii, upgrade-urile și combustibilul se salvează local în localStorage.
 
@@ -24,13 +24,15 @@ Pe lângă pescuit, insula are plajă, sat, recif, barcă, fauna mării, zi/noap
 
 ### Problemele care limitează lansarea și creșterea
 
-- **Compatibilitate:** jocul are un mod de pescuit Canvas pentru WebView-urile fără adaptor WebGPU, dar acesta nu păstrează fidel experiența 3D pe care o dorește jucătorul. Screenshot-urile trimise au arătat încă eroarea „No WebGPU adapter found”; build-ul instalat nu trebuie declarat funcțional până nu verificăm exact versiunea instalată și pornirea fallback-ului pe telefoane reale. Proiectul Capacitor 8 țintește Android API 24+ și iOS 15+.
+- **Compatibilitate Android:** pagina PWA și APK-ul publicat 1.0.16 încă pot opri la diagnosticul WebGPU, iar Huawei ELE-L29 cu Android 10 a raportat „No WebGPU adapter found”. APK-ul local 1.0.19 păstrează randorul 3D drept primă opțiune și oferă Scenic Fishing numai dacă WebGPU eșuează. Modul tactil folosește capturi reale din joc și păstrează jocul pescuitului, dar nu este echivalent cu 3D în timp real. Nici APK-ul 1.0.19, nici Samsung A52, MuMu Player sau Huawei nu au fost încă validate fizic.
+- **Versiuni APK și joc web:** APK-ul publicat 1.0.16 deschide versiunea găzduită în Chrome; primul start are nevoie de internet. APK-ul local 1.0.19 rulează codul și asset-urile incluse, deci rămâne legat de versiunea din pachet și poate porni offline. Pages și GitHub Actions nu au fost încă actualizate la sursa 1.0.19; după publicare se verifică separat și versiunea PWA.
+- **Distribuire iOS:** există Apple ID, dar nu există înscriere Apple Developer. Workflow-ul de simulator poate compila un `.app` pentru simulator, nu un IPA instalabil pe iPhone. Până la înscriere, ruta disponibilă este Safari/PWA; testarea personală prin Xcode mai cere un Mac și iPhone. Nu planificăm TestFlight, App Store sau build semnat ca livrabil curent.
 - **Pornire rece:** compilarea multor shader-e poate dura un minut sau mai mult la prima pornire. Asta amenință instalarea, tutorialul și recenziile.
 - **Costul randării:** marea și lumea sunt ambițioase pentru baterie, memorie și temperatura unui telefon. Profilul mobil actual este doar punctul de pornire, nu o validare pe dispozitive reale.
-- **Retenție:** jocul are acum 18 realizări, contracte, colecții și trei destinații de barcă; lipsesc însă măsurători de cohortă și un ciclu de conținut recurent validat cu jucători.
+- **Retenție:** jocul are 22 de realizări, 11 contracte, colecție de 24 de specii și cinci destinații (portul de acasă plus Pelican Cay, Turtle Key, Mangrove Reach și Sunspire Atoll). Briefingul săptămânal este în buildul local, dar nu a fost testat în sesiuni de joc și nu e publicat în Pages/Actions. Lipsesc măsurători de cohortă și dovada că mecanicile existente aduc jucătorii înapoi.
 - **Distribuire:** există un card PNG pentru capturi și un prototip de duel asincron; link-ul public/de magazin și serviciul de duel nu sunt încă găzduite și verificate cap-coadă.
 - **Continuitate și competiție:** salvările sunt locale; duelurile sunt amicale și auto-declarate, fără autentificare sau anti-trișare. Nu există cloud save, clasament global ori multiplayer live.
-- **Lansarea nativă:** APK poate fi generat local, workflow-urile pregătesc artifacte IPA și Steam pentru Windows, dar nu sunt semnate/rulate în GitHub pentru un repository deținut de utilizator. Mai trebuie conturi, certificate, teste pe hardware și revizia magazinelor.
+- **Lansarea nativă:** APK-ul Android poate fi generat și instalat ca sideload, dar lansarea 3D pe telefoane reale rămâne neverificată. Workflow-ul iOS produce doar artifact de simulator fără contul/certificatele necesare; buildul Windows nu este publicare Steam. Mai sunt necesare teste pe hardware și, pentru distribuția iOS nativă, înscriere Apple Developer și semnare.
 
 ### Poziționarea recomandată
 
@@ -85,11 +87,11 @@ Pachetul de magazin va avea icon lizibil la dimensiune mică, 5–8 capturi real
 
 ### Model de lansare
 
-Recomand **descărcare gratuită cu o felie demonstrativă completă și o achiziție unică „Full Fishing Free”** pentru insulă, toate speciile, larg și conținutul de progres. Jucătorul trebuie să poată prinde pești, vinde și testa loop-ul înainte de oferta de unlock. Fără reclame, energie, pay-to-win sau abonament la lansare.
+Recomand **să păstrăm gratuit tot conținutul existent** pe web și în prima versiune de magazin. Titlul Fishing Free și versiunea web completă au setat deja această așteptare. Venitul vine abia după ce avem dovezi de retenție și producem conținut nou, substanțial: un pachet opțional cu insule, specii și contracte noi. Pe Steam îl vindem ca DLC; pe Android/iOS ca achiziție unică non-consumabilă prin billing-ul fiecărui magazin. Web PWA-ul rămâne gratuit până definim o cale de plată și suport echitabilă.
 
-Există însă o condiție comercială importantă: repo-ul actual trimite la o versiune web gratuită și completă. Nu taxăm aceeași experiență fără valoare distinctă. Înainte de paywall hotărâm ce oferă ediția mobilă în plus (confort touch, pachet nativ/offline și actualizări mobile) și ce parte din conținut rămâne demo. Dacă nu putem susține diferența, prima versiune mobilă rămâne gratuită, iar venitul vine ulterior din expansiuni reale.
+Nu punem paywall retroactiv pe insulele, progresul sau speciile deja publicate gratuit. Pachetul plătit trebuie să fie o aventură nouă și autonomă, iar jocul gratuit să păstreze o buclă completă de pescuit, vânzare, colecție și upgrade. Fără reclame, energie, pay-to-win sau abonament la lansare.
 
-Motivul modelului: instalarea fără cost reduce fricțiunea pentru un joc nou și face cardul de captură mai ușor de distribuit. O achiziție unică este potrivită buclei offline și nu promite servicii recurente pe care produsul încă nu le oferă. Prețul exact rămâne de stabilit prin cercetare de jocuri comparabile, costul de producție și testarea magazinului; nu îl fixăm pe presupuneri.
+Motivul modelului: instalarea fără cost reduce fricțiunea, susține distribuirea capturilor și corespunde numelui ales. DLC-ul sau achiziția non-consumabilă sunt potrivite buclei offline și nu promit servicii recurente. Prețul se stabilește după ce expansiunea are scope și cost estimate; auditul Steam propune doar intervale de test, nu un preț aprobat sau o prognoză de venit.
 
 ### Extinderea veniturilor, după validarea jocului
 
@@ -98,7 +100,7 @@ Motivul modelului: instalarea fără cost reduce fricțiunea pentru un joc nou �
 - Abonament numai dacă există actualizări consecvente, cloud/community sau alte beneficii recurente demonstrate. Nu îl introducem doar ca să avem plată lunară.
 - Fără loot boxes. Sunt nepotrivite pentru tonul jocului și cresc obligațiile de dezvăluire a probabilităților.
 
-Pe iOS, unlock-urile și conținutul digital se implementează prin StoreKit/In-App Purchase; pe Google Play se folosește Play Billing, conform regulilor și excepțiilor curente ale fiecărui magazin. Achizițiile trebuie să aibă restore, verificare de entitlement, preț clar și flux de anulare/eroare. Regulile pot diferi în funcție de regiune și se reverifică înainte de lansare.
+Pe iOS, expansiunea digitală se implementează prin StoreKit/In-App Purchase; pe Google Play se folosește Play Billing, conform regulilor și excepțiilor curente ale fiecărui magazin. Achizițiile trebuie să aibă restore, verificare de entitlement, preț clar și flux de anulare/eroare. Achizițiile nu se sincronizează între Steam, iOS și Android fără un sistem de conturi și entitlement-uri cross-platform; nu promitem transfer. Regulile pot diferi în funcție de regiune și se reverifică înainte de lansare.
 
 ### Economie în joc
 
@@ -114,9 +116,9 @@ Instrumentăm evenimente fără nume, contacte sau locație reală a jucătorulu
 | Activare | first_cast, first_bite, first_catch, first_sale, first_upgrade | Unde renunță jucătorul înainte să înțeleagă loop-ul? |
 | Retenție | sesiune, habitat explorat, specie nouă, jurnal deschis | Ce motiv îi face să revină? |
 | Distribuire | captură eligibilă, share deschis, share fallback copiere | Care momente merită arătate? |
-| Venit | ofertă văzută, achiziție pornită/reușită/restaurată/refund | Este oferta clară și corectă? |
+| Venit | expansion offer viewed, purchase started/completed/restored/refunded | Este oferta noului conținut clară și corectă? |
 
-Dashboard-ul urmărește D1/D7/D30, timpul până la prima captură, completarea primei sesiuni, progresul la vânzare/primul upgrade, crash-uri, cold-start și performanța termică, plus rata de share și conversia unlock-ului. Primele obiective sunt baseline-uri; după un cohort inițial stabilim ținte numerice pe datele reale. Nu optimizăm durata sesiunii cu forța: optimizăm satisfacția și șansa ca utilizatorul să aleagă să revină.
+Dashboard-ul urmărește D1/D7/D30, timpul până la prima captură, completarea primei sesiuni, progresul la vânzare/primul upgrade, crash-uri, cold-start și performanța termică, plus rata de share și interesul pentru pachetul nou. Primele obiective sunt baseline-uri; după un cohort inițial stabilim ținte numerice pe datele reale. Nu optimizăm durata sesiunii cu forța: optimizăm satisfacția și șansa ca utilizatorul să aleagă să revină.
 
 Experimentele se schimbă câte unul: de exemplu, onboarding scurt vs. ghid curent sau card share în toate capturile vs. doar specii noi/recorduri. Măsurăm și efectele negative precum skip-uri, dezinstalări, erori și plângeri.
 
@@ -136,19 +138,19 @@ Estimările sunt intervale de planificare pentru un singur flux de implementare;
 
 | Fază | Ordine / estimare | Livrabile | Criteriu de ieșire |
 |---|---:|---|---|
-| **0. Stabilizare mobilă** | 1–3 săptămâni | Build Android/iOS, test WebGPU pe dispozitive low/mid/high, cold-start și memorie, reluare după background, safe areas, baterie/temperatură, crash logging minimal, inventar de licențe/credite. Optimizăm încărcarea shader-elor și profilul mobil înainte de marketing. | Android APK și iOS build rulează pe dispozitive fizice țintă; lista de incompatibilități este explicită; jucătorul nu rămâne blocat pe ecranul de încărcare. |
+| **0. Stabilizare Android** | 1–3 săptămâni | Instalăm APK-ul local 1.0.19 pe Samsung A52 Android 12, MuMu și Huawei Android 10; notăm versiunea APK, versiunea web servită, Chrome/WebView, GPU, permisiuni, adaptoarele disponibile, pornire rece, memorie, reluare după background, safe areas, baterie și temperatură. Optimizăm shader-ele și raportăm separat rezultatul WebGPU 3D și fallback-ul Scenic Fishing. | Pe A52 versiunea publicată ajunge în jocul 3D; dacă nu se obține adaptorul, înregistrăm cauza și faza rămâne deschisă. Scenic Fishing păstrează capturile 3D și permite pescuitul tactil, dar nu înlocuiește validarea randorului 3D pe A52. IPA-ul nu este condiție de ieșire pentru faza Android. |
 | **1. Activarea** | 1–2 săptămâni | Prima sesiune ghidată, explicații touch, indicator pentru următorul obiectiv, feedback clar la prima mușcătură și captură, revenire din întrerupere. | Jucător nou ajunge la prima captură și înțelege ce poate face apoi; datele arată că nu există abandon major într-un singur pas. |
-| **2. Share și pagină de lansare** | 3–7 zile | Cardul de captură și share sheet-ul există acum atât în jocul 3D, cât și în modul tactil fără WebGPU. Mai lipsesc URL-ul public de destinație, icon/screenshot/video, descrierea și pagina de magazin conforme cu performanța reală pe mobil. | Test pe Android/iOS fizice: PNG-ul se trimite, linkul duce la destinația corectă, datele capturii sunt corecte și distribuirea nu pierde captura. |
-| **3. Progres și revenire** | 2–4 săptămâni | Galerie de trofee, obiective de colecție pe habitate/specii, 10–20 obiective/achievements inițiale, recompense cosmetice obținute în joc, provocare săptămânală fără penalizare de absență. | Există motive distincte de revenire pentru colecționar, explorator și jucător competitiv; progresul rămâne posibil offline. |
-| **4. Test de monetizare** | 1–3 săptămâni după fazele 0–3 | Felie demo echilibrată, ecran Full Fishing Free clar, StoreKit/Play Billing, restore, entitlement local verificat, telemetrie conversie și refund. | Achiziția funcționează în sandbox/test tracks pe ambele platforme și nu șterge progresul/accesele cumpărătorilor existenți. |
+| **2. Share și pagină de lansare** | 3–7 zile | Cardul de captură și share sheet-ul există acum atât în jocul 3D, cât și în modul tactil fără WebGPU. Mai lipsesc URL-ul public de destinație, icon/screenshot/video, descrierea și pagina de magazin conforme cu performanța reală pe mobil. | Test pe Android fizic; pe iOS verificare prin Safari/PWA dacă există acces la un iPhone. PNG-ul se trimite, linkul duce la destinația corectă, datele capturii sunt corecte și distribuirea nu pierde captura. |
+| **3. Progres și revenire** | 2–4 săptămâni | Validăm cele 22 de realizări, 11 contracte, jurnalul de specii și briefingul săptămânal local; îmbunătățim galeria de trofee, obiectivele pe habitate, recompensele cosmetice obținute în joc și provocarea fără penalizare de absență. Adăugăm obiective numai dacă testele arată o lipsă concretă. | Jucătorii înțeleg următorul pas, iar progresul și briefingul funcționează offline și după restart; există motive distincte de revenire pentru colecționar și explorator. |
+| **4. Pregătirea monetizării** | 1–3 săptămâni după fazele 0–3 și un cohort de validare | Măsurăm retenția și interesul pentru o expansiune nouă, estimăm costul ei, definim exact conținutul gratuit vs. noul conținut plătit și facem prețuri de test. Integrarea StoreKit/Play Billing și DLC se începe numai după aprobarea unui pachet real. | Baza gratuită rămâne completă; expansiunea adaugă valoare distinctă; produsul, entitlement-ul, restore-ul și refund-ul se verifică în sandbox/test tracks înainte de a încasa bani. |
 | **5. Provocări între prieteni** | 3–6 săptămâni | Dueluri asincrone: ambii jucători primesc aceleași condiții de pescuit și o fereastră scurtă; câștigă captura validă cea mai grea. Link de provocare, cod de invitație și deep links către joc/pagini de instalare; backend mic pentru reguli și validarea scorului. | Provocarea se deschide din share card pe web și mobil; rezultatul se poate valida și nu expune date personale. |
-| **6. Extindere de conținut** | ciclu continuu, după lansare | Pelican Cay, Turtle Key și Mangrove Reach extind zona navigabilă, habitatele și colecția. Următoarele pachete pot adăuga misiuni și cosmetice tematice; update-urile rămân grupate la preț clar. Evaluăm cloud saves/cross-device doar dacă jucătorii le cer. | Fiecare pachet adaugă o activitate completă și nu destabilizează jocul existent; decizia de a produce următorul pachet se bazează pe retenție și vânzări. |
+| **6. Extindere de conținut** | ciclu continuu, după lansare | Portul și cele trei zone existente (Pelican Cay, Turtle Key și Mangrove Reach) trebuie validate înainte de a desena o hartă și mai mare. Apoi un pachet poate adăuga o regiune coerentă, specii, contracte și cosmetice tematice; cloud save se evaluează doar dacă jucătorii îl cer. | Fiecare extindere adaugă o activitate completă și nu destabilizează jocul existent; decizia de a produce regiunea următoare se bazează pe retenție, interes și cost de producție. |
 
 ### Primele 90 de zile
 
-- **Zilele 1–30:** terminăm faza 0 și share; validăm hardware-ul și prima sesiune. Nu cumpărăm trafic înainte să cunoaștem rata de pornire/activare.
+- **Zilele 1–30:** terminăm faza 0 pe Android și share; validăm A52, fallback-ul și prima sesiune. iOS rămâne PWA până când există decizie și buget pentru Developer Program. Nu cumpărăm trafic înainte să cunoaștem rata de pornire/activare.
 - **Zilele 31–60:** îmbunătățim activarea și colecția; facem soft launch în test track / distribuție limitată, adunăm feedback și stabilim baseline-urile D1/D7.
-- **Zilele 61–90:** testăm challenge-ul și demo/full unlock în sandbox. Lansarea publică se decide numai dacă există compatibilitate, stabilitate, pagină de magazin corectă și proces de suport.
+- **Zilele 61–90:** testăm challenge-ul, măsurăm interesul pentru o expansiune și definim costul/conținutul înainte să construim billing. Lansarea publică se decide numai dacă există compatibilitate, stabilitate, pagină de magazin corectă și proces de suport.
 
 ## 7. Riscuri, dependențe și reguli de decizie
 
@@ -191,18 +193,20 @@ Am adăugat și un prim duel asincron, cu link de invitație și trimitere înap
 
 - [x] Roadmap și faze cu criterii de ieșire scrise în acest fișier.
 - [x] Share catch implementat și proiectele Capacitor sincronizate cu build-ul web.
-- [x] 18 realizări offline, progres de carieră salvat și migrare din salvările v1.
+- [x] 22 realizări offline, progres de carieră salvat și migrare din salvările v1.
 - [x] Jurnal cu tab pentru realizări, progres vizibil și notificări de deblocare.
 - [x] Pelican Cay: teren nou, marker pe minimap, habitat de flats, bonefish și descoperire salvată.
-- [x] Panou de contracte offline: patru obiective permanente, progres persistent și recompense revendicabile o singură dată.
+- [x] Panou de contracte offline: 11 obiective permanente, progres persistent și recompense revendicabile o singură dată.
 - [x] Ghid de specii offline: colecție completă, indicii de habitat/oră și record personal, filtrabile pe ape.
 - [x] Turtle Key: insulă procedurală explorabilă, marker pe minimap, habitat propriu, trei specii catchable și contracte de expediție.
 - [x] Mangrove Reach: arhipelag procedural cu vegetație densă, canale de pescuit, marker pe minimap, snook și tarpon, contracte și realizări.
 - [x] Obiectiv single-player persistent în HUD: contractul următor, progres, revendicare directă și trecere la colecția de specii după terminarea contractelor.
 - [x] Prototip de duel asincron prin share link; țintă pe specie și greutate, trimitere înapoi a rezultatului.
 - [x] API Node opțional pentru păstrarea și compararea duelurilor; necesită deploy și configurarea URL-ului public.
-- [ ] Build APK și rulare pe telefoane Android de nivel diferit.
-- [ ] Build iOS, rulare în WKWebView și semnare pe Mac cu Xcode.
+- [x] Briefing săptămânal al portului adăugat în codul local: ține cont de locațiile descoperite, acordă recompensă în joc și nu cere server sau streak. Este nepublicat și încă necesită validare în joc; modul Scenic Fishing nu îl afișează încă.
+- [x] APK debug 1.0.19/build 20 compilat și verificat ca pachet; instalarea și jocul pe telefoane reale rămân deschise.
+- [ ] Verificare iOS prin Safari/PWA pe un iPhone disponibil.
+- [ ] IPA/TestFlight/App Store: amânat până există cont Apple Developer și certificate/provisioning profile; artifactul de simulator nu se instalează pe iPhone.
 - [ ] Măsurători de cold-start, fps/temperatură, prima sesiune și compatibilitate înainte de beta publică.
 
 ## Referințe oficiale
@@ -211,3 +215,13 @@ Am adăugat și un prim duel asincron, cu link de invitație și trimitere înap
 - Google Play cere Play Billing pentru bunuri și funcții digitale, cu excepții/programări regionale, și dezvăluirea odds-urilor pentru obiecte aleatorii plătite: [Payments policy](https://support.google.com/googleplay/android-developer/answer/9858738?hl=en).
 - Pluginul oficial Capacitor Share folosește share sheet pe iOS/Android și Web Share API pe web; fișierele pot fi trimise din cache nativ: [Capacitor Share API](https://capacitorjs.com/docs/apis/share).
 - Achievements și leaderboard-urile native pot fi adăugate după validarea progresului; [Google Play Games Services overview](https://developer.android.com/games/pgs/overview) și [leaderboards](https://developer.android.com/games/pgs/leaderboards?hl=en) descriu capabilitățile și integrarea.
+
+## Stare verificată a workspace-ului — 3 octombrie 2026 / Fishing Free 1.0.20
+
+- **Publicat:** Pages și Android/Windows Actions rămân la 1.0.16. Buildurile de mai jos nu au fost încă împinse în repository.
+- **Android local:** APK-ul 1.0.20/build 21 este semnat debug și aliniat. În emulatorul Android 16 x86_64 s-a instalat peste buildul local anterior, a pornit automat Scenic Fishing după eșecul WebGPU al WebView-ului și a ajuns prin atingere la lupta cu peștele. Samsung A52, MuMu Player și Huawei încă așteaptă verificare fizică.
+- **Windows:** folderul și ZIP-ul 1.0.20 sunt construite. Lansarea din folder a dat HTTP 200 pentru joc, WebGPU disponibil, scenă 3D/tutorial randate și zero service workers în shell-ul desktop. Steam client, overlay, controller și PC curat nu au fost validate.
+- **Gameplay:** buildul conține Sunspire Atoll, 24 specii, 11 contracte, 22 achievements și brief-ul săptămânal. Brief-ul nou trebuie încă jucat cap-coadă; nu avem măsurători de retenție sau venit.
+- **iOS:** fără Mac/Xcode de test și fără membership de distribuție Apple Developer, nu există IPA instalabil. PWA prin Safari rămâne disponibilă.
+
+Următoarea prioritate este testul fizic pe A52 și apoi o verificare Steam-client. Păstrăm jocul de bază gratuit; DLC-ul rămâne ipoteză până avem date de playtest și retenție.

@@ -282,18 +282,21 @@ export class Bench {
 	// the same images, so a shot before and after a change can be compared pixel by pixel.
 	// dt > 0: the clock runs (animated artefacts: noise the temporal filters don't settle); one image per
 	// `every` frames after the first `frames` is uploaded as tag-view-N.bgra when `seq` > 1
-	async shots( views = DEFAULT_VIEWS, { tag = 'shot', frames = 64, url = 'http://127.0.0.1:5190/', dt = 0, seq = 1, every = 1 } = {} ) {
+	async shots( views = DEFAULT_VIEWS, { tag = 'shot', frames = 64, url = 'http://127.0.0.1:5190/', dt = 0, seq = 1, every = 1, width: shotWidth = 2560, height: shotHeight = 1267 } = {} ) {
 
 		const app = this.app;
 		app.engine.stop();
-		this.setSize();
+		if ( ! Number.isInteger( shotWidth ) || ! Number.isInteger( shotHeight ) || shotWidth < 320 || shotHeight < 320 || shotWidth > 4096 || shotHeight > 4096 ) throw new Error( 'Screenshot dimensions must be whole numbers between 320 and 4096 pixels.' );
+		this.setSize( shotWidth, shotHeight );
 		const { width, height } = app.engine.canvas;
 		if ( ! this._out || this._out.width !== width || this._out.height !== height ) this._out = new Texture( { width, height, format: GPU.format, usage: [ 'render', 'copySrc', 'sample' ], label: 'bench output' } );
 		G.time.value = 1000;
 		for ( const name of views ) {
 
 			this.pose( name );
-			app.post.lens.reset();
+				// Named poses teleport the camera between scenes; reset temporal post effects.
+				app.post.lens.reset();
+				app.post.taau.resetHistory();
 			app.post.outputTexture = this._out;
 			try {
 
@@ -313,7 +316,9 @@ export class Bench {
 					if ( k > 0 ) await this._frames( every, dt );
 					const img = await readTexture( this._out );
 					const body = new Uint8Array( 8 + img.data.byteLength );
-					new Uint32Array( body.buffer, 0, 2 ).set( [ img.width, img.height ] );
+					const header = new DataView( body.buffer, body.byteOffset, 8 );
+					header.setUint32( 0, img.width, true );
+					header.setUint32( 4, img.height, true );
 					body.set( new Uint8Array( img.data ), 8 );
 					await fetch( url + tag + '-' + name + ( seq > 1 ? '-' + k : '' ) + '.bgra', { method: 'POST', body } );
 

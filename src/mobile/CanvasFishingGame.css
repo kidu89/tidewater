@@ -32,7 +32,15 @@
 	height: 100%;
 	object-fit: cover;
 	object-position: center 48%;
-	transform: scale(1.015);
+	transform: scale(1.04);
+	animation: lite-scene-drift 38s ease-in-out infinite alternate;
+	will-change: transform;
+	transition: opacity .45s ease, filter 1s ease;
+}
+
+.tw-lite__art.is-loading {
+	opacity: .35;
+	filter: saturate(.7);
 }
 
 .tw-lite__shade {
@@ -528,9 +536,18 @@
 	line-height: 1.45;
 }
 
+@keyframes lite-scene-drift {
+	from { transform: scale(1.04) translate3d(-.25%, .1%, 0); }
+	to { transform: scale(1.1) translate3d(.45%, -.35%, 0); }
+}
+
 @keyframes lite-bite-pulse {
 	from { opacity: .84; transform: translate(-50%, -50%) scale(.98); }
 	to { opacity: 1; transform: translate(-50%, -50%) scale(1.03); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tw-lite__art { animation: none; transition: none; }
 }
 
 @media (max-height: 640px) and (orientation: landscape) {

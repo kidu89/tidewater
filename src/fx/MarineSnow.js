@@ -1,6 +1,7 @@
 import { Vector2, Vector3, PlaneGeometry, InstancedBufferGeometry, Mesh } from '../engine/index.js';
 import { UniformBlock, ShaderModule, Material } from '../engine/webgpu.js';
 import { LAYERS } from '../core/SceneRenderer.js';
+import { FLASH } from '../materials/LocalLights.js';
 
 // Suspended particles in the water around the camera (marine snow, plankton, sand grains).
 // Positions are procedural (hash of the instance) inside a box that wraps around the camera, so
@@ -15,7 +16,7 @@ import { LAYERS } from '../core/SceneRenderer.js';
 // query.module (waterQueryHeightAtXZ( xz ) -> f32, optional), and the diver's torch of LocalLights
 // (materials/LocalLights.js FLASH handles: on, pos, dir, col, cone). Port note: the torch values
 // live in this material's own `SnowFlash` block whose `{ value }` handles are linked to FLASH by
-// setFlash( FLASH ) (done automatically once materials/LocalLights.js loads; the spot profile is
+// setFlash( FLASH ) (the module imports FLASH directly; the spot profile is
 // the same formula as LocalLights' spotProfile, localLightsSpotProfile in WGSL).
 export class MarineSnow {
 
@@ -140,13 +141,7 @@ fn snowHash3( n: f32 ) -> vec3f { return fract( sin( vec3f( n, n + 17.13, n + 43
 		this.mesh.layers.set( LAYERS.OPAQUE );
 		this.mesh.visible = false;
 
-		// the torch of LocalLights (once that module is ported; harmless if it isn't)
-		import( '../materials/LocalLights.js' ).then( ( m ) => {
-
-			if ( m.FLASH ) this.setFlash( m.FLASH );
-
-		} ).catch( () => {} );
-
+		if ( FLASH ) this.setFlash( FLASH );
 	}
 
 	// link the torch uniforms to LocalLights' FLASH handles ({ on, pos, dir, col, cone } with .value)

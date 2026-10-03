@@ -2621,3 +2621,47 @@ body {
 	}
 
 }
+
+.loader-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.loader-action {
+	min-height: 42px;
+	padding: 0 13px;
+	border: 1px solid rgba(200, 225, 235, 0.22);
+	border-radius: 7px;
+	background: rgba(4, 14, 20, 0.62);
+	color: var(--tw-ink);
+	font: inherit;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+	cursor: pointer;
+}
+
+.loader-action-primary {
+	border-color: rgba(var(--tw-sun-rgb), 0.65);
+	background: rgba(var(--tw-sun-rgb), 0.16);
+}
+
+.loader-action:focus-visible {
+	outline: 2px solid var(--tw-sun);
+	outline-offset: 2px;
+}
+
+.loader-graphics-report {
+	max-height: 22vh;
+	overflow: auto;
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px solid rgba(200, 225, 235, 0.16);
+	border-radius: 6px;
+	background: rgba(4, 14, 20, 0.62);
+	color: var(--tw-ink-2);
+	font: 10px/1.5 var(--tw-mono);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}

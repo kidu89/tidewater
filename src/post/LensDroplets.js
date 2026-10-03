@@ -55,8 +55,8 @@ export class LensDroplets {
 
 	}
 
-
-		// Clear stale droplets when a capture teleports between independent scenes.
+	// Clear stale lens droplets between independent benchmark scenes.
+	// These camera teleports are not continuous diving or surfacing motion.
 	reset() {
 
 		this.wet.value = 0;
@@ -66,7 +66,7 @@ export class LensDroplets {
 
 	}
 
-// compatibility with the three.js version (the composite is lensDroplets() in WGSL)
+// Compatibility with the three.js version (the composite is lensDroplets() in WGSL).
 	build() {
 
 		return this.module;

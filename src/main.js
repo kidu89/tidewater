@@ -10,9 +10,10 @@ if ( /[?&]bench\b/.test( location.search ) ) {
 }
 
 const bench = /[?&]bench\b/.test( location.search );
+const desktopShell = new URLSearchParams( location.search ).get( 'desktop' ) === '1';
 const WEBGPU_PROBE_TIMEOUT_MS = 10000;
 
-if ( ! bench && ! import.meta.env.DEV && 'serviceWorker' in navigator ) {
+if ( ! bench && ! desktopShell && ! import.meta.env.DEV && 'serviceWorker' in navigator ) {
 	navigator.serviceWorker.register( `${ import.meta.env.BASE_URL }sw.js`, { scope: import.meta.env.BASE_URL } )
 		.catch( ( error ) => console.warn( '[Fishing Free] Offline cache could not be enabled.', error ) );
 }
@@ -32,11 +33,115 @@ function browserGraphicsDetails( reason = '' ) {
 		webgpuApi: navigator.gpu ? 'Available' : 'Not exposed',
 		adapterProbe: probe.result || ( navigator.gpu ? 'Not run' : 'Not available' ),
 		adapterAttempts: Array.isArray( probe.attempts ) && probe.attempts.length ? probe.attempts.join( '; ' ) : 'No adapter attempts recorded',
-		reason: reason || probe.startupError || 'No fallback reason recorded',
+		reason: reason || probe.startupError || 'No startup reason recorded',
 	};
 
 }
 
+function showGraphicsError( reason ) {
+
+	const loader = document.getElementById( 'loader' );
+	if ( ! loader ) return;
+	const details = browserGraphicsDetails( reason );
+	const status = loader.querySelector( '.loader-status' );
+	const note = loader.querySelector( '.loader-note' );
+	const androidVersion = Number( details.osVersion.match( /Android\s+(\d+)/i )?.[ 1 ] || 0 );
+	const androidBelowSupportFloor = androidVersion > 0 && androidVersion < 12;
+
+	if ( status ) status.textContent = androidBelowSupportFloor
+		? 'Chrome reports ' + details.osVersion + '. Its documented default WebGPU support starts at Android 12; compatibility mode can vary by device.'
+		: 'Full 3D could not start because the browser did not provide a compatible graphics adapter.';
+	if ( note ) {
+		note.textContent = androidBelowSupportFloor
+			? 'This browser was tried with WebGPU compatibility mode, but did not return a usable adapter. For full 3D, try current Chrome on Android 12 or newer, then tap Try again.'
+			: 'Update Chrome and Android, then tap Try again. Open device details to copy a report if the problem remains.';
+	}
+
+	const percent = loader.querySelector( '.loader-pct' );
+	const elapsed = loader.querySelector( '.loader-time' );
+	const fill = loader.querySelector( '.loader-fill' );
+	if ( percent ) percent.textContent = '—';
+	if ( elapsed ) elapsed.textContent = '';
+	if ( fill ) fill.style.transform = 'scaleX(0.02)';
+	loader.classList.remove( 'tw-hidden' );
+	loader.classList.add( 'tw-error', 'is-compiling' );
+
+	loader.querySelector( '[data-graphics-actions]' )?.remove();
+	const panel = loader.querySelector( '.loader-panel' );
+	if ( ! panel ) return;
+	const actions = document.createElement( 'div' );
+	actions.className = 'loader-actions';
+	actions.dataset.graphicsActions = '';
+	const retry = document.createElement( 'button' );
+	retry.className = 'loader-action loader-action-primary';
+	retry.type = 'button';
+	retry.textContent = 'TRY AGAIN';
+	retry.addEventListener( 'click', () => window.location.reload() );
+	const scenicButton = document.createElement( 'button' );
+	scenicButton.className = 'loader-action loader-action-primary';
+	scenicButton.type = 'button';
+	scenicButton.textContent = 'PLAY SCENIC FISHING';
+	scenicButton.addEventListener( 'click', async () => {
+
+		scenicButton.disabled = true;
+		scenicButton.textContent = 'OPENING SCENIC MODE…';
+		try {
+
+			const { CanvasFishingGame } = await import( './mobile/CanvasFishingGame.js' );
+			const appRoot = document.getElementById( 'app' );
+			if ( ! appRoot ) throw new Error( 'The game container is missing.' );
+			window.__mobileFishingGame = new CanvasFishingGame( appRoot, { reason, graphicsDetails: details } ).start();
+			document.getElementById( 'fps' )?.remove();
+			loader.remove();
+
+		} catch ( error ) {
+
+			console.error( '[Fishing Free] Scenic fishing mode could not start.', error );
+			scenicButton.disabled = false;
+			scenicButton.textContent = 'RETRY SCENIC FISHING';
+
+		}
+
+	} );
+	const reportButton = document.createElement( 'button' );
+	reportButton.className = 'loader-action';
+	reportButton.type = 'button';
+	reportButton.textContent = 'DEVICE DETAILS';
+	const report = document.createElement( 'pre' );
+	report.className = 'loader-graphics-report';
+	report.hidden = true;
+	report.textContent = Object.entries( details ).map( ( [ key, value ] ) => key + ': ' + value ).join( '\n' );
+	reportButton.addEventListener( 'click', () => {
+		report.hidden = ! report.hidden;
+		reportButton.textContent = report.hidden ? 'DEVICE DETAILS' : 'HIDE DETAILS';
+	} );
+	const copy = document.createElement( 'button' );
+	copy.className = 'loader-action';
+	copy.type = 'button';
+	copy.textContent = 'COPY REPORT';
+	copy.addEventListener( 'click', async () => {
+		try {
+			await navigator.clipboard.writeText( report.textContent );
+			copy.textContent = 'COPIED';
+		} catch {
+			copy.textContent = 'COPY UNAVAILABLE';
+		}
+	} );
+	actions.append( retry, scenicButton, reportButton, copy );
+	panel.append( actions, report );
+
+	// Android's embedded WebView may not expose WebGPU even on capable phones.
+	// Keep full 3D as the first choice, then start the playable scenic fallback
+	// automatically in the native Android app instead of leaving players at an error.
+	const userAgent = navigator.userAgent || '';
+	const isAndroidWebView = /Android/i.test( userAgent ) && /;\s*wv\)/i.test( userAgent );
+	if ( isAndroidWebView ) {
+		if ( status ) status.textContent = '3D graphics are unavailable here. Opening Scenic Fishing…';
+		if ( note ) note.textContent = 'The game could not start its 3D renderer in this Android app, so it is opening the playable scenic mode.';
+		void scenicButton.click();
+	}
+
+}
 const loaderArt = document.querySelector( '.loader-art' );
 if ( loaderArt ) {
 	const showArt = () => loaderArt.classList.add( 'is-in' );
@@ -101,24 +206,6 @@ async function findWebGPUAdapter() {
 
 }
 
-function startPhoneMode( reason ) {
-
-	console.info( '[Fishing Free] Starting phone fishing mode:', reason );
-	const loader = document.getElementById( 'loader' );
-	loader?.classList.add( 'tw-hidden' );
-	const fps = document.getElementById( 'fps' );
-	if ( fps ) fps.style.display = 'none';
-	return import( './mobile/CanvasFishingGame.js' ).then( ( { CanvasFishingGame } ) => {
-
-		const game = new CanvasFishingGame( document.getElementById( 'app' ), { reason, graphicsDetails: browserGraphicsDetails( reason ) } );
-		game.start();
-		window.__phoneGame = game;
-		return game;
-
-	} );
-
-}
-
 async function startWebGPUGame() {
 
 	const [ { App }, { UI }, { AppUI }, { TouchControls } ] = await Promise.all( [
@@ -144,6 +231,7 @@ async function startWebGPUGame() {
 			if ( app.qs.has( 'shots' ) ) window.__job = window.__bench.shots( app.qs.get( 'shots' ).split( ',' ), {
 				tag: app.qs.get( 'tag' ) || 'shot', dt: Number( app.qs.get( 'dt' ) ) || 0,
 				seq: Number( app.qs.get( 'seq' ) ) || 1, every: Number( app.qs.get( 'every' ) ) || 1,
+				width: Number( app.qs.get( 'width' ) ) || 2560, height: Number( app.qs.get( 'height' ) ) || 1267,
 			} );
 
 		} else app.start();
@@ -156,7 +244,7 @@ async function startWebGPUGame() {
 
 	} catch ( error ) {
 
-		console.error( '[Fishing Free] WebGPU game could not start; switching to the phone mode.', error );
+		console.error( '[Fishing Free] Full 3D renderer could not start; showing graphics diagnostics.', error );
 		globalThis.__fishingFreeWebGPUProbe ||= { attempts: [], result: 'An adapter was found, but renderer startup failed.' };
 		globalThis.__fishingFreeWebGPUProbe.startupError = error.message;
 		if ( bench ) {
@@ -165,7 +253,7 @@ async function startWebGPUGame() {
 			return;
 
 		}
-		await startPhoneMode( error.message || 'WebGPU is unavailable on this device.' );
+		showGraphicsError( error.message || 'WebGPU is unavailable on this device.' );
 
 	}
 
@@ -174,9 +262,9 @@ async function startWebGPUGame() {
 async function start() {
 
 	if ( bench ) return startWebGPUGame();
-	if ( ! navigator.gpu ) return startPhoneMode( 'This browser does not expose WebGPU.' );
+	if ( ! navigator.gpu ) return showGraphicsError( 'This browser does not expose WebGPU.' );
 	const adapter = await findWebGPUAdapter();
-	if ( ! adapter ) return startPhoneMode( 'WebGPU is present but could not create a graphics adapter.' );
+	if ( ! adapter ) return showGraphicsError( 'WebGPU is present but could not create a graphics adapter.' );
 	// Hand the preflight adapter to the renderer so it is not requested twice.
 	globalThis.__fishingFreeWebGPUAdapter = adapter;
 	return startWebGPUGame();
@@ -187,15 +275,7 @@ start().catch( ( error ) => {
 
 	console.error( '[Fishing Free] Startup failed.', error );
 	if ( bench ) return;
-	startPhoneMode( error.message || 'The 3D renderer could not start.' ).catch( ( fallbackError ) => {
+	showGraphicsError( error.message || 'The 3D renderer could not start.' );
 
-		console.error( '[Fishing Free] Phone mode failed to start.', fallbackError );
-		const loader = document.getElementById( 'loader' );
-		if ( ! loader ) return;
-		loader.classList.remove( 'tw-hidden' );
-		const status = loader.querySelector( '.loader-status' );
-		if ( status ) status.textContent = 'The phone fishing mode could not start. Please close and reopen Fishing Free.';
-
-	} );
 
 } );

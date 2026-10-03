@@ -100,7 +100,24 @@ for ( const [ species, kg ] of [ [ 'grunt', 0.8 ], [ 'yellowtail', 1.2 ], [ 'jac
 ok( table[ 'grunt/careful' ].st === 'caught' && table[ 'yellowtail/careful' ].st === 'caught', 'careful reeling lands small fish' );
 ok( table[ 'jack/careful' ].st === 'caught', 'careful reeling lands a 6 kg jack on the starter line' );
 ok( table[ 'tuna/mash' ].st === 'snapped' && table[ 'tarpon/mash' ].st === 'snapped', 'holding reel on a big fish snaps the line' );
-ok( table[ 'tuna/careful' ].st !== 'caught' && fight( 'tuna', 13, policies.careful, 26, 1.6 ).st === 'caught', 'a 13 kg tuna needs the 30 lb line' );
+const tunaLandingRate = ( lineKg, reelSpeed ) => {
+
+	let landed = 0;
+	for ( let sample = 1; sample <= 32; sample ++ ) {
+
+		let localSeed = sample;
+		const sampleRng = () => ( ( localSeed = ( localSeed * 1664525 + 1013904223 ) >>> 0 ) / 4294967296 );
+		const g = new CatchMinigame( { species: 'tuna', kg: 13, lineKg, reelSpeed, distance: 18, rng: sampleRng } );
+		for ( let i = 0; i < 60 * 180 && g.state === 'fighting'; i ++ ) g.update( 1 / 60, policies.careful( g ) );
+		if ( g.state === 'caught' ) landed ++;
+
+	}
+	return landed;
+
+};
+const starterTunaLandings = tunaLandingRate( 7, 1.1 );
+const upgradedTunaLandings = tunaLandingRate( 26, 1.6 );
+ok( starterTunaLandings <= 3 && upgradedTunaLandings >= 29, `a 13 kg tuna is rare on starter line (${ starterTunaLandings }/32) and dependable with 30 lb gear (${ upgradedTunaLandings }/32)` );
 ok( [ 'escaped' ].includes( table[ 'grunt/idle' ].st ), 'never reeling loses the fish' );
 ok( fight( 'tarpon', 35, policies.careful ).st !== 'caught', 'a 35 kg tarpon beats the starter line' );
 ok( fight( 'tarpon', 35, policies.careful, 50, 2.2 ).st === 'caught', 'the top line and reel land it' );

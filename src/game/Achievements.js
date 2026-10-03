@@ -2,7 +2,7 @@ import { FISH, FISH_IDS } from './FishTable.js';
 
 // Offline-first milestones derived from the player's saved career.
 // Progress is earned through play and never expires.
-export const HABITAT_KEYS = [ 'shallows', 'reef', 'pier', 'bay', 'deep', 'cay', 'key', 'mangrove' ];
+export const HABITAT_KEYS = [ 'shallows', 'reef', 'pier', 'bay', 'deep', 'cay', 'key', 'mangrove', 'atoll' ];
 
 const uniqueSpecies = ( state ) => Object.entries( state.log ).filter( ( [ id, entry ] ) => FISH[ id ] && entry?.count > 0 ).length;
 const watersExplored = ( state ) => HABITAT_KEYS.filter( ( key ) => state.career.habitats[ key ] > 0 ).length;
@@ -27,6 +27,8 @@ export const ACHIEVEMENTS = [
 	{ id: 'key-fisher', icon: '🐟', title: 'Key Waters Regular', description: 'Land three fish in Turtle Key waters.', target: 3, current: ( s ) => s.career.habitats.key },
 	{ id: 'mangrove-landfall', icon: '🌿', title: 'Into the Green', description: 'Reach Mangrove Reach by boat.', target: 1, current: ( s ) => s.career.locations.includes( 'mangrove-reach' ) ? 1 : 0 },
 	{ id: 'mangrove-fisher', icon: '🐟', title: 'Tidal Creek Regular', description: 'Land three fish in Mangrove Reach waters.', target: 3, current: ( s ) => s.career.habitats.mangrove },
+	{ id: 'atoll-landfall', icon: '🌅', title: 'Beyond the Keys', description: 'Reach Sunspire Atoll by boat.', target: 1, current: ( s ) => s.career.locations.includes( 'sunspire-atoll' ) ? 1 : 0 },
+	{ id: 'atoll-fisher', icon: '🪨', title: 'Outer Shelf Angler', description: 'Land three fish on the Sunspire Atoll shelf.', target: 3, current: ( s ) => s.career.habitats.atoll },
 	{ id: 'three-waters', icon: '🌅', title: 'Island Explorer', description: 'Catch fish in three different waters.', target: 3, current: watersExplored },
 	{ id: 'ten-kilo', icon: '💪', title: 'Trophy Fish', description: 'Land a fish weighing at least 10 kg.', target: 10, current: ( s ) => s.career.bestCatchKg, format: ( n ) => Math.min( n, 10 ).toFixed( 1 ) + ' / 10 kg' },
 	{ id: 'twenty-five-kilo', icon: '🐋', title: 'Big Game', description: 'Land a fish weighing at least 25 kg.', target: 25, current: ( s ) => s.career.bestCatchKg, format: ( n ) => Math.min( n, 25 ).toFixed( 1 ) + ' / 25 kg' },

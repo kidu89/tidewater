@@ -112,6 +112,8 @@ const CSS = /* css */`
 .gm-achievement-row.is-done .gm-achievement-progress { color: var(--tw-aqua); }
 .gm-achievement-row.is-ready { border-color: rgba(240,196,106,0.48); background: rgba(240,196,106,0.07); }
 .gm-achievement-row.is-ready .gm-achievement-progress { max-width: none; color: var(--tw-sun); }
+.gm-weekly-progress { min-width: 64px; }
+.gm-weekly-note { margin-top: var(--tw-3); padding: var(--tw-3); border: 1px solid rgba(var(--tw-aqua-rgb), 0.22); border-radius: var(--tw-r-md); color: var(--tw-ink-2); font-size: var(--tw-fs-sm); line-height: 1.45; }
 .gm-contract-claim { min-height: 44px; padding: 6px 12px; white-space: nowrap; }
 .gm-species-filter { display: flex; align-items: center; gap: var(--tw-2); margin-bottom: var(--tw-2); color: var(--tw-ink-3); font-size: var(--tw-fs-sm); }
 .gm-species-filter label { flex: none; }
@@ -302,23 +304,30 @@ export class GameHUD {
 		this._last = {};
 		this.currentObjective = null;
 		this.objectiveMain.onclick = () => {
-			this.inventoryTab = this.currentObjective?.type === 'contract' ? 'contracts' : 'species';
+			this.inventoryTab = this.currentObjective?.type === 'contract' ? 'contracts' : this.currentObjective?.type === 'weekly' ? 'weekly' : 'species';
 			this.toggleInventory( true );
 		};
 		this.objectiveClaim.onclick = () => {
 			const contract = this.currentObjective?.type === 'contract' ? this.game.state.claimContract( this.currentObjective.id ) : null;
 			if ( contract ) this.toast( `Contract complete: ${ contract.title } · +$${ contract.reward }`, 3200 );
+			const brief = this.currentObjective?.type === 'weekly' ? this.game.state.claimWeeklyBrief() : null;
+			if ( brief ) this.toast( `Weekly brief complete: ${ brief.title } · +$${ brief.reward }`, 3200 );
 		};
 		this._readyContracts = new Set( game.state.contractProgress.filter( ( contract ) => contract.complete && ! contract.claimed ).map( ( contract ) => contract.id ) );
+		this._readyWeeklyBrief = game.state.weeklyBrief.complete && ! game.state.weeklyBrief.claimed;
 		game.state.onChange( ( state ) => {
 			const unlocked = [ ...state.newAchievements ];
 			state.newAchievements = [];
 			const ready = state.contractProgress.filter( ( contract ) => contract.complete && ! contract.claimed && ! this._readyContracts.has( contract.id ) );
 			this._readyContracts = new Set( state.contractProgress.filter( ( contract ) => contract.complete && ! contract.claimed ).map( ( contract ) => contract.id ) );
+			const weeklyBrief = state.weeklyBrief;
+			const weeklyReady = weeklyBrief.complete && ! weeklyBrief.claimed;
 			this.refresh();
 			const notices = [];
 			if ( ready.length ) notices.push( `Contract ready: ${ ready[ 0 ].title } · claim $${ ready[ 0 ].reward } in your journal (I)` );
+			if ( weeklyReady && ! this._readyWeeklyBrief ) notices.push( `Weekly brief ready: ${ weeklyBrief.title } · claim $${ weeklyBrief.reward } in your journal (I)` );
 			if ( unlocked.length ) notices.push( `${ unlocked[ 0 ].icon } Achievement: ${ unlocked[ 0 ].title }${ unlocked.length > 1 ? ` · +${ unlocked.length - 1 } more` : '' }` );
+			this._readyWeeklyBrief = weeklyReady;
 			if ( notices.length ) this.toast( notices.join( '  ·  ' ), 3600 );
 		} );
 		this.refresh();
@@ -440,36 +449,47 @@ export class GameHUD {
 
 	refreshObjective() {
 
-		const contracts = this.game.state.contractProgress;
+		const state = this.game.state;
+		const contracts = state.contractProgress;
 		const next = contracts.find( ( contract ) => ! contract.claimed );
+		const brief = state.weeklyBrief;
+		const firstContractClaimed = state.career.claimedContracts.includes( 'joes-first-order' );
+		// Keep the first-session sale contract prominent. After that, surface the weekly
+		// activity alongside the permanent contracts instead of hiding it until the career ends.
+		const showWeekly = ( ! brief.claimed && ( brief.complete || firstContractClaimed ) ) || ! next;
 		this.objective.classList.remove( 'is-ready' );
 		this.objectiveClaim.hidden = true;
 
-		if ( next ) {
+		if ( next && ! showWeekly ) {
+
 			this.currentObjective = { type: 'contract', id: next.id };
 			this.objectiveIcon.textContent = next.icon;
 			this.objectiveLabel.textContent = 'HARBOR CONTRACT';
 			this.objectiveTitle.textContent = next.title;
-			this.objectiveProgress.textContent = next.complete ? `Reward ready · $${ next.reward }` : next.progressText;
+			this.objectiveProgress.textContent = next.complete ? `Reward ready · ${ next.reward }` : next.progressText;
 			this.objectiveFill.style.width = `${ Math.round( next.progress * 100 ) }%`;
 			this.objectiveMain.setAttribute( 'aria-label', `Open contract ${ next.title }: ${ next.progressText }` );
 			if ( next.complete ) {
 				this.objective.classList.add( 'is-ready' );
 				this.objectiveClaim.hidden = false;
-				this.objectiveClaim.textContent = `Claim $${ next.reward }`;
+				this.objectiveClaim.textContent = `Claim ${ next.reward }`;
 			}
 			return;
+
 		}
 
-		const found = Object.keys( this.game.state.log ).filter( ( id ) => FISH[ id ] && this.game.state.log[ id ]?.count > 0 ).length;
-		const total = FISH_IDS.length;
-		this.currentObjective = { type: 'species' };
-		this.objectiveIcon.textContent = '📖';
-		this.objectiveLabel.textContent = 'FIELD GUIDE';
-		this.objectiveTitle.textContent = found === total ? 'Master naturalist' : 'Complete the field guide';
-		this.objectiveProgress.textContent = found === total ? 'All species identified · chase a personal best' : `${ found } / ${ total } species identified`;
-		this.objectiveFill.style.width = `${ Math.round( found / total * 100 ) }%`;
-		this.objectiveMain.setAttribute( 'aria-label', `Open field guide: ${ found } of ${ total } species identified` );
+		this.currentObjective = { type: 'weekly' };
+		this.objectiveIcon.textContent = brief.icon;
+		this.objectiveLabel.textContent = 'WEEKLY HARBOR BRIEF';
+		this.objectiveTitle.textContent = brief.title;
+		this.objectiveProgress.textContent = brief.claimed ? 'Claimed · new brief Monday' : brief.complete ? `Reward ready · ${ brief.reward }` : brief.progressText;
+		this.objectiveFill.style.width = `${ Math.round( brief.progress / brief.target * 100 ) }%`;
+		this.objectiveMain.setAttribute( 'aria-label', `Open weekly harbor brief: ${ brief.description } ${ brief.progressText }` );
+		if ( brief.complete && ! brief.claimed ) {
+			this.objective.classList.add( 'is-ready' );
+			this.objectiveClaim.hidden = false;
+			this.objectiveClaim.textContent = `Claim ${ brief.reward }`;
+		}
 
 	}
 
@@ -629,9 +649,10 @@ export class GameHUD {
 		const logged = Object.entries( s.log ).filter( ( [ k ] ) => FISH[ k ] ).map( ( [ k, v ] ) => `${ FISH[ k ].name }: ${ v.count } caught, best ${ v.bestKg.toFixed( 2 ) } kg · ${ v.bestCm ?? Math.round( fishLengthCm( k, v.bestKg ) ) } cm` ).join( '<br>' );
 		const achievements = s.achievementProgress;
 		const done = achievements.filter( ( achievement ) => achievement.unlocked ).length;
+		const weekly = s.weeklyBrief;
 		const foundSpecies = new Set( Object.keys( s.log ).filter( ( id ) => FISH[ id ] && s.log[ id ]?.count > 0 ) );
 		const filterSpecies = FISH_IDS.filter( ( id ) => this.speciesFilter === 'all' || ( FISH[ id ].habitat[ this.speciesFilter ] || 0 ) > 0 );
-		const habitatNames = { shallows: 'Shallows', pier: 'Pier', reef: 'Reef', bay: 'Open bay', deep: 'Offshore', cay: 'Pelican Cay', key: 'Turtle Key', mangrove: 'Mangrove Reach' };
+		const habitatNames = { shallows: 'Shallows', pier: 'Pier', reef: 'Reef', bay: 'Open bay', deep: 'Offshore', cay: 'Pelican Cay', key: 'Turtle Key', mangrove: 'Mangrove Reach', atoll: 'Sunspire Atoll' };
 		const timeNames = { any: 'Any time', day: 'Day', dawnDusk: 'Dawn and dusk', night: 'Night' };
 		const speciesRows = filterSpecies.map( ( id ) => {
 			const fish = FISH[ id ];
@@ -658,7 +679,8 @@ export class GameHUD {
 		const showAchievements = this.inventoryTab === 'achievements';
 		const showContracts = this.inventoryTab === 'contracts';
 		const showSpecies = this.inventoryTab === 'species';
-		const showHold = ! showAchievements && ! showContracts && ! showSpecies;
+		const showWeekly = this.inventoryTab === 'weekly';
+		const showHold = ! showAchievements && ! showContracts && ! showSpecies && ! showWeekly;
 		const contractRows = contracts.map( ( contract ) => {
 			const claimed = contract.claimed;
 			const complete = contract.complete;
@@ -670,11 +692,15 @@ export class GameHUD {
 				<span class="gm-achievement-progress">${ status }</span>
 			</div>`;
 		} ).join( '' );
+		const weeklyReset = new Intl.DateTimeFormat( 'en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' } ).format( weekly.resetsAt );
+		const weeklyClass = weekly.claimed ? 'is-done' : weekly.complete ? 'is-ready' : '';
+		const weeklyStatus = weekly.claimed ? 'Claimed' : weekly.complete ? `<button type="button" class="gm-btn gm-contract-claim" data-claim-weekly>Claim $${ weekly.reward }</button>` : weekly.progressText;
 		this.inv.innerHTML = `
 			<div class="gm-tabs" role="tablist" aria-label="Journal">
 				<button type="button" class="gm-tab${ showHold ? ' is-active' : '' }" role="tab" aria-selected="${ showHold }" data-inv-tab="hold">Hold</button>
 				<button type="button" class="gm-tab${ showSpecies ? ' is-active' : '' }" role="tab" aria-selected="${ showSpecies }" data-inv-tab="species">Species</button>
 				<button type="button" class="gm-tab${ showAchievements ? ' is-active' : '' }" role="tab" aria-selected="${ showAchievements }" data-inv-tab="achievements">Awards</button>
+				<button type="button" class="gm-tab${ showWeekly ? ' is-active' : '' }" role="tab" aria-selected="${ showWeekly }" data-inv-tab="weekly">Weekly${ weekly.complete && ! weekly.claimed ? ' · 1' : '' }</button>
 				<button type="button" class="gm-tab${ showContracts ? ' is-active' : '' }" role="tab" aria-selected="${ showContracts }" data-inv-tab="contracts">Contracts${ ready ? ` · ${ ready } ready` : '' }</button>
 			</div>
 			${ showAchievements ? `
@@ -684,6 +710,15 @@ export class GameHUD {
 				<h2>Harbor contracts</h2>
 				<p class="gm-sub">Optional fishing goals · claim each reward once · no deadlines</p>
 				<div class="gm-inv-body gm-achievement-list">${ contractRows }</div>` : `
+				${ showWeekly ? `
+				<h2>Weekly harbor brief · ${ weekly.weekId }</h2>
+				<p class="gm-sub">Optional goal · resets ${ weeklyReset} at 00:00 UTC · no streaks</p>
+				<div class="gm-inv-body gm-achievement-list"><div class="gm-achievement-row ${ weeklyClass }">
+					<span class="gm-achievement-icon" aria-hidden="true">${ weekly.icon }</span>
+					<span class="gm-achievement-copy"><b>${ weekly.title }</b><small>${ weekly.description } · Reward $${ weekly.reward }</small><span class="gm-achievement-track"><i style="width:${ Math.round( weekly.progress / weekly.target * 100 ) }%"></i></span></span>
+					<span class="gm-achievement-progress gm-weekly-progress">${ weeklyStatus }</span>
+				</div></div>
+				<div class="gm-weekly-note">Progress counts fish landed in the named water. Your catch log and reward stay on this device.</div>` : `
 				${ showSpecies ? `
 				<h2>Field guide · ${ foundSpecies.size}/${ FISH_IDS.length } identified</h2>
 				<p class="gm-sub">Find each species in its preferred water and active hours.</p>
@@ -697,13 +732,14 @@ export class GameHUD {
 					<option value="cay" ${ this.speciesFilter === 'cay' ? 'selected' : '' }>Pelican Cay</option>
 					<option value="key" ${ this.speciesFilter === 'key' ? 'selected' : '' }>Turtle Key</option>
 					<option value="mangrove" ${ this.speciesFilter === 'mangrove' ? 'selected' : '' }>Mangrove Reach</option>
+					<option value="atoll" ${ this.speciesFilter === 'atoll' ? 'selected' : '' }>Sunspire Atoll</option>
 				</select></div>
 				<div class="gm-inv-body gm-species-list">${ speciesRows || '<div class="gm-empty">No species listed for this water.</div>' }</div>` : `
 				<h2>${ s.upgrades.hold > 0 ? 'Fish hold' : 'Cooler' }</h2>
 				<p class="gm-sub">${ s.inventory.length } fish · ${ s.holdKg.toFixed( 1 ) } of ${ s.stats.holdKg } kg · worth $${ s.holdValue }</p>
 				<div class="gm-inv-body"><div class="gm-list">${ rows || '<div class="gm-empty">Nothing yet. Cast from the pier, the beach or the boat.</div>' }</div>
-				${ logged ? `<div class="gm-log"><b>Fish log</b><br>${ logged }</div>` : '' }</div>` }` }
-			<div class="gm-foot"><span class="gm-sub">${ showAchievements ? 'Earned through play' : showContracts ? 'Rewards fund gear and fuel' : showSpecies ? 'Habitat and activity hints' : 'Sell at the fish stand by the pier' }</span><button class="gm-btn is-ghost" data-close>Close (I)</button></div>`;
+				${ logged ? `<div class="gm-log"><b>Fish log</b><br>${ logged }</div>` : '' }</div>` }` }` }
+			<div class="gm-foot"><span class="gm-sub">${ showAchievements ? 'Earned through play' : showContracts ? 'Rewards fund gear and fuel' : showWeekly ? 'One in-game reward per UTC week' : showSpecies ? 'Habitat and activity hints' : 'Sell at the fish stand by the pier' }</span><button class="gm-btn is-ghost" data-close>Close (I)</button></div>`;
 		this.inv.querySelector( '[data-close]' ).onclick = () => this.toggleInventory( false );
 		for ( const b of this.inv.querySelectorAll( '[data-inv-tab]' ) ) b.onclick = () => {
 			this.inventoryTab = b.dataset.invTab;
@@ -717,6 +753,11 @@ export class GameHUD {
 		for ( const b of this.inv.querySelectorAll( '[data-claim-contract]' ) ) b.onclick = () => {
 			const contract = s.claimContract( b.dataset.claimContract );
 			if ( contract ) this.toast( `Contract complete: ${ contract.title } · +$${ contract.reward }`, 3200 );
+		};
+		const claimWeekly = this.inv.querySelector( '[data-claim-weekly]' );
+		if ( claimWeekly ) claimWeekly.onclick = () => {
+			const brief = s.claimWeeklyBrief();
+			if ( brief ) this.toast( `Weekly brief complete: ${ brief.title } · +$${ brief.reward }`, 3200 );
 		};
 		for ( const b of this.inv.querySelectorAll( '[data-release]' ) ) b.onclick = () => s.release( Number( b.dataset.release ) );
 

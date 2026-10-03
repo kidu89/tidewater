@@ -40,7 +40,7 @@ export class WhaleBrain {
 		this.velocity = new THREE.Vector3();
 		this.speed = CRUISE_SPEED;
 		this.yaw = 0;
-
+		this.pitch = 0;
 		this.roll = 0;
 		this.rollV = 0;
 		this.breachRoll = 0; // twist in the air during a breach

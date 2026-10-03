@@ -7,7 +7,7 @@
 //   habitat   weights per water type (see Bites.habitatAt): shallows (sand, < 3 m), reef (over the
 //             reef), pier (around the piles), bay (open water 3–20 m), deep (offshore, > 20 m),
 //             cay (Pelican Cay flats), key (the protected channel around Turtle Key),
-//             mangrove (the tidal creeks around Mangrove Reach)
+//             mangrove (the tidal creeks around Mangrove Reach), atoll (Sunspire's outer shelf)
 //   kg        [ min, max ] weight; sizes follow a skewed distribution (most fish are small)
 //   price     $ per kg at the fish stand
 //   fight     0..1 how hard it pulls (surge strength and frequency in the catch mini-game)
@@ -30,6 +30,7 @@ export const FISH = {
 	jack: { name: 'Crevalle jack', sci: 'Caranx hippos', lw: [ 0.02, 2.93 ], model: 'jack', habitat: { shallows: 0.5, pier: 0.7, bay: 0.8 }, kg: [ 1, 9 ], price: 6, fight: 0.75, stamina: 12, time: 'dawnDusk', rarity: 0.5 },
 	barracuda: { name: 'Great barracuda', sci: 'Sphyraena barracuda', lw: [ 0.0051, 3.08 ], model: 'barracuda', habitat: { reef: 0.5, bay: 0.8, deep: 0.5 }, kg: [ 2, 16 ], price: 5, fight: 0.7, stamina: 11, time: 'any', rarity: 0.45 },
 	grouper: { name: 'Nassau grouper', sci: 'Epinephelus striatus', lw: [ 0.0107, 3.07 ], model: 'grouper', habitat: { reef: 0.6, deep: 0.6 }, kg: [ 3, 14 ], price: 15, fight: 0.6, stamina: 12, time: 'any', rarity: 0.3 },
+	blackGrouper: { name: 'Black grouper', sci: 'Mycteroperca bonaci', lw: [ 0.014, 3.0 ], model: 'blackGrouper', habitat: { atoll: 1 }, kg: [ 2.5, 38 ], price: 19, fight: 0.9, stamina: 20, time: 'dawnDusk', rarity: 0.28 },
 	redSnapper: { name: 'Red snapper', sci: 'Lutjanus campechanus', lw: [ 0.0137, 2.98 ], model: 'redSnapper', habitat: { deep: 1, bay: 0.2 }, kg: [ 1.5, 9 ], price: 18, fight: 0.5, stamina: 9, time: 'any', rarity: 0.7 },
 	tuna: { name: 'Blackfin tuna', sci: 'Thunnus atlanticus', lw: [ 0.0145, 3.0 ], model: 'tuna', habitat: { deep: 1 }, kg: [ 3, 14 ], price: 16, fight: 0.85, stamina: 16, time: 'dawnDusk', rarity: 0.5 },
 	wahoo: { name: 'Wahoo', sci: 'Acanthocybium solandri', lw: [ 0.0051, 3.0 ], model: 'wahoo', habitat: { deep: 1 }, kg: [ 4, 22 ], price: 18, fight: 0.96, stamina: 19, time: 'dawnDusk', rarity: 0.24 },

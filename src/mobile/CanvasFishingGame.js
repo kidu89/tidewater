@@ -5,19 +5,20 @@ import { FISH, fishLengthCm, fishValue } from '../game/FishTable.js';
 const SAVE_KEY = 'tidewater.phone-mode.v1';
 const HOLD_LIMIT = 10;
 const WATERS = [
-	{ id: 'pier', label: 'Old Pier', habitat: 'pier', sea: '#2c8f9a', deep: '#145264', sky: '#86c9e6' },
-	{ id: 'cay', label: 'Pelican Flats', habitat: 'cay', sea: '#4bb9a7', deep: '#257b80', sky: '#a1d9e8' },
-	{ id: 'reef', label: 'Coral Reef', habitat: 'reef', sea: '#20a9aa', deep: '#155d70', sky: '#8fd1e8' },
-	{ id: 'deep', label: 'Bluewater Drop', habitat: 'deep', sea: '#267d9b', deep: '#082c50', sky: '#74afd1' },
-	{ id: 'mangrove', label: 'Mangrove Creek', habitat: 'mangrove', sea: '#388d78', deep: '#174d4a', sky: '#a0c9b9' },
+	{ id: 'pier', label: 'Old Pier', habitat: 'pier', sea: '#2c8f9a', deep: '#145264', sky: '#86c9e6', scene: 'mobile-scenes/pier.webp', position: '94% 50%' },
+	{ id: 'cay', label: 'Pelican Flats', habitat: 'cay', sea: '#4bb9a7', deep: '#257b80', sky: '#a1d9e8', scene: 'mobile-scenes/cay.webp', position: '10% 50%' },
+	{ id: 'reef', label: 'Coral Reef', habitat: 'reef', sea: '#20a9aa', deep: '#155d70', sky: '#8fd1e8', scene: 'mobile-scenes/reef.webp', position: '52% 50%' },
+	{ id: 'deep', label: 'Bluewater Drop', habitat: 'deep', sea: '#267d9b', deep: '#082c50', sky: '#74afd1', scene: 'mobile-scenes/deep.webp', position: '50% 52%' },
+	{ id: 'mangrove', label: 'Mangrove Creek', habitat: 'mangrove', sea: '#388d78', deep: '#174d4a', sky: '#a0c9b9', scene: 'mobile-scenes/mangrove.webp', position: '52% 55%' },
+	{ id: 'atoll', label: 'Sunspire Atoll', habitat: 'atoll', sea: '#2c9da7', deep: '#155766', sky: '#aadfe4', scene: 'mobile-scenes/atoll.webp', position: '49% 52%' },
 ];
 
 const clamp = ( value, min, max ) => Math.max( min, Math.min( max, value ) );
 const rand = ( min, max ) => min + Math.random() * ( max - min );
 const money = ( value ) => '$' + Math.round( value ).toLocaleString( 'en-US' );
 
-// Lightweight touch-first fishing for phones whose browser does not expose WebGPU.
-// The full 3D island remains the preferred mode wherever a WebGPU adapter is available.
+// Scenic touch-first fishing for phones whose browser cannot start the full 3D renderer.
+// Full 3D stays the primary mode; this camera-scene mode keeps the visual style on unsupported devices.
 export class CanvasFishingGame {
 
 	constructor( root, { reason = '', graphicsDetails = {} } = {} ) {
@@ -84,7 +85,7 @@ export class CanvasFishingGame {
 
 		this.root.innerHTML = `
 			<div class="tw-lite">
-				<img class="tw-lite__art" src="ui/keyart.jpg" alt="" aria-hidden="true">
+				<img class="tw-lite__art" src="ui/keyart.jpg" data-scene-art alt="" aria-hidden="true">
 				<div class="tw-lite__shade" aria-hidden="true"></div>
 				<canvas class="tw-lite__scene" aria-hidden="true"></canvas>
 				<header class="tw-lite__header">
@@ -110,11 +111,12 @@ export class CanvasFishingGame {
 						<button class="tw-lite__share" type="button" data-share hidden>SHARE CATCH</button>
 					</div>
 					<div class="tw-lite__upgrade" data-upgrade hidden></div>
-					<p class="tw-lite__device-note"><span>Phone fishing mode · Your progress saves on this device</span><button type="button" data-graphics-info>GRAPHICS INFO</button></p>
+					<p class="tw-lite__device-note"><span>Scenic fishing · Your progress saves on this device</span><button type="button" data-graphics-info>GRAPHICS INFO</button></p>
 				</div>
 				<div class="tw-lite__modal" data-modal hidden></div>
 			</div>`;
 
+		this.art = this.root.querySelector( '[data-scene-art]' );
 		this.canvas = this.root.querySelector( 'canvas' );
 		this.ctx = this.canvas.getContext( '2d', { alpha: true } );
 		this.messageEl = this.root.querySelector( '[data-message]' );
@@ -127,6 +129,8 @@ export class CanvasFishingGame {
 		this.meterValue = this.root.querySelector( '[data-meter-value]' );
 		this.upgradeEl = this.root.querySelector( '[data-upgrade]' );
 		this.watersEl = this.root.querySelector( '[data-waters]' );
+		this.art.src = this.zone.scene;
+		this.art.style.objectPosition = this.zone.position;
 		this.makeWaterButtons();
 		this.actionButton.addEventListener( 'click', ( event ) => {
 
@@ -220,6 +224,10 @@ export class CanvasFishingGame {
 		const next = WATERS.find( ( water ) => water.id === id );
 		if ( ! next ) return;
 		this.zone = next;
+		this.art.classList.add( 'is-loading' );
+		this.art.addEventListener( 'load', () => this.art.classList.remove( 'is-loading' ), { once: true } );
+		this.art.style.objectPosition = next.position;
+		this.art.src = next.scene;
 		this.message = `${ next.label } selected. Different water brings different fish.`;
 		this.renderUI();
 

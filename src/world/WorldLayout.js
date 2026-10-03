@@ -58,6 +58,19 @@ export const WORLD = {
 		discoverRadius: 100,
 	},
 
+	sunspireAtoll: {
+		name: 'Sunspire Atoll',
+		center: new THREE.Vector3( 470, 0, 620 ),
+		radiusX: 58,
+		radiusZ: 42,
+		islets: [
+			{ center: new THREE.Vector3( 548, 0, 594 ), radiusX: 22, radiusZ: 17 },
+			{ center: new THREE.Vector3( 418, 0, 676 ), radiusX: 24, radiusZ: 18 },
+		],
+		fishingRadius: 340,
+		discoverRadius: 112,
+	},
+
 	spawn: { position: new THREE.Vector3( 18, 0, - 60 ), yaw: Math.PI }, // kept clear of rocks, plants and debris
 	// where the player starts: on the boardwalk up from the pier foot, looking down it toward the pier
 	start: { position: new THREE.Vector3( 53.6, 0, - 77 ), yaw: Math.PI },

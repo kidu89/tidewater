@@ -1,38 +1,11 @@
 package com.fishingfree.game;
 
-import android.content.Intent;
-import android.content.ActivityNotFoundException;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-
 import com.getcapacitor.BridgeActivity;
 
 /**
- * Opens the hosted game in Chrome on Android 10+, letting the full browser try WebGPU
- * even when Android System WebView cannot. Android 10 support is best-effort; the page
- * selects its playable fallback if Chrome cannot create a WebGPU adapter. Older devices
- * and devices without Chrome keep the bundled, offline-capable APK path.
+ * Runs the version-matched web build bundled in this APK, including offline assets.
+ * The game tries its original WebGPU renderer first, then opens scenic fishing automatically
+ * if the Android WebView cannot create an adapter.
  */
 public class MainActivity extends BridgeActivity {
-
-    private static final String WEB_GAME_URL = "https://kidu89.github.io/tidewater/?source=installed-app&appVersion=1.0.16";
-    private static final String CHROME_PACKAGE = "com.android.chrome";
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return;
-
-        Intent chromeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEB_GAME_URL));
-        chromeIntent.setPackage(CHROME_PACKAGE);
-
-        try {
-            startActivity(chromeIntent);
-            finish();
-        } catch (ActivityNotFoundException ignored) {
-            // Keep the bundled local game available if Chrome can't be launched.
-        }
-    }
 }

@@ -390,6 +390,23 @@ export function scatterVegetation( site, seed = 99 ) {
 
 	};
 
+	// Sparse palms and salt-tolerant scrub make the limestone cays readable from the boat.
+	const atoll = WORLD.sunspireAtoll;
+	const atollIslands = [ { center: atoll.center, radiusX: atoll.radiusX, radiusZ: atoll.radiusZ }, ...atoll.islets ];
+	scatter( rand, 390, 565, 585, 704, 8.5, ( x, z ) => {
+
+		const island = atollIslands.some( ( a ) => ( ( x - a.center.x ) / a.radiusX ) ** 2 + ( ( z - a.center.z ) / a.radiusZ ) ** 2 < 0.9 );
+		if ( ! island || rand() > 0.18 ) return;
+		site.cover( x, z, c );
+		if ( c.h < 2.2 || c.h > 8.5 || c.ny < 0.86 ) return;
+		if ( ! site.allowed( x, z, c, { minH: 2.2, maxBare: 0.3, clear: 3, big: true, maxSand: 1.01, maxPath: 0.6 } ) ) return;
+		if ( ! occ.free( x, z, 2.1, 1 ) || ! occT.free( x, z, 1.7, 1 ) ) return;
+		occ.add( x, z, 2.1, KIND.PALM );
+		occT.add( x, z, 1.7, KIND.PALM );
+		out.palms.push( beachPalm( x, z, c.h ) );
+
+	} );
+
 	scatter( rand, - 240, - 230, 250, - 40, 3.4, ( x, z ) => {
 
 		if ( ! site.inBay( x, z ) ) return;

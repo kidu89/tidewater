@@ -473,6 +473,14 @@ function surface( prop, lodFade ) {
 		c = mix( c, vec3f( 0.13, 0.085, 0.05 ), dark );
 		let pale = smoothstep( 0.86, 0.93, fishVnoise( vec2f( z, y ) * 150.0 + 9.0 ) ) * bodyK * 0.2;
 		c = mix( c, vec3f( 0.85, 0.8, 0.72 ), pale );
+	} else if ( pat == ${ PT( 'blackGrouper' ) } ) {
+		// Charcoal olive mottling, soft vertical bars and restrained amber flecks.
+		let mottling = fishVnoise( vec2f( z, y ) * 46.0 + seed * 7.0 );
+		let bars = smoothstep( 0.48, 0.78, sin( ( z + ( n2 - 0.5 ) * 0.025 ) * 28.0 ) ) * smoothstep( 0.28, 0.5, h ) * ( 1.0 - tBelly * 0.7 ) * bodyK;
+		let flecks = smoothstep( 0.76, 0.9, fishVnoise( vec2f( z, y ) * 190.0 + seed * 17.0 ) ) * bodyK;
+		c *= mix( 0.72, 1.08, mottling );
+		c = mix( c, vec3f( 0.045, 0.052, 0.043 ), bars * 0.45 );
+		c = mix( c, vec3f( 0.52, 0.43, 0.24 ), flecks * 0.38 );
 	} else if ( pat == ${ PT( 'tuna' ) } ) {
 		// blackfin tuna: sharp dark back, bronze band, pale bars on the belly, dusky yellow finlets
 		let bronze = fishBand( h, 0.28, 0.05, fwH + 0.06 ) * smoothstep( 0.3, 0.2, z ) * bodyK;

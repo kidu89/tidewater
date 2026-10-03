@@ -216,6 +216,15 @@ export class TemporalUpscale {
 
 	}
 
+	resetHistory() {
+
+		this._needsRestart = true;
+		this._hasPrevInvVP = false;
+		this._camPrev = null;
+		this._camMotion = 0;
+
+	}
+
 	_build() {
 
 		const beautyTex = () => this._beautyTexture();

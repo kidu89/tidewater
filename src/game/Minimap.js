@@ -43,6 +43,7 @@ const CSS = /* css */`
 .gm-mk.is-cay > i { background: #e8b65a; }
 .gm-mk.is-key > i { background: #82c7b5; }
 .gm-mk.is-mangrove > i { background: #9cce79; }
+.gm-mk.is-atoll > i { background: #e8cf88; }
 .gm-mk > b { position: absolute; left: 0; top: 0; width: 0; height: 0; border-left: calc(5 * var(--tw-u)) solid transparent; border-right: calc(5 * var(--tw-u)) solid transparent;
 	border-bottom: calc(7 * var(--tw-u)) solid rgba(255,255,255,0.9); margin: calc(-19 * var(--tw-u)) 0 0 calc(-5 * var(--tw-u)); transform-origin: calc(5 * var(--tw-u)) calc(19 * var(--tw-u)); display: none; }
 .gm-mk.is-edge > b { display: block; }
@@ -77,6 +78,7 @@ const ICON = {
 	cay: '✦',
 	key: '⌂',
 	mangrove: '⌁',
+	atoll: '☼',
 };
 
 const h = ( tag, cls, html ) => {
@@ -137,6 +139,7 @@ export class Minimap {
 			{ id: 'cay', ...mk( 'cay', ICON.cay ), pos: () => WORLD.pelicanCay.center },
 			{ id: 'turtle-key', ...mk( 'key', ICON.key ), pos: () => WORLD.turtleKey.center },
 			{ id: 'mangrove-reach', ...mk( 'mangrove', ICON.mangrove ), pos: () => WORLD.mangroveReach.center },
+			{ id: 'sunspire-atoll', ...mk( 'atoll', ICON.atoll ), pos: () => WORLD.sunspireAtoll.center },
 			{ id: 'boat', ...mk( 'boat', ICON.boat ), pos: () => {
 
 				const b = game.app.boatCtl;
