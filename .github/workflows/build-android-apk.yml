@@ -66,7 +66,8 @@ jobs:
           "$APKSIGNER" verify --verbose "$APK_PATH"
           "$ZIPALIGN" -c -v 4 "$APK_PATH"
           BADGING="$("$AAPT" dump badging "$APK_PATH")"
-          grep -Fq "package: name='com.fishingfree.game' versionCode='21' versionName='1.0.20'" <<< "$BADGING"
+          VERSION_NAME="$(node -p "require('./package.json').version")"
+          grep -Fq "package: name='com.fishingfree.game' versionCode='21' versionName='${VERSION_NAME}'" <<< "$BADGING"
           grep -Fq "sdkVersion:'24'" <<< "$BADGING"
 
       - name: Upload sideloadable APK
