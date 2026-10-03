@@ -34,32 +34,36 @@ The owner's public repository is `kidu89/tidewater`. Windows Actions run [370538
 
 ## Publish through SteamPipe
 
-The Windows folder is a build artifact, not a published Steam build. The helper script creates SteamPipe app and depot VDF files after you obtain the real IDs:
+The Windows folder is a build artifact, not a published Steam build. After completing Steamworks onboarding and creating the app plus Windows depot, package the Windows build and generate a preview:
 
-```powershell
-npm ci
-npm run desktop:package:win
-.\scripts\prepare-steam-pipe.ps1 -AppId <STEAM_APP_ID> -DepotId <WINDOWS_DEPOT_ID>
-```
+    npm ci
+    npm run desktop:package:win
+    .\scripts\prepare-steam-pipe.ps1 -AppId <STEAM_APP_ID> -DepotId <WINDOWS_DEPOT_ID>
 
-The first generated app-build file is preview-only: it produces a local manifest for inspection and does not upload. After checking the generated manifest and confirming the IDs and content root, regenerate in upload mode:
+Preview mode writes the app and depot VDF files under steamworks/generated and does not start SteamCMD or upload any content. Inspect the generated app-build VDF, depot VDF and content root. To produce a local preview manifest, run SteamCMD with the generated app-build VDF while its Preview value is 1; that check requires SteamCMD authentication but does not upload content. Use an account with Edit App Metadata permission for this app:
 
-```powershell
-.\scripts\prepare-steam-pipe.ps1 -AppId <STEAM_APP_ID> -DepotId <WINDOWS_DEPOT_ID> -Upload
-```
+    Push-Location .\steamworks\generated
+    & 'C:\path\to\steamcmd.exe' '+login' '<STEAM_ACCOUNT>' '+run_app_build' 'app_build_<STEAM_APP_ID>.vdf' '+quit'
+    Pop-Location
 
-The generated files are in `steamworks/generated/`, which is ignored by Git. Install Steamworks SDK on the Windows upload machine, sign into SteamCMD with an account that has **Edit App Metadata** permission for this app, then run the generated app-build VDF. Keep the Steam password and Steam Guard code out of the command history and source tree. `SetLive` is deliberately blank in every generated config, so uploading a build does not automatically make it available to a branch. Assign the build to an internal beta branch in Steamworks after upload and testing.
+For a real upload, first sign into SteamCMD interactively on the upload machine, finish Steam Guard, and retain that SteamCMD installation's config/config.vdf. The helper intentionally accepts no password or Steam Guard code. Then run:
 
-The VDF format follows Valve's [SteamPipe build documentation](https://partner.steamgames.com/doc/sdk/uploading?l=english). Valve documents preview builds as manifest-only and an empty `SetLive` value as leaving the build unassigned to a live branch.
+    .\scripts\prepare-steam-pipe.ps1 -AppId <STEAM_APP_ID> -DepotId <WINDOWS_DEPOT_ID> -Upload -SteamCmdPath 'C:\path\to\steamcmd.exe' -SteamUsername '<STEAM_ACCOUNT>'
+
+Upload mode sets Preview to 0 and invokes SteamCMD with the cached account to run the generated app-build VDF. It saves SteamCMD output to steamworks/generated/steamcmd-upload.log, checks the process exit code and requires a newly written depot manifest. Review that log and the Steamworks build history to confirm Valve accepted the build.
+
+The generated app-build VDF keeps SetLive empty. Uploading stores the build in Steamworks but does not assign it to a public or beta branch; set a build live manually in Steamworks only after review. Do not put Steam passwords, Guard codes, or cached SteamCMD configuration in the repository or share them.
+
+The VDF format follows Valve's [SteamPipe build documentation](https://partner.steamgames.com/doc/sdk/uploading?l=english). Valve documents preview builds as manifest-only and an empty SetLive value as leaving a build unassigned to a live branch.
 
 Before using SteamPipe:
 
 1. Create the Steamworks partner account and app entry, complete identity, tax and bank onboarding, and obtain the Steam App ID and Windows depot ID.
-2. Publish the app's SteamPipe depot and launch-option configuration in Steamworks before uploading. The Windows launch option must point to `Fishing Free.exe` in the depot root.
-3. Run the preview, inspect the manifest, then upload the build without setting it live.
-4. Test a clean Steam install and launch on Windows 10/11, then check the Steam overlay, save persistence, window sizing, GPU fallback and the controller setup before submitting the store page and build for review.
+2. Publish the app's SteamPipe depot and launch-option configuration in Steamworks before uploading. The Windows launch option must point to Fishing Free.exe in the depot root.
+3. Run the preview, inspect the VDF and manifest, then upload without setting the build live.
+4. Review the SteamCMD log and Steamworks build history. Test a clean Steam install and launch on Windows 10/11, then check the Steam overlay, save persistence, window sizing, GPU fallback and controller setup before submitting the store page and build for review.
 
-The Steam App ID, depot IDs, SteamCMD credentials, store art, store description, trailer, tested controller profile and release approval have not been supplied, so this project does not upload to or publish on Steam automatically.
+The Steam App ID, depot IDs, SteamCMD credentials, store art, store description, trailer, tested controller profile and release approval have not been supplied, so no SteamPipe upload or publication has been attempted.
 
 ## Current Steam release gates
 

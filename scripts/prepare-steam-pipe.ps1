@@ -11,6 +11,8 @@ param (
 	[string] $ContentRoot,
 	[string] $OutputDirectory,
 	[string] $BuildDescription,
+	[string] $SteamCmdPath,
+	[string] $SteamUsername,
 
 	[switch] $Upload
 )
@@ -43,6 +45,29 @@ $null = New-Item -ItemType Directory -Path $buildOutput -Force
 
 if ([string]::IsNullOrWhiteSpace($BuildDescription)) {
 	$BuildDescription = 'Fishing Free Windows x64 build ' + (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss') + ' UTC'
+}
+
+$resolvedSteamCmdPath = $null
+if ($Upload) {
+	if ([string]::IsNullOrWhiteSpace($SteamCmdPath)) {
+		throw '-Upload requires -SteamCmdPath pointing to steamcmd.exe.'
+	}
+	if ([string]::IsNullOrWhiteSpace($SteamUsername)) {
+		throw '-Upload requires -SteamUsername. The password and Steam Guard code must never be passed to this script.'
+	}
+
+	if (-not [System.IO.Path]::IsPathRooted($SteamCmdPath)) {
+		$SteamCmdPath = Join-Path $repositoryRoot $SteamCmdPath
+	}
+	if (-not (Test-Path -LiteralPath $SteamCmdPath -PathType Leaf)) {
+		throw "SteamCMD was not found at: $SteamCmdPath"
+	}
+	$resolvedSteamCmdPath = (Resolve-Path -LiteralPath $SteamCmdPath).Path
+
+	$steamCmdConfig = Join-Path (Split-Path -Parent $resolvedSteamCmdPath) 'config\config.vdf'
+	if (-not (Test-Path -LiteralPath $steamCmdConfig -PathType Leaf)) {
+		throw "SteamCMD has no cached login configuration at '$steamCmdConfig'. Run SteamCMD interactively, complete sign-in and Steam Guard, then keep its config folder on this upload machine."
+	}
 }
 
 function ConvertTo-VdfValue([string] $Value) {
@@ -90,10 +115,51 @@ $depotBuild = @"
 "@
 
 $utf8WithoutBom = [System.Text.UTF8Encoding]::new($false)
-[System.IO.File]::WriteAllText($appBuildPath, $appBuild.Trim() + "`n", $utf8WithoutBom)
-[System.IO.File]::WriteAllText($depotBuildPath, $depotBuild.Trim() + "`n", $utf8WithoutBom)
+[System.IO.File]::WriteAllText($appBuildPath, $appBuild.Trim() + [Environment]::NewLine, $utf8WithoutBom)
+[System.IO.File]::WriteAllText($depotBuildPath, $depotBuild.Trim() + [Environment]::NewLine, $utf8WithoutBom)
 
-$buildMode = if ($Upload) { 'upload enabled' } else { 'preview only (no upload)' }
 Write-Output "Created $appBuildPath"
 Write-Output "Created $depotBuildPath"
-Write-Output "SteamPipe mode: $buildMode. SetLive is empty; this does not publish a build to a branch."
+
+if (-not $Upload) {
+	Write-Output 'SteamPipe mode: PREVIEW ONLY. SteamCMD was not started and no content was uploaded.'
+	Write-Output 'SetLive is empty; this preview does not assign a build to a live branch.'
+	return
+}
+
+$steamCmdLogPath = Join-Path $OutputDirectory 'steamcmd-upload.log'
+Write-Output "Starting SteamCMD upload for app $AppId using the cached login for '$SteamUsername'."
+Write-Output 'The uploaded build will not be assigned to a live branch; SetLive is empty.'
+
+$manifestStateBefore = @{}
+$existingManifests = Get-ChildItem -LiteralPath $buildOutput -Filter '*.manifest' -File -Recurse -ErrorAction SilentlyContinue
+foreach ($manifest in $existingManifests) {
+	$manifestStateBefore[$manifest.FullName] = "$($manifest.LastWriteTimeUtc.Ticks)|$($manifest.Length)"
+}
+
+Push-Location -LiteralPath $OutputDirectory
+try {
+	& $resolvedSteamCmdPath '+login' $SteamUsername '+run_app_build' (Split-Path -Leaf $appBuildPath) '+quit' 2>&1 |
+		Tee-Object -FilePath $steamCmdLogPath
+	$steamCmdExitCode = $LASTEXITCODE
+} finally {
+	Pop-Location
+}
+if ($steamCmdExitCode -ne 0) {
+	throw "SteamCMD exited with code $steamCmdExitCode. Review its output at '$steamCmdLogPath'."
+}
+
+$recentManifests = @(
+	Get-ChildItem -LiteralPath $buildOutput -Filter '*.manifest' -File -Recurse -ErrorAction SilentlyContinue |
+		Where-Object {
+			$currentState = "$($_.LastWriteTimeUtc.Ticks)|$($_.Length)"
+			-not $manifestStateBefore.ContainsKey($_.FullName) -or $manifestStateBefore[$_.FullName] -ne $currentState
+		}
+)
+if ($recentManifests.Count -eq 0) {
+	throw "SteamCMD exited with code 0 but did not create a fresh depot manifest. Review '$steamCmdLogPath' and the Steamworks build history; upload success is not confirmed."
+}
+
+Write-Output "SteamCMD exited with code 0 and created $($recentManifests.Count) fresh depot manifest(s)."
+Write-Output "Review '$steamCmdLogPath' and the Steamworks build history to confirm the server accepted the upload."
+Write-Output 'The uploaded build remains unassigned to a live branch until you explicitly set it live in Steamworks.'
