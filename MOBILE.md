@@ -8,7 +8,7 @@ Fishing Free keeps its original WebGPU 3D world on devices that support it. If a
 - Package `com.fishingfree.game`, version 1.0.25 / code 25, minimum API 24, target API 36. `apksigner` verified its v2 signature, `zipalign` passed, and the APK contains the 1.0.25 cache name, mobile fallback code and all six scene images.
 - This is a local debug-signed sideload candidate, not a Play release. It uses this workstation's Android debug certificate (SHA-256 `a6bcee7b761b12f3e85267f2579e9f3ec73609974d5fd0c8cb26dc37fb0507aa`). It differs from the prior Actions APK and the emulator's installed 1.0.20 package. Installing it over either may require uninstalling the old package, which can erase its save. Future local builds made on this workstation can use the same debug certificate; GitHub Actions debug builds can have different temporary certificates.
 - The APK has not been installed on the physical Samsung A52 or Huawei. The existing Android 16 emulator still has 1.0.20 installed, and it was left untouched to preserve its app data.
-- The 1.0.25 web assets are built locally; GitHub Pages still serves the last deployed source until the 1.0.25 source commit is pushed and deployment succeeds.
+- The 1.0.25 source is on `main` at `a851aac`; Pages run [#86](https://github.com/kidu89/tidewater/actions/runs/37154452558) succeeded. The public HTML, JavaScript entry and service worker return HTTP 200; the live service worker uses `fishing-free-shell-1.0.25`.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Fishing Free keeps its original WebGPU 3D world on devices that support it. If a
 
 ### Install on a phone with the PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open it in Chrome on Android or Safari on iOS and use the browser's **Install app** or **Add to Home Screen** menu. Supported devices start the full 3D renderer. If a mobile browser cannot start WebGPU, the 1.0.24 source currently deployed automatically opens Scenic Fishing; 1.0.25 adds versioned cache invalidation and a bundled fallback; no graphics setting or manual switch is needed. The PWA needs internet on first load, then its service worker caches the app shell and game assets for later starts. Native Android APKs bundle the game assets and can start offline.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/). Open it in Chrome on Android or Safari on iOS and use the browser's **Install app** or **Add to Home Screen** menu. Supported devices start the full 3D renderer. If a mobile browser cannot start WebGPU, the deployed 1.0.25 source opens Scenic Fishing from the bundled entry code; the service worker changes cache names per version, so the next launch discards stale shell assets. No graphics setting or manual switch is needed. The PWA needs internet on first load, then its service worker caches the app shell and game assets for later starts. Native Android APKs bundle the game assets and can start offline.
 
 ## Create native projects
 
@@ -44,7 +44,7 @@ npx cap open ios
 
 The previous GitHub Actions Android artifact is [Actions run #22](https://github.com/kidu89/tidewater/actions/runs/37150115502), built from commit `3b680b2`: Fishing Free 1.0.24, version code 24, package `com.fishingfree.game`, min API 24 and target API 36. The standalone APK is 57,732,890 bytes, SHA-256 `376DC48B2DAE80A091A5568B4DD615D63C24BE8B6F2124DEAF031A886187B16A`; it is debug-signed, not a Play release. CI and local checks verified the APK signature and alignment, and its bundled JavaScript contains automatic mobile fallback. No physical phone has been checked.
 
-Download the `Fishing-Free-Android-APK` artifact from the Actions run, extract `app-debug.apk`, and send that single APK to the phone. The 1.0.24 debug signing certificate differs from the previous Actions APK, so Android will not update that older install in place. Uninstalling it may erase its local save; back up data first if needed.
+That 1.0.24 Actions APK is historical. Use the local 1.0.25 APK candidate listed above for the current phone check. Its signer differs from the older Actions builds, so Android may require uninstalling the old app first; uninstalling can erase the local save. GitHub Actions debug APKs may use a separate temporary key and should not be mixed with this local build for updates.
 
 GitHub debug APKs may be signed with a different temporary key on different workflow runs. Android may require uninstalling an older debug build before installing a differently signed one; uninstalling erases that app's local save. Back up the save before doing this if it matters.
 
