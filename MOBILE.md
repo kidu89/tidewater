@@ -2,16 +2,14 @@
 
 Fishing Free keeps its original WebGPU 3D world on devices that support it. Android 12 and newer try WebGPU for up to 4.5 seconds, then open Scenic Fishing if no usable adapter is available; Android 10 and 11 go straight to Scenic Fishing. The touch fallback uses high-resolution scenes captured from the game, not real-time 3D. APKs display their version in the game and clear the game's old service-worker cache on startup; browser PWA caching stays on. Desktop retains the full renderer.
 
-## Current source — Fishing Free 1.0.30 (4 October 2026)
+## Current source — Fishing Free 1.0.31 (4 October 2026)
 
-- Added export and restore for Scenic Fishing progress and any saved 3D career. The JSON backup is validated before import; restore asks before replacing matching saves and rolls storage back if writing fails.
-- Production web build and Capacitor Android sync succeeded. Android metadata is version 1.0.30/code 30, package com.fishingfree.game, minimum API 24, target API 36.
-- Installed over local 1.0.29 on an Android 16 x86_64 emulator. When WebGPU was unavailable, Scenic Fishing opened automatically; the photo scene appeared and a touch cast entered the fishing state. This does not verify MuMu, a physical Samsung/Huawei phone, or full 3D.
-- GitHub Actions Android run #27 succeeded from commit 462daa9 (artifact 57,069,866 bytes; SHA-256 `01547f3a1bf93cb527256d4c9ce416ba852f6b6c313b702dfa99eaa34c16c3b6`; expires 18 October 2026). Actions downloads are ZIP archives; extract `app-debug.apk` before sending/installing. The local candidate above is already the raw `.apk` file.
-- Some older Actions APKs and this local candidate use different debug signatures. Android refuses an in-place update across those keys; uninstalling erases local app data, so preserve progress first. Google Play release signing still needs an owner-controlled upload key.
-- Local APK: `release/1.0.30-android-candidate/Fishing-Free-1.0.30-Android.apk`, 57,736,924 bytes, SHA-256 `10522F17D586B19C3070D15998B3C8D1839A8697F2AA5D6E4ADCCD8226AF8506`. Package `com.fishingfree.game`, version 1.0.30/code 30, minimum API 24, target API 36; APK signature and 4-byte alignment verified.
-- The native iOS project is version 1.0.30/build 30. Simulator run #9 succeeded, but its unsigned simulator app cannot install on iPhone. The owner has a personal Apple ID but no Developer Program membership or signing assets, so a signed IPA cannot be produced.
-
+- Fixed the empty journal/cooler's horizontal scrollbar in the packaged Windows game by removing nested horizontal overflow and constraining fish rows to the panel width.
+- Production web build, Capacitor Android sync and Android debug APK build succeeded. Android metadata is version 1.0.31/code 31, package `com.fishingfree.game`, minimum API 24, target API 36.
+- Local APK: `release/1.0.31-android-candidate/Fishing-Free-1.0.31-Android.apk`, 57,736,940 bytes, SHA-256 `28D2E9BFDB9CB754440248B3386B1E7A8C081E8FF295C5F1A5FEBF84AB86BAE1`. APK v2 signature and 4-byte alignment verified. The APK updated the local 1.0.30 build in an Android 16 x86_64 emulator without uninstalling. WebGPU was unavailable there, so Scenic Fishing opened; touch casting and the logbook worked. This does not verify MuMu Player, Samsung A52, Huawei ELE-L29, or 3D WebGPU on a physical phone.
+- The local Windows x64 package is `release/win-unpacked/` (752 files, 450,759,517 bytes); `Fishing Free.exe` is version 1.0.31.0, SHA-256 `4D63FBF5B87E64FA028D54FEDF9E4CCFD817EEECFC26B7546BD4D1227CB2EAF4`. The exact packaged executable opened with WebGPU and the empty-journal capture shows the scrollbar fix. The Windows package is unsigned; clean retail-PC, Steam-client, controller and overlay checks remain open.
+- GitHub Actions build artifacts will be recorded here after the 1.0.31 source tags complete their builds. Actions Android downloads are ZIP archives; extract the APK before sending or installing it.
+- Native iOS metadata is now version 1.0.31/build 31. The owner has a personal Apple ID but no Apple Developer membership or signing assets, so a signed, installable IPA cannot be produced. The simulator build is not installable on iPhone.
 ## Previous verified Android candidate — Fishing Free 1.0.29 (4 October 2026)
 
 - Local debug APK: `release/1.0.29-android-local/Fishing-Free-1.0.29-Android.apk` (57,761,153 bytes; SHA-256 `2409BC064353A00BBF36C89064D5676788379AE87AF08F5186A5E416679DBA29`).
@@ -22,13 +20,13 @@ Fishing Free keeps its original WebGPU 3D world on devices that support it. Andr
 
 ## Requirements
 
-- The latest Android sideload package is the direct 1.0.30 APK above. For GitHub Actions artifacts, download the ZIP and extract the `.apk`; do not rename the ZIP to `.apk`.
-- Safari on iOS can install the PWA. Native iOS metadata is 1.0.30/build 30. Simulator run #9 built successfully, but its unsigned app cannot install on iPhone; no signed IPA exists without Apple Developer signing assets.
+- The latest Android sideload package is the direct 1.0.31 APK above. For GitHub Actions artifacts, download the ZIP and extract the `.apk`; do not rename the ZIP to `.apk`.
+- Safari on iOS can install the PWA. Native iOS metadata is 1.0.31/build 31. No signed IPA exists without Apple Developer signing assets.
 - Android builds require Android Studio and its SDK. Native iOS builds require macOS with Xcode.
 
 ### Install on a phone with the PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.30 ([Pages run #102](https://github.com/kidu89/tidewater/actions/runs/37177858643)). Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.30 ([Pages run #102](https://github.com/kidu89/tidewater/actions/runs/37177858643)); the 1.0.31 Pages build is pending publication from `main`. Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
 
 ## Create native projects
 
@@ -54,7 +52,7 @@ npx cap open ios
 
 The previous GitHub Actions Android artifact is [Actions run #22](https://github.com/kidu89/tidewater/actions/runs/37150115502), built from commit `3b680b2`: Fishing Free 1.0.24, version code 24, package `com.fishingfree.game`, min API 24 and target API 36. The standalone APK is 57,732,890 bytes, SHA-256 `376DC48B2DAE80A091A5568B4DD615D63C24BE8B6F2124DEAF031A886187B16A`; it is debug-signed, not a Play release. CI and local checks verified the APK signature and alignment, and its bundled JavaScript contains automatic mobile fallback. No physical phone has been checked.
 
-The 1.0.24 APK is historical. Use the 1.0.30 Actions artifact listed above. The artifact is a ZIP downloaded from the Actions run; extract the APK before transferring it to the phone. Actions debug signing can differ from a locally signed install, so Android may ask to remove the older app first. Removing the app erases its local progress; the older app has no save-export tool.
+The 1.0.24 APK is historical. Use the 1.0.31 APK listed above, or the 1.0.31 Actions artifact after its build completes. The artifact is a ZIP downloaded from the Actions run; extract the APK before transferring it to the phone. Actions debug signing can differ from a locally signed install, so Android may ask to remove the older app first. Removing the app erases its local progress; the older app has no save-export tool.
 
 GitHub debug APKs may be signed with a different temporary key on different workflow runs. Android may require uninstalling an older debug build before installing a differently signed one; uninstalling erases that app's local save. Back up the save before doing this if it matters.
 
@@ -69,7 +67,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current source metadata is app version **1.0.30**, build **30**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. The unsigned Simulator workflow now runs on pushes to `main` and passed for 1.0.30 in [run #9](https://github.com/kidu89/tidewater/actions/runs/37177858656). It is not an iPhone-installable build. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current source metadata is app version **1.0.31**, build **31**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. The unsigned Simulator workflow now runs on pushes to `main` and passed for 1.0.30 in [run #9](https://github.com/kidu89/tidewater/actions/runs/37177858656). It is not an iPhone-installable build. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.
