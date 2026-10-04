@@ -1,6 +1,6 @@
 {
   "name": "fishing-free",
-  "version": "1.0.38",
+  "version": "1.0.39",
   "description": "A scenic tropical island fishing game.",
   "author": {
     "name": "Fishing Free",
@@ -73,5 +73,5 @@
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
   },
-  "androidVersionCode": 38
+  "androidVersionCode": 39
 }

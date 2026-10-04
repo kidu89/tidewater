@@ -6,6 +6,7 @@ import { SCENIC_SAVE_KEY, normalizeScenicSave, createSaveBackup, parseSaveBackup
 // Preserve phone-mode progress from earlier builds under its original localStorage key.
 const SAVE_KEY = SCENIC_SAVE_KEY;
 const HOLD_LIMIT = 10;
+const CATCH_GESTURE_GUARD_MS = 700;
 const WATERS = [
 	{ id: 'pier', label: 'Old Pier', habitat: 'pier', sea: '#2c8f9a', deep: '#145264', sky: '#86c9e6', scene: 'mobile-scenes/pier.webp', portraitScene: 'mobile-scenes-portrait/pier.webp', position: '94% 50%' },
 	{ id: 'cay', label: 'Pelican Flats', habitat: 'cay', sea: '#4bb9a7', deep: '#257b80', sky: '#a1d9e8', scene: 'mobile-scenes/cay.webp', portraitScene: 'mobile-scenes-portrait/cay.webp', position: '10% 50%' },
@@ -35,6 +36,8 @@ export class CanvasFishingGame {
 		this.phase = 'ready';
 		this.message = 'Choose a stretch of water, cast your line, and bring your catch back to Joe.';
 		this.reeling = false;
+		this.reelPointerActive = false;
+		this.catchGestureGuardUntil = 0;
 		this.progress = 0;
 		this.tension = 32;
 		this.lastFrame = 0;
@@ -139,6 +142,14 @@ export class CanvasFishingGame {
 		this.makeWaterButtons();
 		this.actionButton.addEventListener( 'click', ( event ) => {
 
+			if ( performance.now() < this.catchGestureGuardUntil ) {
+
+				event.preventDefault();
+				event.stopPropagation();
+				return;
+
+			}
+
 			if ( this.phase === 'fight' ) {
 
 				if ( event.detail === 0 ) this.reeling = ! this.reeling;
@@ -152,6 +163,7 @@ export class CanvasFishingGame {
 
 			if ( this.phase !== 'fight' ) return;
 			event.preventDefault();
+			this.reelPointerActive = true;
 			this.reeling = true;
 			this.actionButton.classList.add( 'is-reeling' );
 			this.actionButton.setPointerCapture?.( event.pointerId );
@@ -159,6 +171,9 @@ export class CanvasFishingGame {
 		} );
 		const releaseReel = () => {
 
+			const pointerWasReeling = this.reelPointerActive;
+			this.reelPointerActive = false;
+			if ( pointerWasReeling && this.phase === 'caught' ) this.catchGestureGuardUntil = performance.now() + CATCH_GESTURE_GUARD_MS;
 			this.reeling = false;
 			this.actionButton.classList.remove( 'is-reeling' );
 
@@ -420,6 +435,7 @@ export class CanvasFishingGame {
 			species: entry.id, kg, cm: Math.round( fishLengthCm( entry.id, kg ) ), value,
 			newSpecies: first, record, prevBestKg: previousBestKg, kept: this.data.bag.length <= HOLD_LIMIT,
 		};
+		if ( this.reelPointerActive ) this.catchGestureGuardUntil = performance.now() + CATCH_GESTURE_GUARD_MS;
 		this.save();
 		this.phase = 'caught';
 		this.target = null;
@@ -446,7 +462,7 @@ export class CanvasFishingGame {
 
 	async shareLastCatch() {
 
-		if ( ! this.lastCatch || this.shareButton.disabled ) return;
+		if ( ! this.lastCatch || this.shareButton.disabled || this.reelPointerActive || performance.now() < this.catchGestureGuardUntil ) return;
 		this.shareButton.disabled = true;
 		this.shareButton.textContent = 'PREPARING CATCH CARD…';
 		try {
