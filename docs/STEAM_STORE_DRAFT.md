@@ -1,6 +1,6 @@
 # Fishing Free — Steam store page draft
 
-**Status:** Internal copy draft, 4 October 2026. Current Windows candidate: Fishing Free 1.0.27. This is not a live Steam page; title clearance, Steamworks onboarding, store art, gameplay media and release approval remain open.
+**Status:** Internal copy draft, 4 October 2026. Current Windows candidate: Fishing Free 1.0.28. This is not a live Steam page; title clearance, Steamworks onboarding, store art, gameplay media and release approval remain open.
 
 ## Store identity
 
@@ -76,7 +76,7 @@ Record a 45–60 second trailer from the final Windows build: harbor and changin
 - Decide whether a demo is worth maintaining. If offered, give it a satisfying, clearly bounded fishing loop and test the save handoff before publishing.
 - Confirm minimum Windows version and GPU requirements using a clean install. The current 3D renderer needs a usable WebGPU adapter; do not claim universal GPU compatibility.
 - Test first launch, shader compilation time, save persistence, display scaling, window controls, sleep/resume, the Steam overlay and controller input on a clean Windows 10/11 machine.
-- Windows 1.0.27 candidate: GitHub Actions [run 37166245511](https://github.com/kidu89/tidewater/actions/runs/37166245511) built the x64 package, confirmed the executable and passed a staged startup/loopback smoke check. The artifact is a Steam-ready folder, not a SteamPipe upload or retail-PC/Steam-client verification. Exact-build screenshots, controller/overlay checks and approved store assets remain open.
+- Windows 1.0.28 candidate: GitHub Actions [run 37168743697](https://github.com/kidu89/tidewater/actions/runs/37168743697) built the x64 package, confirmed the executable and passed a staged startup/loopback smoke check. The artifact is a Steam-ready folder, not a SteamPipe upload or retail-PC/Steam-client verification. Exact-build screenshots, controller/overlay checks and approved store assets remain open.
 - Complete Steamworks partner onboarding, Steam Direct, the app and Windows depot setup, store/build review, SteamPipe upload, Coming Soon period and owner-triggered release.
 - Steam Direct is currently US$100 per app credit, recoupable after at least US$1,000 adjusted gross revenue; first releases also have a 30-day wait after fee payment and need a publicly visible Coming Soon page for at least two weeks. Valve says store-page and build reviews typically take 3–5 business days and recommends submitting at least 7 business days before a planned go-live. Recheck the fee, timing, and review state in Steamworks before setting a release date. [Steam Direct](https://partner.steamgames.com/steamdirect/), [review process](https://partner.steamgames.com/doc/store/review_process?l=english), [release process](https://partner.steamgames.com/doc/store/releasing?l=english).
 
