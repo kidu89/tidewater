@@ -1,7 +1,11 @@
 {
   "name": "fishing-free",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "description": "A scenic tropical island fishing game.",
+  "author": {
+    "name": "Fishing Free",
+    "url": "https://github.com/kidu89/tidewater"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5189",
     "build": "vite build && node scripts/copy-legal.mjs",
@@ -69,5 +73,5 @@
       "artifactName": "${productName}-${version}-${arch}.${ext}"
     }
   },
-  "androidVersionCode": 34
+  "androidVersionCode": 35
 }
