@@ -178,6 +178,7 @@ export class CanvasFishingGame {
 			if ( event.target.closest( '[data-close-log]' ) ) this.closeLogbook();
 			if ( event.target.closest( '[data-graphics-info]' ) ) this.showGraphicsDetails();
 			if ( event.target.closest( '[data-copy-graphics-info]' ) ) this.copyGraphicsDetails();
+			if ( event.target.closest( '[data-retry-3d]' ) ) window.location.reload();
 			if ( event.target.closest( '[data-upgrade-rod]' ) ) this.upgradeRod();
 			if ( event.target.closest( '[data-claim-weekly]' ) ) this.claimWeeklyBrief();
 			if ( event.target.closest( '[data-save-manager]' ) ) this.showSaveManager();
@@ -564,7 +565,7 @@ export class CanvasFishingGame {
 		};
 		const rows = Object.entries( labels ).map( ( [ key, label ] ) => `<li><span>${ label }</span><strong data-graphics-value="${ key }">Checking…</strong></li>` ).join( '' );
 		const modal = this.root.querySelector( '[data-modal]' );
-		modal.innerHTML = `<section class="tw-lite__dialog" role="dialog" aria-modal="true" aria-label="Graphics diagnostics"><div class="tw-lite__dialog-top"><div><span>DEVICE CHECK</span><h2>Graphics details</h2></div><button type="button" data-close-log aria-label="Close graphics details">×</button></div><p>This report stays on this device. It can show why full 3D did not start.</p><ul>${ rows }</ul><button class="tw-lite__primary" type="button" data-copy-graphics-info>COPY DEVICE REPORT</button><small class="tw-lite__diagnostic-status" data-graphics-copy-status aria-live="polite"></small><button class="tw-lite__secondary" type="button" data-close-log>BACK TO THE WATER</button></section>`;
+		modal.innerHTML = `<section class="tw-lite__dialog" role="dialog" aria-modal="true" aria-label="Graphics diagnostics"><div class="tw-lite__dialog-top"><div><span>DEVICE CHECK</span><h2>Graphics details</h2></div><button type="button" data-close-log aria-label="Close graphics details">×</button></div><p>This report stays on this device. It can show why full 3D did not start.</p><ul>${ rows }</ul><button class="tw-lite__primary" type="button" data-copy-graphics-info>COPY DEVICE REPORT</button><button class="tw-lite__secondary" type="button" data-retry-3d>RETRY FULL 3D</button><small class="tw-lite__diagnostic-status" data-graphics-copy-status aria-live="polite"></small><button class="tw-lite__secondary" type="button" data-close-log>BACK TO THE WATER</button></section>`;
 		for ( const [ key, value ] of Object.entries( this.graphicsDetails ) ) {
 			const field = modal.querySelector( `[data-graphics-value="${ key }"]` );
 			if ( field ) field.textContent = String( value ).slice( 0, 180 );

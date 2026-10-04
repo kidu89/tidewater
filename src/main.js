@@ -68,12 +68,13 @@ function showGraphicsError( reason ) {
 	const androidBelowSupportFloor = androidVersion > 0 && androidVersion < 12;
 
 	if ( status ) status.textContent = androidBelowSupportFloor
-		? details.osVersion + ' is below the Android 12 baseline for full 3D. Scenic Fishing is opening.'
+		? details.osVersion + ' has limited WebGPU support and no compatible adapter was available. Scenic Fishing is opening.'
 		: 'Full 3D could not start because the browser did not provide a compatible graphics adapter.';
 	if ( note ) {
-		note.textContent = androidBelowSupportFloor
-			? 'Android 10 and 11 start Scenic Fishing automatically. Full 3D needs Android 12 or newer and a supported graphics adapter.'
-			: 'Update Chrome and Android, then tap Try again. Open device details to copy a report if the problem remains.';
+		if ( details.mode === 'Android WebView' ) note.textContent = 'This game runs in Android System WebView, separate from Chrome. Update Android System WebView, then restart; DEVICE DETAILS reports what the game app can access.';
+		else if ( details.mode === 'Android browser' ) note.textContent = 'A GPU status page can show WebGPU enabled while this game runtime has no usable adapter. Update Chrome and send DEVICE DETAILS if it persists.';
+		else if ( details.mode === 'iOS browser' ) note.textContent = 'This Safari runtime could not provide a usable WebGPU adapter. Update iOS and try again.';
+		else note.textContent = 'Update this browser and its graphics drivers, then tap TRY AGAIN. DEVICE DETAILS reports what this game runtime can access.';
 	}
 
 	const percent = loader.querySelector( '.loader-pct' );
@@ -293,8 +294,8 @@ async function startWebGPUGame() {
 async function start() {
 
 	if ( bench ) return startWebGPUGame();
-	const androidVersion = Number( navigator.userAgent.match( /Android\s+(\d+)/i )?.[ 1 ] || 0 );
-	if ( androidVersion > 0 && androidVersion < 12 ) return showGraphicsError( 'Android ' + androidVersion + ' uses Scenic Fishing for a reliable mobile experience.' );
+	// Try Chromium's compatibility adapter where an experimental WebGPU backend is available.
+	// Probe the actual adapter instead of forcing those phones into Scenic Fishing by OS version.
 	if ( ! navigator.gpu ) return showGraphicsError( 'This browser does not expose WebGPU.' );
 	const adapter = await findWebGPUAdapter();
 	if ( ! adapter ) return showGraphicsError( 'WebGPU is present but could not create a graphics adapter.' );
