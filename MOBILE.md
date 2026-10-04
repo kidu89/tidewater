@@ -37,12 +37,12 @@ Open [Fishing Free](https://kidu89.github.io/tidewater/) in Chrome on Android or
 ## Requirements
 
 - The latest Android sideload package is the direct 1.0.40 APK above. GitHub Actions artifact downloads are ZIP files; extract the `.apk` before installing.
-- Safari on iOS can install the PWA. Native iOS source metadata is 1.0.40/build 40. The latest signed or simulator build has not yet been produced from this version; the unsigned 1.0.39 Simulator build passed in [run #37](https://github.com/kidu89/tidewater/actions/runs/37221748972). No signed IPA exists without Apple Developer signing assets.
+- Safari on iOS can install the PWA. Native iOS source metadata is 1.0.40/build 40. The unsigned Simulator build for 1.0.40 passed in [run #39](https://github.com/kidu89/tidewater/actions/runs/37229004274). No signed IPA exists without Apple Developer signing assets.
 - Android builds require Android Studio and its SDK. Native iOS builds require macOS with Xcode.
 
 ### Install on a phone with the PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.39 ([Pages run #130](https://github.com/kidu89/tidewater/actions/runs/37221748959)); the service worker cache is versioned with the current build. Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.40 ([Pages run #132](https://github.com/kidu89/tidewater/actions/runs/37229004278)); the service worker cache is versioned with the current build. Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
 
 ## Create native projects
 
@@ -83,7 +83,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current source metadata is app version **1.0.40**, build **40**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. The unsigned Simulator workflow passed for 1.0.39 in [run #37](https://github.com/kidu89/tidewater/actions/runs/37221748972). It is not an iPhone-installable build. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current source metadata is app version **1.0.40**, build **40**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. The unsigned Simulator workflow passed for 1.0.40 in [run #39](https://github.com/kidu89/tidewater/actions/runs/37229004274). It is not an iPhone-installable build. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.
