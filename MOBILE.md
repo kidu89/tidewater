@@ -8,17 +8,17 @@ Fishing Free keeps its original WebGPU 3D world on devices that support it. Andr
 - Package `com.fishingfree.game`, version 1.0.29 / code 29, minimum API 24, target API 36. APK v2 signature and 4-byte alignment verified. Local signer SHA-256 `a6bcee7b761b12f3e85267f2579e9f3ec73609974d5fd0c8cb26dc37fb0507aa`; it matches the prior local 1.0.28 build. This is a debug sideload build, not a Play release.
 - Installed over 1.0.28 on an Android 16 x86_64 emulator: Scenic displayed the weekly objective card, accepted a cast and showed a fish bite. Full catch/claim and physical phone, MuMu Player, Huawei ELE-L29 and WebGPU 3D checks remain open.
 - GitHub Actions [run #26](https://github.com/kidu89/tidewater/actions/runs/37172317923) succeeded for 1.0.29 and uploaded artifact Fishing-Free-Android-APK (57,066,910 bytes; archive digest `sha256:cb9b68b2ebc30496146ff71fd523c1579725cc78edac6e01f4305eef30b7385f`).
-- Source commit 771ab24 and tag android-v1.0.29 are pushed. Android Actions run #26 passed; Pages run #99 and iOS Simulator run #6 also succeeded for the 1.0.29 code.
+- Android source commit 771ab24 and tag android-v1.0.29 are pushed. Android Actions run #26 passed; Windows Steam package run #27, Pages run #100 and iOS Simulator run #7 also succeeded for the 1.0.29 source.
 
 ## Requirements
 
 - Current Android candidates: local APK 1.0.29 above and Actions artifact 1.0.29 from run #26. Both are debug-signed sideload builds, not Play releases; local and Actions keys may differ.
-- Safari on iOS can install the PWA. The native iOS project uses 1.0.29/build 29. iOS Simulator [run #6](https://github.com/kidu89/tidewater/actions/runs/37172503848) passed, but its unsigned simulator app cannot install on iPhone. The owner has a personal Apple ID but no Apple Developer membership or signing assets, so no signed IPA exists.
+- Safari on iOS can install the PWA. The native iOS project uses 1.0.29/build 29. iOS Simulator [run #7](https://github.com/kidu89/tidewater/actions/runs/37173206919) built successfully, but its unsigned simulator app cannot install on iPhone. The owner has a personal Apple ID but no Apple Developer membership or signing assets, so no signed IPA exists.
 - Android builds require Android Studio and its SDK. Native iOS builds require macOS with Xcode.
 
 ### Install on a phone with the PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.29 (Pages run #99). Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.29 ([Pages run #100](https://github.com/kidu89/tidewater/actions/runs/37173206912)). Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
 
 ## Create native projects
 

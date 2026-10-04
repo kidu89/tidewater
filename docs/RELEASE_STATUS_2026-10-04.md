@@ -1,8 +1,9 @@
 # Fishing Free — release status
 
-**Checked:** 4 October 2026. Fishing Free 1.0.28, Android code 28, iOS build 28. Source commit `3d47658b568fa634db480d1e0b01738f497a2f23` is on `main`; `android-v1.0.28` and `desktop-v1.0.28` point to it.
+**Historical snapshot:** checked 4 October 2026 — Fishing Free 1.0.28, Android code 28, iOS build 28. Source commit `3d47658b568fa634db480d1e0b01738f497a2f23` was the baseline for tags `android-v1.0.28` and `desktop-v1.0.28`.
 
-## Current evidence
+## 1.0.28 evidence snapshot (historical)
+These rows record the previous candidate. The current 1.0.29 release evidence is below.
 
 | Area | Verified state | Remaining gap |
 |---|---|---|
@@ -22,9 +23,10 @@ The local 1.0.28 debug APK installed successfully on a clean emulator. Its signe
 
 Physical Android installation/gameplay, full mobile WebGPU validation, signed Play release, signed iOS IPA, Steamworks IDs and SteamPipe upload remain outstanding. Monetization decisions still need player data.
 
-## 1.0.29 local candidate
+## Current candidate: Fishing Free 1.0.29 — 4 October 2026
 
 - Added a weekly harbor brief to Scenic Fishing. The rotating objective is limited to the six Scenic habitats and their existing scenes; only three location-based briefs are reachable in this mode; qualifying fish advance it, progress saves in the existing phone-mode save, and the player can claim the in-game cash reward once each UTC week.
 - Production web build and Capacitor Android sync succeeded. The APK is at release/1.0.29-android-local/Fishing-Free-1.0.29-Android.apk (57,761,153 bytes; SHA-256 2409BC064353A00BBF36C89064D5676788379AE87AF08F5186A5E416679DBA29). Package com.fishingfree.game, version 1.0.29/code 29, min API 24, target API 36. APK v2 signature and 4-byte alignment verified; local debug signer matches 1.0.28.
 - Installed over 1.0.28 on the Android 16 x86_64 emulator. Scenic scene, weekly card, cast and fish-bite states were visually confirmed. Full eligible catch, reward claim and restart persistence were not verified end-to-end.
-- Source commit 771ab24 and tag android-v1.0.29 are pushed. Android Actions [run #26](https://github.com/kidu89/tidewater/actions/runs/37172317923) passed and uploaded artifact Fishing-Free-Android-APK (57,066,910 bytes; digest `sha256:cb9b68b2ebc30496146ff71fd523c1579725cc78edac6e01f4305eef30b7385f`). Pages [run #99](https://github.com/kidu89/tidewater/actions/runs/37172504130) and iOS Simulator [run #6](https://github.com/kidu89/tidewater/actions/runs/37172503848) also passed. Physical Samsung A52, MuMu Player, Huawei ELE-L29, WebGPU 3D, signed Play and iOS install checks remain open.
+- Android source commit 771ab24 and tag android-v1.0.29 are pushed. Android Actions [run #26](https://github.com/kidu89/tidewater/actions/runs/37172317923) passed; Pages [run #100](https://github.com/kidu89/tidewater/actions/runs/37173206912), iOS Simulator [run #7](https://github.com/kidu89/tidewater/actions/runs/37173206919), and Windows Steam [run #27](https://github.com/kidu89/tidewater/actions/runs/37173986774) passed for the 1.0.29 source. Physical Samsung A52, MuMu Player, Huawei ELE-L29, WebGPU 3D, signed Play and iOS install checks remain open.
+- Local Windows x64 folder `release/1.0.29-windows-candidate/win-unpacked/`: 752 files, 450,751,119 bytes; executable 1.0.29.0, PE x64, SHA-256 `C45C6B3D11EA2EBC341E03751542E1C90DA9E57FD767F8D319060EB08CEF6C86`. ZIP handoff is 218,302,372 bytes; SHA-256 `78E8E27E84173F4FA76C13F8910311944FA9F20AB4B7882B187CC81104023C44`. Windows Actions #27 uploaded a 214,625,301-byte artifact (digest `sha256:db283e3e7a34316cebe74c8970bcff72409edfd91d9c3832cc9f128d12004383`) and passed staged startup checks. This unsigned folder is not yet uploaded through SteamPipe.
