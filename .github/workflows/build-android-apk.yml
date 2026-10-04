@@ -68,7 +68,8 @@ jobs:
           BADGING="$("$AAPT" dump badging "$APK_PATH")"
           VERSION_NAME="$(node -p "require('./package.json').version")"
           VERSION_CODE="$(node -p "require('./package.json').androidVersionCode")"
-          grep -Fq "package: name='com.fishingfree.game' versionCode='"$VERSION_CODE"' versionName='${VERSION_NAME}'" <<< "$BADGING"
+          APPLICATION_ID="$(node -p "require('./package.json').build.appId")$(node -p "require('./package.json').androidDebugApplicationIdSuffix")"
+          grep -Fq "package: name='${APPLICATION_ID}' versionCode='"$VERSION_CODE"' versionName='${VERSION_NAME}'" <<< "$BADGING"
           grep -Fq "sdkVersion:'24'" <<< "$BADGING"
 
       - name: Upload sideloadable APK

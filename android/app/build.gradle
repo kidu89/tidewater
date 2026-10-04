@@ -25,6 +25,12 @@ android {
         }
     }
     buildTypes {
+        debug {
+            // Keep CI sideload builds installable alongside older builds signed with another debug key.
+            applicationIdSuffix appMetadata.androidDebugApplicationIdSuffix ?: ''
+            resValue "string", "app_name", "Fishing Free Native"
+            resValue "string", "title_activity_main", "Fishing Free Native"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
