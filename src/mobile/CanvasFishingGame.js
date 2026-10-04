@@ -115,7 +115,7 @@ export class CanvasFishingGame {
 						<button class="tw-lite__share" type="button" data-share hidden>SHARE CATCH</button>
 					</div>
 					<div class="tw-lite__upgrade" data-upgrade hidden></div>
-					<p class="tw-lite__device-note"><span>Scenic fishing · Fishing Free ${ __FISHING_FREE_VERSION__ } · Your progress saves on this device</span><button type="button" data-graphics-info>GRAPHICS INFO</button></p>
+					<p class="tw-lite__device-note"><span>Scenic fishing · Fishing Free ${ __FISHING_FREE_VERSION__ } · Your progress saves on this device</span><span class="tw-lite__device-note-actions">${ this.graphicsDetails.nativeAndroidApp ? '<button class="tw-lite__chrome-3d" type="button" data-open-3d-chrome>TRY FULL 3D IN CHROME</button>' : '' }<button type="button" data-graphics-info>GRAPHICS INFO</button></span><small class="tw-lite__chrome-status" data-chrome-status aria-live="polite">${ this.graphicsDetails.nativeAndroidApp ? 'Online mode · Chrome uses a separate save.' : '' }</small></p>
 				</div>
 				<div class="tw-lite__modal" data-modal hidden></div>
 			</div>`;
@@ -179,6 +179,7 @@ export class CanvasFishingGame {
 			if ( event.target.closest( '[data-graphics-info]' ) ) this.showGraphicsDetails();
 			if ( event.target.closest( '[data-copy-graphics-info]' ) ) this.copyGraphicsDetails();
 			if ( event.target.closest( '[data-retry-3d]' ) ) window.location.reload();
+			if ( event.target.closest( '[data-open-3d-chrome]' ) ) this.openFull3DInChrome();
 			if ( event.target.closest( '[data-upgrade-rod]' ) ) this.upgradeRod();
 			if ( event.target.closest( '[data-claim-weekly]' ) ) this.claimWeeklyBrief();
 			if ( event.target.closest( '[data-save-manager]' ) ) this.showSaveManager();
@@ -571,6 +572,31 @@ export class CanvasFishingGame {
 			if ( field ) field.textContent = String( value ).slice( 0, 180 );
 		}
 		modal.hidden = false;
+
+	}
+
+	async openFull3DInChrome() {
+
+		const button = this.root.querySelector( '[data-open-3d-chrome]' );
+		const status = this.root.querySelector( '[data-chrome-status]' );
+		if ( ! button || ! status ) return;
+		button.disabled = true;
+		status.textContent = 'Opening the online game in Chrome…';
+		try {
+
+			if ( typeof window.__fishingFreeOpen3DInChrome !== 'function' ) throw new Error( 'Chrome launch is unavailable in this build.' );
+			await window.__fishingFreeOpen3DInChrome();
+			status.textContent = 'Chrome opened. This version needs internet and keeps a separate save.';
+
+		} catch ( error ) {
+
+			status.textContent = error?.message || 'Could not open Chrome. Check that a browser is installed.';
+
+		} finally {
+
+			button.disabled = false;
+
+		}
 
 	}
 

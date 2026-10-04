@@ -1,5 +1,5 @@
 import './core/BenchSeed.js';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { CanvasFishingGame } from './mobile/CanvasFishingGame.js';
 
 // ?bench runs in background tabs too (automation): rAF does not fire in a hidden page.
@@ -13,6 +13,11 @@ if ( /[?&]bench\b/.test( location.search ) ) {
 
 const bench = /[?&]bench\b/.test( location.search );
 const desktopShell = new URLSearchParams( location.search ).get( 'desktop' ) === '1';
+const AndroidGameBrowser = registerPlugin( 'AndroidGameBrowser' );
+globalThis.__fishingFreeOpen3DInChrome = () => {
+	if ( ! Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'android' ) throw new Error( 'This option is only available in the Android app.' );
+	return AndroidGameBrowser.openInChrome( { url: 'https://kidu89.github.io/tidewater/' } );
+};
 const WEBGPU_PROBE_TIMEOUT_MS = 10000;
 const ANDROID_WEBGPU_PROBE_TIMEOUT_MS = 4500;
 
@@ -46,6 +51,7 @@ function browserGraphicsDetails( reason = '' ) {
 	return {
 		appVersion: __FISHING_FREE_VERSION__,
 		mode: /;\s*wv\)/i.test( ua ) ? 'Android WebView' : /Android/i.test( ua ) ? 'Android browser' : /iPhone|iPad|iPod/i.test( ua ) ? 'iOS browser' : 'Browser',
+		nativeAndroidApp: Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android',
 		osVersion: android ? `Android ${ android[ 1 ] }` : /iPhone|iPad|iPod/i.test( ua ) ? 'iOS (version not exposed)' : 'Not reported',
 		engineVersion: chromium ? `Chromium ${ chromium[ 1 ] }` : webkit ? `WebKit ${ webkit[ 1 ] }` : 'Not reported',
 		secureContext: globalThis.isSecureContext ? 'Yes' : 'No',
