@@ -1,6 +1,27 @@
 # Fishing Free — Steam store page draft
 
-**Status:** Internal copy draft, 4 October 2026. Current Windows candidate: Fishing Free 1.0.31. This is not a live Steam page; title clearance, Steamworks onboarding, store art, gameplay media and release approval remain open.
+**Status:** Internal copy draft, 4 October 2026. Current Windows candidate: Fishing Free 1.0.32. This is not a live Steam page; title clearance, Steamworks onboarding, final store art, owner approval and release approval remain open.
+
+## Current 1.0.32 Windows screenshot review
+
+The 1.0.32 candidate was launched from the packaged Windows executable in release/win-unpacked/Fishing Free.exe (245,780,992 bytes; SHA-256 A8CFBA8FCBFF09CBFCE17DF8714A9832BAC553F9F003C27DD4F1E745943BE444). Captures were made directly from that running production package at 1920×1080. Movement, fishing, catches, boat boarding, helm use and travel were performed with ordinary in-game controls. No screenshot was edited, cropped, composited or annotated.
+
+The locally retained, Git-ignored review frames are under release/1.0.32-windows-candidate/:
+
+- steam-1.0.32-gameplay-clean.png — clean harbor gameplay and normal HUD.
+- store-10-pier-walk-clean.png — first-person walk down the pier toward the boat and islands.
+- store-04-pier-fishing.png — rod, cast line and water.
+- store-05-bobber-watch.png — a naturally triggered bite and strike prompt.
+- store-07-catch-record.png — actual caught striped mullet and catch record.
+- store-08-fish-logbook.png — in-game logbook after the catch.
+- store-13-helm.png — boat at the harbor, shown from the normal third-person helm camera.
+- store-14-boat-underway.png — boat moving offshore with wake and island scenery.
+
+All eight listed files were checked as 1920×1080 PNGs. These are an internal review set; the owner has not approved them for publication. Steam’s current graphical asset guidance calls for at least five screenshots at 1920×1080 and 16:9: [Steam graphical asset requirements](https://partner.steamgames.com/doc/store/assets?language=english).
+
+Do not use the discarded internal frames: store-02-cast-at-harbor.png lands on sand; store-06-fish-fight.png exposes a slack-line state; store-09-boat-approach.png and store-09b-pier-steps.png show obstructed under-dock views; store-15-pelican-cay-approach.png shows the boat grounded against rocks. The game’s harbor-tow recovery returned the boat to the pier and retained the Pelican Cay discovery. The destination capture still needs a safe, clean pass before it can be considered for the store.
+
+A 1.0.32 screenshot index with capture conditions and review notes is in docs/steam-capture-review-1.0.32.md. Store media must continue to match the approved shipping build; the screenshots here are not uploaded to Steam and do not constitute owner approval.
 
 ## Store identity
 
@@ -46,9 +67,9 @@ Do not add Multiplayer, Online Co-op, PvP, Steam Cloud, Steam Achievements, Stea
 
 ### Screenshots
 
-The existing `docs/screenshot.jpg` and `docs/screenshot-beach.jpg` show in-game 3D scenes at 1920×950. Keep them as capture references. Before store submission, capture at least six clean screenshots from the exact Windows release candidate, at the shipping display resolution:
+The existing beach captures are useful scene references. The 1.0.32 packaged build now has eight local 1920×1080 review screenshots listed above; owner approval is still pending. Suggested coverage for the final submitted set:
 
-A 1.0.30 review set of 18 1920×1080 frames is in release/1.0.30-windows-candidate/store-captures-review/. They come from the production bundle through the Electron screenshot harness, not the packaged executable, and show camera presets without the normal HUD or player-driven gameplay. Visual review found an overly dark sunset, a too-close underwater fish, and an overexposed cove. These are not approved store assets; the exact packaged build still needs six distinct gameplay captures with the intended HUD. Steam requires at least five screenshots at 1920×1080 and 16:9. [Steam graphical asset requirements](https://partner.steamgames.com/doc/store/assets?language=english).
+Historical 1.0.30 review: the 18 images were captured from the production bundle rather than the packaged executable and are not current store evidence. Use the eight exact-package 1.0.32 frames listed near the top of this draft for owner review. Steam graphical asset requirements: [Valve documentation](https://partner.steamgames.com/doc/store/assets?language=english).
 
 1. First-person cast from the pier, rod and open water visible.
 2. A landed fish and the in-game catch card or field guide.
@@ -63,7 +84,7 @@ Capture the actual game, with no marketing text or edited-in features. Confirm e
 
 Internal art drafts now exist in `docs/steam-assets-draft-v2/`: main 1232×706, header 920×430, small capsule 462×174, vertical store capsule 748×896, library capsule 600×900, and library hero 3840×1240. Run `scripts/build-steam-capsules.ps1` and `scripts/build-steam-artwork.ps1` from the repository root to create them. The AI-generated source concept was guided by the in-game beach capture, but is not game footage. The hero export is an upscaled 1672×940 concept crop and is not final-resolution art. None of these assets has been approved for the live store. Clear the working name and get owner approval before Steam submission. Store capsules may show the game's artwork, name and official subtitle only. The library hero is artwork only. Do not put discounts, review scores, extra feature claims or calls to action on base capsules.
 
-The exact packaged Windows 1.0.31 executable has been opened in an isolated profile with WebGPU available. The local, Git-ignored screenshot `release/1.0.31-windows-candidate/steam-1.0.31-journal-final.png` (1920×1080) confirms the empty journal/cooler no longer shows a horizontal scrollbar. This fixes the earlier 1.0.30 UI defect. The five gameplay review frames documented below came from the 1.0.30 executable and are not evidence for this candidate. The exact 1.0.31 build still needs six distinct gameplay captures with the intended HUD, including alternate destinations and a catch moment; this journal image is review evidence, not an approved store screenshot set.
+Historical 1.0.31 review: the empty journal/cooler layout was visually checked in its packaged executable. Its screenshot set has been superseded by the exact-package 1.0.32 review set near the top of this draft.
 
 The packaged Windows 1.0.23 artifact was launched locally in an isolated profile and reached the active 3D walking scene. Ten unedited 1920×1080 review captures are in `release/1.0.23-actions-4c851f9/store-captures-review/`; two are ordinary harbor walking views with nearly the same composition, while eight use the in-game Free Camera. These images are local, Git-ignored and unapproved review evidence, not a store-ready set; they are not uploaded to GitHub. The two raw 1.0.21 captures remain historical references. Steam requires screenshots of the product at a minimum of 1920×1080 and 16:9; target six distinct gameplay frames from the final Windows build, including the six moments listed above. Do not crop or pad images to imply they came from a 16:9 build.
 
@@ -80,7 +101,7 @@ Record a 45–60 second trailer from the final Windows build: harbor and changin
 - Decide whether a demo is worth maintaining. If offered, give it a satisfying, clearly bounded fishing loop and test the save handoff before publishing.
 - Confirm minimum Windows version and GPU requirements using a clean install. The current 3D renderer needs a usable WebGPU adapter; do not claim universal GPU compatibility.
 - Test first launch, shader compilation time, save persistence, display scaling, window controls, sleep/resume, the Steam overlay and controller input on a clean Windows 10/11 machine.
-- Windows 1.0.31 candidate: locally packaged in `release/win-unpacked/` (752 files; 450,759,517 bytes; exe version 1.0.31.0; SHA-256 `4D63FBF5B87E64FA028D54FEDF9E4CCFD817EEECFC26B7546BD4D1227CB2EAF4`). The executable was opened in an isolated profile with WebGPU and the empty-journal layout was visually checked. It is unsigned and has not been installed through Steam or a clean retail PC. The six-distinct-gameplay-shot store gate remains open; controller/overlay checks, Steamworks IDs and SteamPipe upload are also outstanding. The 1.0.31 Windows Actions build passed in [run #29](https://github.com/kidu89/tidewater/actions/runs/37185802559) and uploaded the `Fishing-Free-Windows-x64` ZIP artifact (214,626,937 bytes). Prior Windows Actions run #28 is for 1.0.30, not this candidate.
+- Windows 1.0.32 candidate: locally packaged in release/win-unpacked/ (752 files; 450,759,879 bytes; executable version 1.0.32.0; SHA-256 A8CFBA8FCBFF09CBFCE17DF8714A9832BAC553F9F003C27DD4F1E745943BE444). The production build was opened in an isolated profile with WebGPU; title screen, 3D gameplay, controls, photo mode, fishing, a natural catch, journal, pier walk, boat boarding, helm and underway movement were visually checked. The unsigned package has not been installed through Steam or a clean retail PC. Eight exact-package screenshots are locally available for owner review; destination fishing still needs a clean capture. Steamworks IDs, controller/overlay checks and SteamPipe upload remain outstanding. Windows Actions [run #30](https://github.com/kidu89/tidewater/actions/runs/37188543312) passed and uploaded the 1.0.32 ZIP artifact (214,626,920 bytes; digest sha256:7b7689a313689ad13bbc97ee0f30c38b13f520347581bad7c7ba158541965964).
 - Complete Steamworks partner onboarding, Steam Direct, the app and Windows depot setup, store/build review, SteamPipe upload, Coming Soon period and owner-triggered release.
 - Steam Direct is currently US$100 per app credit, recoupable after at least US$1,000 adjusted gross revenue; first releases also have a 30-day wait after fee payment and need a publicly visible Coming Soon page for at least two weeks. Valve says store-page and build reviews typically take 3–5 business days and recommends submitting at least 7 business days before a planned go-live. Recheck the fee, timing, and review state in Steamworks before setting a release date. [Steam Direct](https://partner.steamgames.com/steamdirect/), [review process](https://partner.steamgames.com/doc/store/review_process?l=english), [release process](https://partner.steamgames.com/doc/store/releasing?l=english).
 
