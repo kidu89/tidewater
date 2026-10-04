@@ -1885,6 +1885,7 @@ export class UI {
 		this._sparkT = 0;
 		this._statsT = 0;
 		const debugParams = new URLSearchParams( location.search );
+		this.developerTools = import.meta.env?.DEV === true || debugParams.has( 'debugUI' ) || debugParams.has( 'bench' );
 		this._showStats = debugParams.has( 'stats' ) || debugParams.has( 'bench' );
 		this._lvl = 'good';
 		this._lastAct = performance.now();
@@ -2082,7 +2083,7 @@ export class UI {
 
 	_buildPanel() {
 
-		const panel = this.panel = h( 'aside', 'tw-panel tw-glass tw-interactive', { 'aria-label': 'Settings' } );
+		const panel = this.panel = h( 'aside', 'tw-panel tw-glass tw-interactive', { 'aria-label': 'Developer settings', hidden: ! this.developerTools } );
 		panel.inert = true;
 
 		const head = h( 'header', 'tw-panel-head' );
@@ -2123,11 +2124,13 @@ export class UI {
 		this.pages = h( 'div', 'tw-pages' );
 
 		const foot = h( 'footer', 'tw-panel-foot' );
-		foot.innerHTML = '<span><kbd>H</kbd>Hide</span><span><kbd>F1</kbd>Controls</span><span><kbd>P</kbd>Photo mode</span>';
+		foot.innerHTML = this.developerTools
+			? '<span><kbd>H</kbd>Hide</span><span><kbd>F1</kbd>Controls</span><span><kbd>P</kbd>Photo mode</span>'
+			: '<span><kbd>F1</kbd>Controls</span><span><kbd>P</kbd>Photo mode</span>';
 		panel.append( head, this.tabBar, this.pages, foot );
 
 		// collapsed state: a slim rail of tab icons
-		const rail = this.rail = h( 'nav', 'tw-rail tw-glass tw-interactive', { 'aria-label': 'Settings' } );
+		const rail = this.rail = h( 'nav', 'tw-rail tw-glass tw-interactive', { 'aria-label': 'Developer settings', hidden: ! this.developerTools } );
 		const open = h( 'button', 'tw-rail-btn tw-rail-open', { type: 'button', 'aria-label': 'Open settings', 'data-tip': 'Settings (H)', 'data-tip-side': 'left', html: icon( 'sliders' ) } );
 		open.addEventListener( 'click', () => this.togglePanel( true ) );
 		this.railTabs = h( 'div', 'tw-rail-tabs' );
@@ -2181,7 +2184,7 @@ export class UI {
 					</section>
 					<section>
 						<h3>Interface</h3>
-						${ row( k( 'H' ), 'Settings panel' ) }
+						${ this.developerTools ? row( k( 'H' ), 'Settings panel' ) : '' }
 						${ row( k( 'P' ), 'Photo mode<small>Hides all interface</small>' ) }
 						${ row( k( 'F1' ) + k( '?' ), 'This sheet' ) }
 						${ row( k( 'Esc' ), 'Release the mouse' ) }
@@ -2196,7 +2199,7 @@ export class UI {
 						${ row( k( 'LB', 'RB' ), 'Sprint / boost · boat camera' ) }
 						${ row( k( 'LT', 'RT' ), 'Retrieve line · cast, strike or reel' ) }
 						${ row( k( 'L3', 'R3' ), 'Jump / surface · dive' ) }
-						${ row( k( 'Start' ), 'Open settings · close the current panel' ) }
+						${ row( k( 'Start' ), 'Close the current panel' ) }
 						${ row( k( 'D-pad' ), 'Move or navigate open panels' ) }
 					</section>
 				</div>
@@ -2228,7 +2231,7 @@ export class UI {
 					<span><span class="tw-wasd"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>Move</span>
 					<span><kbd class="tw-kbd-ico">${ icon( 'mouse' ) }</kbd>Look</span>
 					<span><kbd>E</kbd>Interact</span>
-					<span><kbd>H</kbd>Settings</span>
+					${ this.developerTools ? '<span><kbd>H</kbd>Settings</span>' : '' }
 					<span><kbd>F1</kbd>All controls</span>
 				</div>
 			</div>`;
@@ -2400,7 +2403,7 @@ export class UI {
 
 		if ( e.repeat || this._start ) return;
 
-		if ( e.code === 'KeyH' ) {
+		if ( e.code === 'KeyH' && this.developerTools ) {
 
 			if ( this._photo ) this.setPhotoMode( false );
 			this.togglePanel();
@@ -2693,6 +2696,7 @@ export class UI {
 
 	togglePanel( force ) {
 
+		if ( ! this.developerTools ) return false;
 		const open = force === undefined ? ! this._panelOpen : !! force;
 		if ( open === this._panelOpen ) return open;
 		this._panelOpen = open;

@@ -124,7 +124,7 @@ function openGameWindow() {
 			if ( new URL( url ).protocol === 'https:' ) shell.openExternal( url );
 		} catch { /* Ignore invalid external links. */ }
 	} );
-	mainWindow.loadURL( `${ gameOrigin }/?desktop=1` );
+	mainWindow.loadURL( `${ gameOrigin }/?desktop=1${ app.isPackaged ? '' : '&debugUI=1' }` );
 }
 
 const hasSingleInstanceLock = app.requestSingleInstanceLock();
