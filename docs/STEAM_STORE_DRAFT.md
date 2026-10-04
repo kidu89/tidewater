@@ -48,6 +48,8 @@ Do not add Multiplayer, Online Co-op, PvP, Steam Cloud, Steam Achievements, Stea
 
 The existing `docs/screenshot.jpg` and `docs/screenshot-beach.jpg` show in-game 3D scenes at 1920×950. Keep them as capture references. Before store submission, capture at least six clean screenshots from the exact Windows release candidate, at the shipping display resolution:
 
+A 1.0.30 review set of 18 1920×1080 frames is in release/1.0.30-windows-candidate/store-captures-review/. They come from the production bundle through the Electron screenshot harness, not the packaged executable, and show camera presets without the normal HUD or player-driven gameplay. Visual review found an overly dark sunset, a too-close underwater fish, and an overexposed cove. These are not approved store assets; the exact packaged build still needs six distinct gameplay captures with the intended HUD. Steam requires at least five screenshots at 1920×1080 and 16:9. [Steam graphical asset requirements](https://partner.steamgames.com/doc/store/assets?language=english).
+
 1. First-person cast from the pier, rod and open water visible.
 2. A landed fish and the in-game catch card or field guide.
 3. Boat underway with the island visible ahead.
