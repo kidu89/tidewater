@@ -2,6 +2,9 @@ name: Build Fishing Free iOS Simulator
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read

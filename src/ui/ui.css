@@ -181,6 +181,16 @@ body {
 	text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
 }
 
+.loader-version {
+	margin: calc(5 * var(--tw-u)) 0 0;
+	color: rgba(255, 245, 228, 0.66);
+	font-size: clamp(9px, 0.8vw, 11px);
+	font-weight: 650;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
+}
+
 .loader-panel {
 	display: flex;
 	flex-direction: column;

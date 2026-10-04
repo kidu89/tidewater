@@ -111,7 +111,7 @@ export class CanvasFishingGame {
 						<button class="tw-lite__share" type="button" data-share hidden>SHARE CATCH</button>
 					</div>
 					<div class="tw-lite__upgrade" data-upgrade hidden></div>
-					<p class="tw-lite__device-note"><span>Scenic fishing · Your progress saves on this device</span><button type="button" data-graphics-info>GRAPHICS INFO</button></p>
+					<p class="tw-lite__device-note"><span>Scenic fishing · Fishing Free ${ __FISHING_FREE_VERSION__ } · Your progress saves on this device</span><button type="button" data-graphics-info>GRAPHICS INFO</button></p>
 				</div>
 				<div class="tw-lite__modal" data-modal hidden></div>
 			</div>`;

@@ -16,9 +16,24 @@ const desktopShell = new URLSearchParams( location.search ).get( 'desktop' ) ===
 const WEBGPU_PROBE_TIMEOUT_MS = 10000;
 const ANDROID_WEBGPU_PROBE_TIMEOUT_MS = 4500;
 
-if ( ! bench && ! desktopShell && ! import.meta.env.DEV && 'serviceWorker' in navigator ) {
-	navigator.serviceWorker.register( `${ import.meta.env.BASE_URL }sw.js`, { scope: import.meta.env.BASE_URL } )
-		.catch( ( error ) => console.warn( '[Fishing Free] Offline cache could not be enabled.', error ) );
+const versionLabel = document.querySelector( '[data-app-version]' );
+if ( versionLabel ) versionLabel.textContent = 'VERSION ' + __FISHING_FREE_VERSION__;
+
+if ( ! bench && ! desktopShell && 'serviceWorker' in navigator ) {
+	if ( Capacitor.isNativePlatform() ) {
+		// Native releases already bundle every asset. Remove an older PWA worker/cache so an APK update
+		// cannot keep serving stale JavaScript from WebView storage; local saves are in localStorage.
+		navigator.serviceWorker.getRegistrations()
+			.then( ( registrations ) => Promise.all( registrations
+				.filter( ( registration ) => new URL( registration.scope ).origin === location.origin )
+				.map( ( registration ) => registration.unregister() ) ) )
+			.then( () => 'caches' in window ? window.caches.keys() : [] )
+			.then( ( names ) => Promise.all( names.filter( ( name ) => name.startsWith( 'fishing-free-shell-' ) ).map( ( name ) => window.caches.delete( name ) ) ) )
+			.catch( ( error ) => console.warn( '[Fishing Free] Native cache cleanup could not be completed.', error ) );
+	} else if ( ! import.meta.env.DEV ) {
+		navigator.serviceWorker.register( `${ import.meta.env.BASE_URL }sw.js`, { scope: import.meta.env.BASE_URL } )
+			.catch( ( error ) => console.warn( '[Fishing Free] Offline cache could not be enabled.', error ) );
+	}
 }
 
 function browserGraphicsDetails( reason = '' ) {
