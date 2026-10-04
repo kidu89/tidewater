@@ -1,7 +1,7 @@
 # Fishing Free — product, market and monetization audit
 
 **Audit date:** 4 October 2026
-**Research baseline:** Fishing Free 1.0.36, with game systems and monetization assessed against the 1.0.34 gameplay baseline and the 1.0.36 harbor-rescue fix. Android, Windows, Pages and iOS Simulator Actions passed for 1.0.36; the direct 1.0.36 APK installed on an API 36 emulator. Physical-phone WebGPU reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
+**Research baseline:** Fishing Free 1.0.37. The game systems and monetization remain assessed against the 1.0.34 gameplay baseline, 1.0.36 harbor-rescue fix and 1.0.37 whale-surfacing adjustment. Android, Windows, Pages and iOS Simulator Actions passed for 1.0.37; its local APK installed and launched on the Android 16 emulator. Physical-phone reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
 **Purpose:** current product decision, market framing, monetization recommendation and release plan. Historical build details are kept in [docs/release status](docs/RELEASE_STATUS_2026-10-04.md).
 
 ## Release validation update — Fishing Free 1.0.36 — 4 October 2026
