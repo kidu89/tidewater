@@ -1,20 +1,21 @@
 # Fishing Free — product, market and monetization audit
 
 **Audit date:** 4 October 2026
-**Research baseline:** core gameplay in Fishing Free 1.0.26; current release candidate 1.0.31, with the 1.0.29 Scenic weekly harbor brief, save backups, and a 1.0.31 journal layout fix. The release source is on the user-owned `kidu89/tidewater` repository.
+**Research baseline:** Fishing Free 1.0.32. The current Windows package and the Android/Web/PWA/iOS-simulator workflows have fresh 4 October 2026 evidence; retention, physical-phone reliability and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
 **Purpose:** current product decision, market framing, monetization recommendation and release plan. Historical build details are kept in [docs/release status](docs/RELEASE_STATUS_2026-10-04.md).
 
 ## Latest verified state — 4 October 2026
 
-The 1.0.31 source is pushed as commit `38e9735`; Android, Windows, Pages and iOS Simulator Actions succeeded.
+The current product source/tag commit is 5c1871c; the latest main commit deacdcf updates release documentation. Git push to the user-owned kidu89/tidewater remote succeeded. Android, Windows, Pages and iOS Simulator Actions passed for Fishing Free 1.0.32.
 
-- **Ownership and product name:** the user-owned public repository is `kidu89/tidewater`, and product-facing metadata says Fishing Free. Retain the upstream MIT copyright/license and third-party asset credits; rebranding does not transfer authorship or remove license obligations.
-- **Web/PWA:** Pages deployed version 1.0.31 in [run #108](https://github.com/kidu89/tidewater/actions/runs/37185788213); the public service worker reports `fishing-free-shell-1.0.31`. No physical-phone browser check has passed.
-- **Android:** local APK `release/1.0.31-android-candidate/Fishing-Free-1.0.31-Android.apk`, 57,736,940 bytes, SHA-256 `28D2E9BFDB9CB754440248B3386B1E7A8C081E8FF295C5F1A5FEBF84AB86BAE1`. Package `com.fishingfree.game`, version 1.0.31/code 31, min API 24, target API 36; v2 signature and 4-byte alignment verified. It updated the local 1.0.30 build in an Android 16 x86_64 emulator without uninstalling; Scenic Fishing, touch casting and logbook opened. Samsung A52, Huawei, MuMu and physical-device WebGPU 3D remain unverified. Android Actions [run #28](https://github.com/kidu89/tidewater/actions/runs/37185802513) passed and uploaded a ZIP artifact.
-- **Windows:** local x64 package `release/win-unpacked/` (752 files, 450,759,517 bytes); executable version 1.0.31.0, SHA-256 `4D63FBF5B87E64FA028D54FEDF9E4CCFD817EEECFC26B7546BD4D1227CB2EAF4`. It was launched in an isolated profile with WebGPU; the empty journal no longer displays the horizontal scrollbar. Windows Actions [run #29](https://github.com/kidu89/tidewater/actions/runs/37185802559) also passed. The package is unsigned; retail-PC, Steam-client, controller and overlay checks remain open.
-- **Steam:** there is no supplied Steamworks App ID/depot ID, approved store page, SteamPipe upload, review or live branch. Final title clearance and owner-approved media are not complete.
-- **iOS:** Xcode project settings now use version 1.0.31/build 31, bundle `com.fishingfree.game`, target iOS 15. The 1.0.31 Simulator build passed in [run #15](https://github.com/kidu89/tidewater/actions/runs/37185788168). No signed installable IPA exists because the owner has a personal Apple ID but no Apple Developer membership or signing assets. Safari PWA remains the iPhone route.
-- **Commercial evidence:** no representative retention, wishlist, conversion, sales or willingness-to-pay data exists. There is no billing, ads, purchase entitlement or real-money currency.
+- **Ownership and product name:** repository and remote are under kidu89; the game UI, executable and package metadata are branded Fishing Free. Source and user-facing app labels no longer use dgreenheck or apistol. The tidewater repository slug and legacy storage keys remain for links and save compatibility. Preserve the original MIT copyright/license notice and third-party asset credits; those are legal attribution, not publisher branding.
+- **Windows:** local x64 package release/win-unpacked has 752 files totaling 450,759,879 bytes. Fishing Free.exe is 245,780,992 bytes, SHA-256 A8CFBA8FCBFF09CBFCE17DF8714A9832BAC553F9F003C27DD4F1E745BE444. It launched with WebGPU and the production 3D scene; normal fishing, catch, journal, pier and boat play were checked. Windows Actions [run #30](https://github.com/kidu89/tidewater/actions/runs/37188543312) passed. The package is unsigned and has not been installed through Steam or on a clean retail PC.
+- **Android:** direct APK release/1.0.32-android-candidate/Fishing-Free-1.0.32-Android.apk is 57,737,080 bytes, SHA-256 88BC648B73398AF2040D8F66B5F4C1DBEB7D363B57F0992251F7D878B7AF4123. Package com.fishingfree.game, version 1.0.32/code 32, min API 24, target API 36; signature v2 and alignment passed. Android 16 x86_64 emulator checked install/launch, Scenic fallback, touch cast and logbook. Samsung A52, MuMu Player, Huawei ELE-L29 and physical-device WebGPU 3D remain unverified. Android Actions [run #29](https://github.com/kidu89/tidewater/actions/runs/37188543395) passed.
+- **Web/PWA:** Pages [run #110](https://github.com/kidu89/tidewater/actions/runs/37188508546) passed and deployed the 1.0.32 source. A physical phone/browser pass remains open.
+- **iOS:** project metadata is 1.0.32/build 32, bundle com.fishingfree.game. iOS Simulator [run #17](https://github.com/kidu89/tidewater/actions/runs/37188508539) passed. The owner has a personal Apple ID but no Apple Developer membership or distribution signing assets; there is no iPhone-installable IPA.
+- **Steam:** the exact Windows package has eight internal unedited 1920×1080 screenshots, indexed in docs/steam-capture-review-1.0.32.md. The set has normal gameplay HUD and real fishing/catch/boat sequences. The owner has not approved it. A clean destination-fishing image, final art/title approval, Steamworks AppID/depot IDs, Steam client/clean-PC/controller/overlay checks and SteamPipe upload remain open. The in-repo SteamPipe script prepares preview VDFs when real IDs are supplied and keeps SetLive empty.
+- **Commercial evidence:** no representative retention, wishlists, conversion, sales or willingness-to-pay data exists. There is no checkout, billing, ads, purchase entitlement or real-money currency.
+
 ## Executive decision
 
 **Continue controlled testing; do not announce a Steam date or buy user-acquisition ads yet.** The product has a strong visual premise and a multi-trip solo progression loop. The first-session experience and store distribution are not sufficiently verified, and there is no evidence yet that players return or would pay.
@@ -23,7 +24,7 @@ Keep the first product free and single-player. Preserve all current waters and p
 
 ## What is in the product now
 
-Core content counts are unchanged from 1.0.26 through 1.0.31:
+Core content counts are unchanged from 1.0.26 through 1.0.32:
 
 - Browser-first custom WebGPU/WGSL fishing and island exploration: cast, hook, manage line tension, land a fish, keep or sell it, then upgrade gear/boat.
 - Fish log and size/weight records, local save data, photo mode, catch-card sharing and offline-first solo progression.
@@ -129,14 +130,14 @@ For digital features consumed inside a Play-distributed Android app, the current
 - Preserve the root MIT license, upstream copyright, CREDITS.md and vendor/third-party asset notices in all source and shipping packages.
 - The game package name is com.fishingfree.game. Existing legacy test builds using another package ID do not update in place; different Android signing certificates can also require uninstalling and may erase local saves.
 - No Steam App ID/depot IDs or completed Steamworks onboarding are recorded. Steam Direct fee, review lead time and Coming Soon requirements are documented in STEAM.md; recheck Valve's current rules before scheduling.
-- Store art concepts are drafts, and current screenshot previews do not show a normal gameplay HUD from the exact packaged build. Six shipping-build screenshots, trailer, support contact and privacy disclosures remain open.
+- Store capsules are drafts. Eight exact-package gameplay screenshots exist in the 1.0.32 review set and await owner approval; one safe destination-fishing image, trailer, support contact and privacy disclosures remain open.
 
 ## Order of work and exit criteria
 
 ### P0 — make the Windows and phone paths trustworthy
 
 1. Obtain the Steamworks App ID and Windows depot ID and complete partner onboarding. Never put Steam passwords or Steam Guard codes in chat or source control.
-2. Capture six distinct, unedited gameplay screenshots and a 45–60 second trailer from the actual 1.0.27 Windows build. Existing source-preview captures omit the normal HUD and are composition references only.
+2. Review the eight unedited 1920×1080 captures from the actual 1.0.32 Windows package; obtain owner approval and capture a safe destination-fishing scene. Then record a 45–60 second trailer from the release candidate.
 3. On a clean Windows 10/11 PC, verify WebGPU 3D, shader cold start, local save close/reopen, resizing, keyboard/mouse, physical gamepad and Steam overlay. Set honest minimum/recommended GPU requirements.
 4. Install the current standalone APK on the Samsung A52 without overwriting valuable save data. Record Android, Chrome and Android System WebView versions, installation result, graphics/fallback, touch fishing, performance and offline relaunch. Test Android 10 separately and keep signing consistent for updates.
 5. Check the iPhone PWA in Safari on a physical iPhone. Native iOS distribution remains blocked until there is an Apple signing path.
@@ -146,7 +147,7 @@ For digital features consumed inside a Play-distributed Android app, the current
 ### P1 — validate the loop and discovery
 
 - Run separate moderated sessions on desktop 3D, Android 3D where available, Android Scenic Fishing and iPhone PWA.
-- Fix blocked boat recovery, unclear cast/fight controls, small-screen overlap, stuck camera, blank scenes and slow cold starts before adding large content.
+- Verify capsize-to-harbor rescue on real gameplay; tow recovery from grounding was reproduced and worked in the 1.0.32 package. Improve shore/rock approach cues if playtests show repeated grounding, and continue checking cast/fight clarity, small-screen layout, camera recovery and cold starts.
 - Recruit at least 100 first-time players per platform/mode. Compare first-catch completion and day-one/day-seven return by hardware and renderer; a friend-only or single-device sample is inconclusive.
 - Track launch → first playable action → first bite → first catch → sell/upgrade → second session → share → invitee launch/first catch. Collect only needed events and disclose them.
 - Publish a simple landing page with accurate media, support/privacy information and correct platform links. Buy no traffic until installation and first catch work.
