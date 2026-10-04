@@ -1,19 +1,19 @@
 # Fishing Free — product, market and monetization audit
 
 **Audit date:** 4 October 2026
-**Research baseline:** core gameplay in Fishing Free 1.0.26; current release candidate 1.0.28. Versions 1.0.27–1.0.28 update mobile startup, cache handling, diagnostics and release metadata; fish, maps, progression and commercial hypotheses are unchanged.
+**Research baseline:** core gameplay in Fishing Free 1.0.26; current local release candidate 1.0.29. Versions 1.0.27–1.0.28 update mobile startup, cache handling, diagnostics and release metadata; 1.0.29 adds a Scenic weekly harbor brief without changing the full 3D game.
 **Purpose:** current product decision, market framing, monetization recommendation and release plan. Historical build details are kept in [docs/release status](docs/RELEASE_STATUS_2026-10-04.md).
 
 ## Latest verified state — 4 October 2026
 
-The current candidate is Fishing Free 1.0.28. Android 12+ tries the WebGPU 3D renderer for up to 4.5 seconds before Scenic Fishing opens; Android 10/11 go directly to Scenic Fishing. Version 1.0.28 makes the build visible and removes the game's old service-worker cache from native packages while keeping PWA caching. The fallback uses high-resolution scenes and touch fishing, not real-time 3D; it installed and accepted a cast on an Android 16 x86_64 emulator, but physical phone and WebGPU 3D checks are still open.
+The current local candidate is Fishing Free 1.0.29. Android 12+ tries the WebGPU 3D renderer for up to 4.5 seconds before Scenic Fishing opens; Android 10/11 go directly to Scenic Fishing. Version 1.0.29 adds a weekly brief card for reachable Scenic habitats, persists brief progress in the existing phone-mode save, and pays its one-time reward into the in-game wallet. It keeps high-resolution scenes and touch fishing, not real-time 3D. The APK was installed over 1.0.28 on an Android 16 x86_64 emulator; the card and cast/bite screen appeared, but an eligible catch, claim and restart persistence have not been verified end-to-end.
 
 - **Ownership and product name:** the user-owned public repository is `kidu89/tidewater`, and product-facing metadata says Fishing Free. Retain the upstream MIT copyright/license and third-party asset credits; rebranding does not transfer authorship or remove license obligations.
 - **Web/PWA:** Pages deployed version 1.0.28 from commit `3d47658` in [run 37168627882](https://github.com/kidu89/tidewater/actions/runs/37168627882). No physical-phone browser check has passed.
-- **Android:** local APK `release/1.0.28-android-local/Fishing-Free-1.0.28-Android.apk`, 57,732,385 bytes, SHA-256 `01A6DBBC4EB3E774316ADCAA5D2F6674F0EF19E3FAFCC0A06E34E972F16CF183`. Package `com.fishingfree.game`, version 1.0.28/code 28, min API 24, target API 36; v2 signature and 4-byte alignment verified. It installed on a clean Android 16 x86_64 emulator and Scenic Fishing accepted a cast and displayed a bite. Actions [run 37168743935](https://github.com/kidu89/tidewater/actions/runs/37168743935) passed the APK checks and uploaded its debug artifact. No physical Samsung A52, Huawei or MuMu Player check has passed.
+- **Android:** local APK `release/1.0.29-android-local/Fishing-Free-1.0.29-Android.apk`, 57,761,153 bytes, SHA-256 `2409BC064353A00BBF36C89064D5676788379AE87AF08F5186A5E416679DBA29`. Package `com.fishingfree.game`, version 1.0.29/code 29, min API 24, target API 36; v2 signature and 4-byte alignment verified. The 1.0.29 APK installed over 1.0.28 on an Android 16 x86_64 emulator, displayed the weekly Scenic card and reached a fish bite. Previous Actions [run 37168743935](https://github.com/kidu89/tidewater/actions/runs/37168743935) validated 1.0.28; 1.0.29 has not yet run in GitHub Actions. No physical Samsung A52, Huawei or MuMu Player check has passed.
 - **Windows:** Windows Actions [run 37168743697](https://github.com/kidu89/tidewater/actions/runs/37168743697) built the 1.0.28 x64 package and passed executable and staged startup/loopback checks. It is unsigned. Clean retail-PC/WebGPU startup, save persistence, controller and Steam overlay remain unverified.
 - **Steam:** there is no supplied Steamworks App ID/depot ID, approved store page, SteamPipe upload, review or live branch. Final title clearance and owner-approved media are not complete.
-- **iOS:** Xcode App configurations use version 1.0.28/build 28, bundle `com.fishingfree.game`, target iOS 15. Simulator build [run 37168627889](https://github.com/kidu89/tidewater/actions/runs/37168627889) succeeded. No signed installable IPA exists because the owner has a personal Apple ID but no Apple Developer membership or signing assets. Safari PWA remains the iPhone route.
+- **iOS:** Xcode project settings now use version 1.0.29/build 29, bundle `com.fishingfree.game`, target iOS 15. The last successful simulator build was 1.0.28 in [run 37168627889](https://github.com/kidu89/tidewater/actions/runs/37168627889); the 1.0.29 workflow has not run yet. No signed installable IPA exists because the owner has a personal Apple ID but no Apple Developer membership or signing assets. Safari PWA remains the iPhone route.
 - **Commercial evidence:** no representative retention, wishlist, conversion, sales or willingness-to-pay data exists. There is no billing, ads, purchase entitlement or real-money currency.
 ## Executive decision
 
@@ -23,7 +23,7 @@ Keep the first product free and single-player. Preserve all current waters and p
 
 ## What is in the product now
 
-Source-table counts are unchanged from 1.0.26 through 1.0.28: **24 catchable fish**, **14 permanent career contracts**, **24 in-game achievements**, nine habitats, five destinations counting the home island, and a weekly harbor brief chosen deterministically from nine brief types.
+Source-table counts are unchanged from 1.0.26 through 1.0.29:
 
 - Browser-first custom WebGPU/WGSL fishing and island exploration: cast, hook, manage line tension, land a fish, keep or sell it, then upgrade gear/boat.
 - Fish log and size/weight records, local save data, photo mode, catch-card sharing and offline-first solo progression.

@@ -28,11 +28,12 @@ export function getUtcWeekId( date = new Date() ) {
 
 }
 
-export function getWeeklyBriefSpec( weekId, discoveredLocations = [] ) {
+export function getWeeklyBriefSpec( weekId, discoveredLocations = [], availableHabitats = null ) {
 
 	const match = /^(\d{4})-W(\d{2})$/.exec( weekId || '' );
 	const weekNumber = match ? Number( match[ 1 ] ) * 53 + Number( match[ 2 ] ) : 0;
-	const available = WEEKLY_BRIEFS.filter( ( brief ) => ! brief.location || discoveredLocations.includes( brief.location ) );
+	const supportedHabitats = availableHabitats ? new Set( availableHabitats ) : null;
+	const available = WEEKLY_BRIEFS.filter( ( brief ) => ( ! brief.location || discoveredLocations.includes( brief.location ) ) && ( ! supportedHabitats || supportedHabitats.has( brief.habitat ) ) );
 	return available[ weekNumber % available.length ];
 
 }

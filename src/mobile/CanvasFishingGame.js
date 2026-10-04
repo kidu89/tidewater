@@ -1,5 +1,6 @@
 import './CanvasFishingGame.css';
 import { FISH, fishLengthCm, fishValue } from '../game/FishTable.js';
+import { WEEKLY_BRIEFS, getUtcWeekId, getWeeklyBriefSpec } from '../game/WeeklyBriefs.js';
 
 // Preserve phone-mode progress from earlier builds under its original localStorage key.
 const SAVE_KEY = 'tidewater.phone-mode.v1';
@@ -12,6 +13,8 @@ const WATERS = [
 	{ id: 'mangrove', label: 'Mangrove Creek', habitat: 'mangrove', sea: '#388d78', deep: '#174d4a', sky: '#a0c9b9', scene: 'mobile-scenes/mangrove.webp', position: '52% 55%' },
 	{ id: 'atoll', label: 'Sunspire Atoll', habitat: 'atoll', sea: '#2c9da7', deep: '#155766', sky: '#aadfe4', scene: 'mobile-scenes/atoll.webp', position: '49% 52%' },
 ];
+const SCENIC_HABITATS = WATERS.map( ( water ) => water.habitat );
+const SCENIC_LOCATIONS = [ 'pelican-cay', 'mangrove-reach', 'sunspire-atoll' ];
 
 const clamp = ( value, min, max ) => Math.max( min, Math.min( max, value ) );
 const rand = ( min, max ) => min + Math.random() * ( max - min );
@@ -45,7 +48,7 @@ export class CanvasFishingGame {
 
 	load() {
 
-		const empty = { cash: 0, rodLevel: 0, bag: [], collection: {}, catches: 0, bestKg: 0 };
+		const empty = { cash: 0, rodLevel: 0, bag: [], collection: {}, catches: 0, bestKg: 0, weeklyBrief: null };
 		try {
 
 			const saved = JSON.parse( localStorage.getItem( SAVE_KEY ) || 'null' );
@@ -62,9 +65,17 @@ export class CanvasFishingGame {
 				}
 
 			}
+			const savedBrief = saved.weeklyBrief && typeof saved.weeklyBrief === 'object' && /^\d{4}-W\d{2}$/.test( saved.weeklyBrief.weekId || '' )
+				? WEEKLY_BRIEFS.find( ( brief ) => brief.id === saved.weeklyBrief.id && SCENIC_HABITATS.includes( brief.habitat ) && ( ! brief.location || SCENIC_LOCATIONS.includes( brief.location ) ) )
+				: null;
+			const weeklyBrief = savedBrief ? {
+				weekId: saved.weeklyBrief.weekId, id: savedBrief.id,
+				progress: Math.min( savedBrief.target, Math.max( 0, Math.floor( Number( saved.weeklyBrief.progress ) || 0 ) ) ),
+				claimed: !! saved.weeklyBrief.claimed,
+			} : null;
 			return {
 				cash: Math.max( 0, Number( saved.cash ) || 0 ), rodLevel: clamp( Number( saved.rodLevel ) || 0, 0, 3 ), bag, collection,
-				catches: Math.max( 0, Number( saved.catches ) || 0 ), bestKg: Math.max( 0, Number( saved.bestKg ) || 0 ),
+				catches: Math.max( 0, Number( saved.catches ) || 0 ), bestKg: Math.max( 0, Number( saved.bestKg ) || 0 ), weeklyBrief,
 			};
 
 		} catch {
@@ -78,6 +89,24 @@ export class CanvasFishingGame {
 	save() {
 
 		try { localStorage.setItem( SAVE_KEY, JSON.stringify( this.data ) ); } catch { /* the game still works when storage is full or disabled */ }
+
+	}
+
+	get weeklyBrief() {
+
+		const weekId = getUtcWeekId();
+		const currentSpec = getWeeklyBriefSpec( weekId, SCENIC_LOCATIONS, SCENIC_HABITATS );
+		let saved = this.data.weeklyBrief;
+		if ( ! saved || saved.weekId !== weekId || saved.id !== currentSpec.id ) {
+
+			saved = this.data.weeklyBrief = { weekId, id: currentSpec.id, progress: 0, claimed: false };
+			this.save();
+
+		}
+
+		const spec = WEEKLY_BRIEFS.find( ( brief ) => brief.id === saved.id ) || currentSpec;
+		const progress = Math.min( spec.target, Math.max( 0, Number( saved.progress ) || 0 ) );
+		return { ...spec, weekId, progress, complete: progress >= spec.target, claimed: !! saved.claimed };
 
 	}
 
@@ -96,6 +125,10 @@ export class CanvasFishingGame {
 					</div>
 				</header>
 				<div class="tw-lite__toast" role="status" aria-live="polite" data-message></div>
+				<aside class="tw-lite__brief" aria-label="Weekly harbor brief">
+					<div class="tw-lite__brief-main"><span class="tw-lite__brief-icon" data-brief-icon aria-hidden="true">⚓</span><div class="tw-lite__brief-copy"><span class="tw-lite__brief-kicker">WEEKLY HARBOR BRIEF</span><strong data-brief-title></strong><small data-brief-description></small></div><strong class="tw-lite__brief-count" data-brief-count></strong></div>
+					<div class="tw-lite__brief-bottom"><div class="tw-lite__brief-track" role="progressbar" aria-label="Weekly brief progress" aria-valuemin="0" aria-valuemax="4" data-brief-track><span data-brief-fill></span></div><span class="tw-lite__brief-reward" data-brief-reward></span><span class="tw-lite__brief-claimed" data-brief-claimed hidden>CLAIMED</span><button class="tw-lite__brief-claim" type="button" data-claim-weekly hidden></button></div>
+				</aside>
 				<div class="tw-lite__bite" data-bite hidden>FISH ON THE LINE <span>Tap SET HOOK!</span></div>
 				<div class="tw-lite__waters" role="group" aria-label="Choose fishing water" data-waters></div>
 				<div class="tw-lite__hud">
@@ -175,6 +208,7 @@ export class CanvasFishingGame {
 			if ( event.target.closest( '[data-graphics-info]' ) ) this.showGraphicsDetails();
 			if ( event.target.closest( '[data-copy-graphics-info]' ) ) this.copyGraphicsDetails();
 			if ( event.target.closest( '[data-upgrade-rod]' ) ) this.upgradeRod();
+			if ( event.target.closest( '[data-claim-weekly]' ) ) this.claimWeeklyBrief();
 
 		} );
 		this.resize();
@@ -372,6 +406,8 @@ export class CanvasFishingGame {
 		this.data.collection[ entry.id ] = collection;
 		this.data.catches ++;
 		this.data.bestKg = Math.max( kg, this.data.bestKg );
+		const brief = this.weeklyBrief;
+		if ( ! brief.claimed && ! brief.complete && fish.habitat?.[ brief.habitat ] >= 0.4 ) this.data.weeklyBrief.progress ++;
 		if ( this.data.bag.length < HOLD_LIMIT ) this.data.bag.push( { species: entry.id, kg, value } );
 		this.lastCatch = {
 			species: entry.id, kg, cm: Math.round( fishLengthCm( entry.id, kg ) ), value,
@@ -385,6 +421,19 @@ export class CanvasFishingGame {
 		this.message = `${ tag } ${ fish.name} · ${ kg.toFixed( 2 ) } kg · ${ money( value )} at Joe's stand.`;
 		this.renderUI();
 		if ( navigator.vibrate ) navigator.vibrate( [ 35, 30, 35 ] );
+
+	}
+
+	claimWeeklyBrief() {
+
+		const brief = this.weeklyBrief;
+		if ( ! brief.complete || brief.claimed ) return;
+		this.data.weeklyBrief.claimed = true;
+		this.data.cash += brief.reward;
+		this.message = 'Harbor brief complete! Joe paid ' + money( brief.reward ) + '. Your reward is in your wallet.';
+		this.save();
+		this.renderUI();
+		if ( navigator.vibrate ) navigator.vibrate( [ 40, 30, 65 ] );
 
 	}
 
@@ -527,6 +576,20 @@ export class CanvasFishingGame {
 		this.root.querySelector( '[data-hold]' ).textContent = `${ this.data.bag.length } / ${ HOLD_LIMIT } fish`;
 		const species = Object.keys( this.data.collection ).filter( ( id ) => this.data.collection[ id ].count > 0 ).length;
 		this.root.querySelector( '[data-log-count]' ).textContent = `${ species }/${ Object.keys( FISH ).length }`;
+		const brief = this.weeklyBrief;
+		this.root.querySelector( '[data-brief-icon]' ).textContent = brief.icon;
+		this.root.querySelector( '[data-brief-title]' ).textContent = brief.title;
+		this.root.querySelector( '[data-brief-description]' ).textContent = brief.description;
+		this.root.querySelector( '[data-brief-count]' ).textContent = brief.progress + ' / ' + brief.target;
+		const briefTrack = this.root.querySelector( '[data-brief-track]' );
+		briefTrack.setAttribute( 'aria-valuemax', String( brief.target ) );
+		briefTrack.setAttribute( 'aria-valuenow', String( brief.progress ) );
+		this.root.querySelector( '[data-brief-fill]' ).style.width = ( brief.progress / brief.target * 100 ) + '%';
+		this.root.querySelector( '[data-brief-reward]' ).textContent = 'REWARD ' + money( brief.reward );
+		this.root.querySelector( '[data-brief-claimed]' ).hidden = ! brief.claimed;
+		const claimBrief = this.root.querySelector( '[data-claim-weekly]' );
+		claimBrief.hidden = ! brief.complete || brief.claimed;
+		claimBrief.textContent = 'CLAIM ' + money( brief.reward );
 		for ( const button of this.watersEl.querySelectorAll( '[data-zone]' ) ) button.setAttribute( 'aria-pressed', String( button.dataset.zone === this.zone.id ) );
 		const costs = [ 180, 700, 2200 ];
 		const cost = costs[ this.data.rodLevel ];

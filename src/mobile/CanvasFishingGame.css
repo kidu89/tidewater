@@ -558,3 +558,141 @@
 	.tw-lite__hud { left: auto; width: min(410px, 48vw); padding: 10px; }
 	.tw-lite__device-note { margin-top: 6px; }
 }
+
+
+.tw-lite__brief {
+	position: absolute;
+	z-index: 3;
+	top: max(150px, calc(env(safe-area-inset-top) + 136px));
+	left: 50%;
+	width: min(88vw, 390px);
+	padding: 10px 12px;
+	transform: translateX(-50%);
+	border: 1px solid rgba(255, 197, 122, .29);
+	border-radius: 15px;
+	background: rgba(10, 24, 31, .7);
+	backdrop-filter: blur(13px);
+	-webkit-backdrop-filter: blur(13px);
+	box-shadow: 0 10px 28px rgba(4, 16, 24, .17);
+	font-variant-numeric: tabular-nums;
+}
+
+.tw-lite__brief-main,
+.tw-lite__brief-bottom {
+	display: flex;
+	align-items: center;
+}
+
+.tw-lite__brief-main { gap: 9px; }
+
+.tw-lite__brief-icon {
+	display: grid;
+	flex: 0 0 31px;
+	width: 31px;
+	height: 31px;
+	place-items: center;
+	border: 1px solid rgba(255, 197, 122, .22);
+	border-radius: 10px;
+	background: rgba(255, 197, 122, .1);
+	font-size: 16px;
+}
+
+.tw-lite__brief-copy {
+	min-width: 0;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.tw-lite__brief-kicker {
+	color: var(--lite-gold);
+	font-size: 8px;
+	font-weight: 800;
+	letter-spacing: .16em;
+}
+
+.tw-lite__brief-copy strong {
+	overflow: hidden;
+	font-size: 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.tw-lite__brief-copy small {
+	overflow: hidden;
+	color: var(--lite-muted);
+	font-size: 10px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.tw-lite__brief-count {
+	color: var(--lite-aqua);
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.tw-lite__brief-bottom {
+	gap: 8px;
+	margin: 9px 0 0 40px;
+}
+
+.tw-lite__brief-track {
+	flex: 1;
+	height: 5px;
+	overflow: hidden;
+	border-radius: 99px;
+	background: rgba(255, 255, 255, .13);
+}
+
+.tw-lite__brief-track span {
+	display: block;
+	width: 0;
+	height: 100%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, var(--lite-aqua), #b0f3c9);
+	transition: width .28s ease;
+}
+
+.tw-lite__brief-reward,
+.tw-lite__brief-claimed {
+	color: var(--lite-gold);
+	font-size: 8px;
+	font-weight: 800;
+	letter-spacing: .06em;
+	white-space: nowrap;
+}
+
+.tw-lite__brief-claimed { color: var(--lite-aqua); }
+
+.tw-lite__brief-claimed[hidden],
+.tw-lite__brief-claim[hidden] { display: none; }
+
+.tw-lite__brief-claim {
+	min-height: 30px;
+	padding: 0 9px;
+	border: 1px solid rgba(104, 228, 208, .39);
+	border-radius: 9px;
+	background: rgba(24, 87, 85, .72);
+	color: #b8fff0;
+	font: inherit;
+	font-size: 9px;
+	font-weight: 850;
+	letter-spacing: .04em;
+	touch-action: manipulation;
+}
+
+.tw-lite__brief-claim:focus-visible {
+	outline: 2px solid var(--lite-aqua);
+	outline-offset: 2px;
+}
+
+@media (max-height: 640px) and (orientation: landscape) {
+	.tw-lite__brief {
+		top: calc(env(safe-area-inset-top) + 130px);
+		left: 14px;
+		width: min(40vw, 360px);
+		transform: none;
+	}
+}

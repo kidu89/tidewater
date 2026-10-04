@@ -21,3 +21,10 @@ The local 1.0.28 debug APK installed successfully on a clean emulator. Its signe
 ## Release gates still open
 
 Physical Android installation/gameplay, full mobile WebGPU validation, signed Play release, signed iOS IPA, Steamworks IDs and SteamPipe upload remain outstanding. Monetization decisions still need player data.
+
+## 1.0.29 local candidate
+
+- Added a weekly harbor brief to Scenic Fishing. The rotating objective is limited to the six Scenic habitats and their existing scenes; only three location-based briefs are reachable in this mode; qualifying fish advance it, progress saves in the existing phone-mode save, and the player can claim the in-game cash reward once each UTC week.
+- Production web build and Capacitor Android sync succeeded. The APK is at release/1.0.29-android-local/Fishing-Free-1.0.29-Android.apk (57,761,153 bytes; SHA-256 2409BC064353A00BBF36C89064D5676788379AE87AF08F5186A5E416679DBA29). Package com.fishingfree.game, version 1.0.29/code 29, min API 24, target API 36. APK v2 signature and 4-byte alignment verified; local debug signer matches 1.0.28.
+- Installed over 1.0.28 on the Android 16 x86_64 emulator. Scenic scene, weekly card, cast and fish-bite states were visually confirmed. Full eligible catch, reward claim and restart persistence were not verified end-to-end.
+- This local candidate has not yet been pushed to GitHub Actions. Physical Samsung A52, MuMu Player, Huawei ELE-L29, WebGPU 3D, signed Play and iOS install checks remain open.
