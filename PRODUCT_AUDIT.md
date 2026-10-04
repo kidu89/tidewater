@@ -1,10 +1,14 @@
 # Fishing Free — product, market and monetization audit
 
 **Audit date:** 4 October 2026
-**Research baseline:** Fishing Free 1.0.34. Android, Windows, Pages and iOS Simulator Actions have fresh 4 October 2026 evidence; Android was installed on an API 36 emulator, while physical-phone WebGPU reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
+**Research baseline:** gameplay in Fishing Free 1.0.34, packaged as metadata-only version 1.0.35. Android, Windows, Pages and iOS Simulator Actions passed on 4 October 2026; the direct Android APK installed on an API 36 emulator. Physical-phone WebGPU reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
 **Purpose:** current product decision, market framing, monetization recommendation and release plan. Historical build details are kept in [docs/release status](docs/RELEASE_STATUS_2026-10-04.md).
 
-## Latest verified state — 4 October 2026
+## Release validation update — Fishing Free 1.0.35 — 4 October 2026
+
+Version 1.0.35 changes package/version and author metadata only; the gameplay evidence below remains the 1.0.34 baseline. Commit `a169252` and tags `android-v1.0.35` / `desktop-v1.0.35` are pushed. Android #32, Windows #33, Pages #119 and iOS Simulator #26 passed. The direct 57,738,940-byte debug APK (SHA-256 `E6599595423CCE28EFD1815BA8E1666BF514CC57D977A2B1EF6BFD51DB25D257`) installed as an update and opened on the Android 16 x86_64 emulator; a physical phone has not been checked.
+
+## Product evidence baseline — gameplay 1.0.34 — 4 October 2026
 
 Fishing Free 1.0.34 source commit 94b8e0f is pushed to the user-owned kidu89/tidewater repository. Android [run #31](https://github.com/kidu89/tidewater/actions/runs/37197749696), Windows [run #32](https://github.com/kidu89/tidewater/actions/runs/37197749770), Pages [run #116](https://github.com/kidu89/tidewater/actions/runs/37197717973) and iOS Simulator [run #23](https://github.com/kidu89/tidewater/actions/runs/37197717964) passed. Android, Windows and simulator artifacts are CI candidates; only Android was installed locally on an emulator.
 

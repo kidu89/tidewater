@@ -2,7 +2,13 @@
 
 Acesta este roadmap-ul de lucru pentru Fishing Free. Prioritatea executabilă este **Android → stabilitate pe dispozitive → prima sesiune reușită → share → progres și revenire → monetizare → extindere**. Pe iOS păstrăm versiunea web/PWA ca rută fără taxă de distribuție; IPA-ul instalabil și publicarea în App Store rămân opționale până când există acces la Apple Developer Program și materialele de semnare. Nu adăugăm sisteme online sau monetizare înainte ca jocul de bază să ruleze bine pe telefoanele țintă.
 
-## Revalidare la 1.0.34 — 4 octombrie 2026
+## Verificare pachet Fishing Free 1.0.35 — 4 octombrie 2026
+
+- Versiunea 1.0.35 aliniază metadatele Android, Windows și iOS și setează autorul Electron la Fishing Free; codul de joc nu s-a schimbat. APK-ul direct de 57.738.940 bytes a trecut verificarea manifestului, semnăturii v2 și alinierii, apoi s-a instalat ca actualizare și a deschis Scenic Fishing pe emulator Android 16 x86_64. Telefonul fizic și MuMu Player rămân neverificate.
+- GitHub Actions au trecut: Android #32, Windows #33, Pages #119 și iOS Simulator #26. Acestea confirmă compilarea/deploy-ul, nu instalarea fizică, 3D WebGPU pe A52, SteamPipe sau IPA semnat. Artefactele Android/Windows/iOS sunt păstrate până la 18 octombrie 2026.
+- Jocul nu are încă date reale de retenție sau conversie. Păstrăm planul de joc gratuit de bază și monetizare doar după playtest; buildul 1.0.35 nu adaugă sisteme noi de gameplay sau monetizare.
+
+## Gameplay baseline 1.0.34 — 4 octombrie 2026
 
 - **PC/Steam:** 1.0.32 rămâne ultima versiune Windows pornită și verificată vizual. Folderul x64 1.0.34 și ZIP-ul de transfer de 213,624,558 bytes sunt construite local, fără inspecție vizuală. Windows Actions #32 a trecut verificările de pachet și pornire. Capturile Steam 1.0.32 rămân locale și neaprobate; AppID/depot ID, PC retail curat, Steam client/overlay/controller, art final și SteamPipe rămân deschise. Folderul vechi release/win-unpacked nu a putut fi înlocuit din cauza unui DLL blocat de Windows; candidatul separat 1.0.34 este intact.
 - **Android:** APK-ul 1.0.34 s-a instalat pe emulator Android 16 x86_64; fallback-ul Scenic și noul buton TRY FULL 3D IN CHROME au fost verificate. WebView-ul emulatorului nu a returnat adaptor WebGPU; butonul a deschis pagina publică în Chrome, dar Chrome 3D pe A52 nu a fost verificat fizic. Scenic rămâne offline, iar Chrome cere internet și păstrează salvare separată. Samsung A52 și MuMu Player încă așteaptă test real. Captura GPU primită arată Android 10/HUAWEI ELE-L29; utilizatorul a menționat separat Samsung A52.
