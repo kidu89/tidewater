@@ -7,12 +7,12 @@ import { SCENIC_SAVE_KEY, normalizeScenicSave, createSaveBackup, parseSaveBackup
 const SAVE_KEY = SCENIC_SAVE_KEY;
 const HOLD_LIMIT = 10;
 const WATERS = [
-	{ id: 'pier', label: 'Old Pier', habitat: 'pier', sea: '#2c8f9a', deep: '#145264', sky: '#86c9e6', scene: 'mobile-scenes/pier.webp', position: '94% 50%' },
-	{ id: 'cay', label: 'Pelican Flats', habitat: 'cay', sea: '#4bb9a7', deep: '#257b80', sky: '#a1d9e8', scene: 'mobile-scenes/cay.webp', position: '10% 50%' },
-	{ id: 'reef', label: 'Coral Reef', habitat: 'reef', sea: '#20a9aa', deep: '#155d70', sky: '#8fd1e8', scene: 'mobile-scenes/reef.webp', position: '52% 50%' },
-	{ id: 'deep', label: 'Bluewater Drop', habitat: 'deep', sea: '#267d9b', deep: '#082c50', sky: '#74afd1', scene: 'mobile-scenes/deep.webp', position: '50% 52%' },
-	{ id: 'mangrove', label: 'Mangrove Creek', habitat: 'mangrove', sea: '#388d78', deep: '#174d4a', sky: '#a0c9b9', scene: 'mobile-scenes/mangrove.webp', position: '52% 55%' },
-	{ id: 'atoll', label: 'Sunspire Atoll', habitat: 'atoll', sea: '#2c9da7', deep: '#155766', sky: '#aadfe4', scene: 'mobile-scenes/atoll.webp', position: '49% 52%' },
+	{ id: 'pier', label: 'Old Pier', habitat: 'pier', sea: '#2c8f9a', deep: '#145264', sky: '#86c9e6', scene: 'mobile-scenes/pier.webp', portraitScene: 'mobile-scenes-portrait/pier.webp', position: '94% 50%' },
+	{ id: 'cay', label: 'Pelican Flats', habitat: 'cay', sea: '#4bb9a7', deep: '#257b80', sky: '#a1d9e8', scene: 'mobile-scenes/cay.webp', portraitScene: 'mobile-scenes-portrait/cay.webp', position: '10% 50%' },
+	{ id: 'reef', label: 'Coral Reef', habitat: 'reef', sea: '#20a9aa', deep: '#155d70', sky: '#8fd1e8', scene: 'mobile-scenes/reef.webp', portraitScene: 'mobile-scenes-portrait/reef.webp', position: '52% 50%' },
+	{ id: 'deep', label: 'Bluewater Drop', habitat: 'deep', sea: '#267d9b', deep: '#082c50', sky: '#74afd1', scene: 'mobile-scenes/deep.webp', portraitScene: 'mobile-scenes-portrait/deep.webp', position: '50% 52%' },
+	{ id: 'mangrove', label: 'Mangrove Creek', habitat: 'mangrove', sea: '#388d78', deep: '#174d4a', sky: '#a0c9b9', scene: 'mobile-scenes/mangrove.webp', portraitScene: 'mobile-scenes-portrait/mangrove.webp', position: '52% 55%' },
+	{ id: 'atoll', label: 'Sunspire Atoll', habitat: 'atoll', sea: '#2c9da7', deep: '#155766', sky: '#aadfe4', scene: 'mobile-scenes/atoll.webp', portraitScene: 'mobile-scenes-portrait/atoll.webp', position: '49% 52%' },
 ];
 const SCENIC_HABITATS = WATERS.map( ( water ) => water.habitat );
 const SCENIC_LOCATIONS = [ 'pelican-cay', 'mangrove-reach', 'sunspire-atoll' ];
@@ -135,8 +135,7 @@ export class CanvasFishingGame {
 		this.meterValue = this.root.querySelector( '[data-meter-value]' );
 		this.upgradeEl = this.root.querySelector( '[data-upgrade]' );
 		this.watersEl = this.root.querySelector( '[data-waters]' );
-		this.art.src = this.zone.scene;
-		this.art.style.objectPosition = this.zone.position;
+		this.applySceneArt();
 		this.makeWaterButtons();
 		this.actionButton.addEventListener( 'click', ( event ) => {
 
@@ -217,6 +216,34 @@ export class CanvasFishingGame {
 		this.ctx?.setTransform( dpr, 0, 0, dpr, 0, 0 );
 		this.width = width;
 		this.height = height;
+		this.applySceneArt();
+
+	}
+
+	applySceneArt( water = this.zone ) {
+
+		if ( ! this.art ) return;
+		const portrait = window.innerHeight >= window.innerWidth;
+		const scene = portrait && water.portraitScene ? water.portraitScene : water.scene;
+		this.art.style.objectPosition = portrait && water.portraitScene ? '50% 50%' : water.position;
+		if ( this.art.dataset.scene === scene ) return;
+		this.art.classList.add( 'is-loading' );
+		this.art.dataset.scene = scene;
+		this.art.onload = () => this.art.classList.remove( 'is-loading' );
+		this.art.onerror = () => {
+
+			this.art.classList.remove( 'is-loading' );
+			this.art.onerror = null;
+			if ( scene !== water.scene ) {
+
+				this.art.dataset.scene = water.scene;
+				this.art.style.objectPosition = water.position;
+				this.art.src = water.scene;
+
+			}
+
+		};
+		this.art.src = scene;
 
 	}
 
@@ -243,10 +270,7 @@ export class CanvasFishingGame {
 		const next = WATERS.find( ( water ) => water.id === id );
 		if ( ! next ) return;
 		this.zone = next;
-		this.art.classList.add( 'is-loading' );
-		this.art.addEventListener( 'load', () => this.art.classList.remove( 'is-loading' ), { once: true } );
-		this.art.style.objectPosition = next.position;
-		this.art.src = next.scene;
+		this.applySceneArt( next );
 		this.message = `${ next.label } selected. Different water brings different fish.`;
 		this.renderUI();
 

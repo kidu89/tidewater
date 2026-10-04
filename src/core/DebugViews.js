@@ -20,6 +20,12 @@ export const VIEWS = {
 	// from the pier over the shallows, looking down (refraction near the bottom edge of the screen)
 	pierShallows: { p: [ 53.4, 3.92, 5 ], yaw: 1.2, pitch: - 0.45, time: 9.0 },
 	pierShallowsE: { p: [ 56.6, 3.92, 5 ], yaw: - 1.2, pitch: - 0.45, time: 16.5 },
+	mobilePier: { p: [ 55, 4, - 58 ], yaw: Math.PI, pitch: - 0.02, time: 16.2 },
+	mobileCay: { p: [ 0, 7, 360 ], yaw: 0, pitch: - 0.10, time: 16.0 },
+	mobileReef: { p: [ - 78, 8, 112 ], yaw: 0, pitch: - 0.32, time: 13.0 },
+	mobileDeep: { p: [ 0, 10, 520 ], yaw: Math.PI, pitch: - 0.04, time: 14.0 },
+	mobileMangrove: { p: [ - 410, 7, 610 ], yaw: 0, pitch: - 0.10, time: 16.0 },
+	mobileAtoll: { p: [ 470, 7, 700 ], yaw: 0, pitch: - 0.10, time: 16.5 },
 	// looking at the sun from the beach, a little off axis (lens flare, sun disc); lookSun: aimed once the sky has updated
 	sunFlare: { p: [ 15, 3.0, - 58 ], yaw: 0, pitch: 0, time: 11.0, lookSun: [ 0.18, - 0.08 ] },
 	// at the waterline looking down toward the sun over the swash film (its edge on the wet sand)
