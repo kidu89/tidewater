@@ -1,6 +1,8 @@
 # Fishing Free — Steam for Windows
 
-The current Windows x64 CI candidate is Fishing Free 1.0.38. GitHub Actions [run #36](https://github.com/kidu89/tidewater/actions/runs/37213560189) built and passed staged launch/loopback checks; the `Fishing-Free-Windows-x64` artifact is available from that run. The locally reviewed candidate is still 1.0.37. The 1.0.38 change targets portrait Scenic art and does not alter desktop gameplay. Steamworks AppID/depot ID, store approval, SteamPipe upload and Steam-client testing remain open.
+The current Windows x64 CI candidate is Fishing Free 1.0.39. GitHub Actions [run #37](https://github.com/kidu89/tidewater/actions/runs/37221776556) built the `Fishing-Free-Windows-x64` artifact and passed the staged startup/loopback checks. The last locally inspected package remains 1.0.38; 1.0.39 changes the mobile catch touch guard and version metadata, not desktop gameplay. Steamworks AppID/depot ID, store approval, SteamPipe upload and Steam-client testing remain open.
+
+
 
 The game is packaged as an Electron desktop app. It runs the bundled Vite build from a loopback-only local server, so the game does not depend on a website being online. The renderer has Node integration disabled, uses context isolation and sandboxing, blocks navigation away from the game, and only opens explicitly linked HTTPS pages in the system browser.
 

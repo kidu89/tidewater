@@ -1,8 +1,8 @@
 # Fishing Free — Steam store page draft
 
-**Status:** Internal copy draft, 4 October 2026. Current Windows candidate: Fishing Free 1.0.38, built by GitHub Actions run #36. This is not a live Steam page; title clearance, Steamworks onboarding, final store art, owner approval and release approval remain open.
+**Status:** Internal copy draft, 4 October 2026. Current Windows CI candidate: Fishing Free 1.0.39, built by GitHub Actions [run #37](https://github.com/kidu89/tidewater/actions/runs/37221776556). The build passed CI startup and loopback checks but has not yet been unpacked for local visual review. This is not a live Steam page; title clearance, Steamworks onboarding, final store art, owner approval and release approval remain open.
 
-## Current 1.0.38 Windows package check
+## Previous 1.0.38 Windows package check
 
 The Windows Actions artifact from [run #36](https://github.com/kidu89/tidewater/actions/runs/37213560189) was downloaded and unpacked to release/1.0.38-windows-steam-candidate/win-unpacked/ for local review. The archive digest was sha256:2c5339ab7687e641070260ecdfe86a441d2570e2b8ebf6eb0e7bedd54e8914d6. The unpacked directory contains 72 files (448,985,436 bytes). Fishing Free.exe reports version 1.0.38.0 (245,780,992 bytes; SHA-256 780D551A30AF40ABA954451757A9D582390C051B64288CBB3AD1D8411673F866); resources/app.asar is 64,104,811 bytes (SHA-256 5B703F970287BF5530C76A218944CF3E2FD151B2621D5C6165AFAE69C64C20F8).
 
@@ -75,9 +75,9 @@ Do not add Multiplayer, Online Co-op, PvP, Steam Cloud, Steam Achievements, Stea
 
 ### Screenshots
 
-The 1.0.32 package has eight local 1920×1080 screenshots from actual play, but they are historical and do not represent the 1.0.38 candidate; owner approval is still pending. Suggested coverage for the final submitted set:
+The 1.0.32 package has eight local 1920×1080 screenshots from actual play, but they are historical and do not represent the current 1.0.39 candidate; owner approval is still pending. Suggested coverage for the final submitted set:
 
-Historical 1.0.30 review: the 18 images were captured from the production bundle rather than the packaged executable and are not current store evidence. The 1.0.32 screenshots above are historical too. The 1.0.38 free-camera captures are not a replacement store set; capture new unedited 1920×1080 images from the packaged 1.0.38 game and review their framing before submission. Steam graphical asset requirements: [Valve documentation](https://partner.steamgames.com/doc/store/assets?language=english).
+Historical 1.0.30 review: the 18 images were captured from the production bundle rather than the packaged executable and are not current store evidence. The 1.0.32 screenshots above are historical too. The 1.0.38 free-camera captures are not a replacement store set; capture new unedited 1920×1080 images from the packaged 1.0.39 game and review their framing before submission. Steam graphical asset requirements: [Valve documentation](https://partner.steamgames.com/doc/store/assets?language=english).
 
 1. First-person cast from the pier, rod and open water visible.
 2. A landed fish and the in-game catch card or field guide.
