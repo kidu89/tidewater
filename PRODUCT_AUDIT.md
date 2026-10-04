@@ -1,12 +1,12 @@
 # Fishing Free — product, market and monetization audit
 
 **Audit date:** 4 October 2026
-**Research baseline:** Fishing Free 1.0.36, with game systems and monetization assessed against the 1.0.34 gameplay baseline and the 1.0.36 harbor-rescue fix. Android, Windows, Pages and iOS Simulator Actions passed for 1.0.35; the direct 1.0.36 APK installed on an API 36 emulator. Physical-phone WebGPU reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
+**Research baseline:** Fishing Free 1.0.36, with game systems and monetization assessed against the 1.0.34 gameplay baseline and the 1.0.36 harbor-rescue fix. Android, Windows, Pages and iOS Simulator Actions passed for 1.0.36; the direct 1.0.36 APK installed on an API 36 emulator. Physical-phone WebGPU reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
 **Purpose:** current product decision, market framing, monetization recommendation and release plan. Historical build details are kept in [docs/release status](docs/RELEASE_STATUS_2026-10-04.md).
 
 ## Release validation update — Fishing Free 1.0.36 — 4 October 2026
 
-Version 1.0.36 adds the emergency harbor-rescue prompt fix; the product and monetization research below remains based on the established 1.0.34 gameplay baseline. The direct APK (57,738,912 bytes; SHA-256 `2D0DF61692A04A47F7095698D8F043432D82729825B4A5269257EAA5E04DD928`) installed over 1.0.35 and launched on an Android 16 x86_64 emulator. Physical-device installation and gameplay are still unverified.
+Version 1.0.36 adds the emergency harbor-rescue prompt fix; the product and monetization research below remains based on the established 1.0.34 gameplay baseline. Commit `5c3bc93` and both 1.0.36 tags are pushed. Android #33, Windows #34, Pages #121 and iOS Simulator #28 passed. The direct APK (57,738,912 bytes; SHA-256 `2D0DF61692A04A47F7095698D8F043432D82729825B4A5269257EAA5E04DD928`) installed over 1.0.35 and launched on an Android 16 x86_64 emulator. Physical-device installation and gameplay are still unverified.
 
 ## Release validation update — Fishing Free 1.0.35 — 4 October 2026
 
