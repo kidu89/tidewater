@@ -14,6 +14,7 @@ if ( /[?&]bench\b/.test( location.search ) ) {
 const bench = /[?&]bench\b/.test( location.search );
 const desktopShell = new URLSearchParams( location.search ).get( 'desktop' ) === '1';
 const WEBGPU_PROBE_TIMEOUT_MS = 10000;
+const ANDROID_WEBGPU_PROBE_TIMEOUT_MS = 4500;
 
 if ( ! bench && ! desktopShell && ! import.meta.env.DEV && 'serviceWorker' in navigator ) {
 	navigator.serviceWorker.register( `${ import.meta.env.BASE_URL }sw.js`, { scope: import.meta.env.BASE_URL } )
@@ -165,9 +166,10 @@ if ( loaderArt ) {
 async function findWebGPUAdapter() {
 
 	if ( ! navigator.gpu ) return null;
-	const deadline = performance.now() + WEBGPU_PROBE_TIMEOUT_MS;
 	const probe = globalThis.__fishingFreeWebGPUProbe = { attempts: [], result: 'Searching for a graphics adapter.' };
 	const androidVersion = Number( navigator.userAgent.match( /Android\s+(\d+)/i )?.[ 1 ] || 0 );
+	const probeTimeoutMs = androidVersion >= 12 ? ANDROID_WEBGPU_PROBE_TIMEOUT_MS : WEBGPU_PROBE_TIMEOUT_MS;
+	const deadline = performance.now() + probeTimeoutMs;
 	const coreOptions = [
 		[ 'High-performance', { powerPreference: 'high-performance' } ], [ 'Default', {} ], [ 'Low-power', { powerPreference: 'low-power' } ],
 	];
@@ -183,13 +185,14 @@ async function findWebGPUAdapter() {
 	for ( const [ label, options ] of optionsToTry ) {
 		const remaining = deadline - performance.now();
 		if ( remaining <= 0 ) {
-			probe.result = 'The adapter search reached its 10-second time limit.';
+			probe.result = `The adapter search reached its ${ ( probeTimeoutMs / 1000 ).toFixed( 1 ) }-second time limit.`;
 			return null;
 		}
 		const isOlderAndroidCompatibilityAttempt = androidVersion > 0 && androidVersion < 12 && label.startsWith( 'Compatibility' );
 		// The OpenGL ES compatibility adapter can take longer to initialize on Android 10/11.
-		// Give that path more time without extending the overall 10-second probe deadline.
-		const attemptTimeoutMs = isOlderAndroidCompatibilityAttempt ? 4500 : 2500;
+		// Android 12+ WebViews still get several backend attempts, but one stalled request should
+		// not keep phone players on the startup screen for the desktop timeout.
+		const attemptTimeoutMs = isOlderAndroidCompatibilityAttempt ? 4500 : androidVersion >= 12 ? 1500 : 2500;
 		let timeout;
 		let timedOut = false;
 
