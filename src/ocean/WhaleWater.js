@@ -61,7 +61,7 @@ export class WhaleWater {
 
 		const b = whale.brain;
 		const d = b.water - b.position.y; // depth of the root below the surface
-		const breaking = b.state === 'surface' && d < 1.6;
+		const breaking = b.state === 'surface' && d < 1.8;
 		if ( breaking ) {
 
 			// churn: a new patch every ~1.2 s at mid-body while the back is out, spreading behind

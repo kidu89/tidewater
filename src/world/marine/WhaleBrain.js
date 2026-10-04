@@ -14,9 +14,9 @@ const SURFACE_AT = 0.25; // route fraction where the surfacing sequence starts (
 const CRUISE_SPEED = 2.6; // m/s underwater
 const SURFACE_SPEED = 1.5;
 const BREACH_LAUNCH_ACCEL = 3.2; // m/s²: a restrained push toward the surface
-const BREACH_MAX_RISE_SPEED = 3.8; // m/s: keep the whale's exit slow and close to the water
-const BREACH_MAX_HEIGHT = - 1.1; // root height: only the crown can break the surface
-const BREACH_MAX_PITCH = 0.025; // rad: keep the long body level so its ends cannot read as airborne
+const BREACH_MAX_RISE_SPEED = 4.6; // m/s: enough energy for a shallow breach, not a high jump
+const BREACH_MAX_HEIGHT = - 1.5; // root height matched to the model's ~1.55 m crown
+const BREACH_MAX_PITCH = 0.08; // rad: a small nose-up angle; the whole body stays close to the water
 const BREACH_MAX_ROLL = 0.18; // rad: keep the long body upright through its low surface roll
 const ROOT_CLEARANCE = 2.5; // m from the seafloor to the whale's centre when the shelf is shallow
 const MIN_ROOT_DEPTH = 0.45; // m below water, so seabed avoidance can never lift the whale out
@@ -215,7 +215,7 @@ export class WhaleBrain {
 		const row = this.time * TAU / 11; // one heavy stroke every ~11 s
 		const air = target.breach === 'air';
 		// the slap: chosen now and then while the back is at the surface
-		if ( surface && this.water - this.y < 1.35 && ! this.slap && ! air ) {
+		if ( surface && this.water - this.y < 1.55 && ! this.slap && ! air ) {
 
 			this.slapTimer -= dt;
 			if ( this.slapTimer < 0 ) {
@@ -322,7 +322,7 @@ export class WhaleBrain {
 		k.push( { t: 9, depth: 1.3, pitch: 0.08, arch: 0, follow: 0.85, speed: SURFACE_SPEED, stroke: 0.07 } ); // rise
 		for ( let i = 0; i < n; i ++ ) {
 
-			k.push( { t: 3.5, depth: 1.12, pitch: 0.1, arch: 0.02, follow: 0.85, speed: SURFACE_SPEED, stroke: 0.03, blow: true } );
+			k.push( { t: 3.5, depth: 1.45, pitch: 0.18, arch: 0.02, follow: 0.85, speed: SURFACE_SPEED, stroke: 0.03, blow: true } );
 			if ( i < n - 1 ) {
 
 				// roll back under: the head goes down, the back and dorsal fin roll through
@@ -478,6 +478,14 @@ export class WhaleBrain {
 		if ( target.breach !== 'air' ) this.breachRoll += ( 0 - this.breachRoll ) * Math.min( 1, dt * 0.6 );
 		this.vy += ay * dt;
 		this.y += this.vy * dt;
+		// Semi-implicit integration can step past the height limit at low frame rates.
+		// Clamp after the step so the whale never rises above its intended silhouette.
+		if ( target.breach === 'air' && this.y > this.water + BREACH_MAX_HEIGHT ) {
+
+			this.y = this.water + BREACH_MAX_HEIGHT;
+			this.vy = Math.min( this.vy, 0 );
+
+		}
 		// hard floor: never closer than ~3.3 m (belly ~1.9 m) above the seabed under the body
 		const hard = Math.min( this.water - MIN_ROOT_DEPTH, floor + ROOT_CLEARANCE - 0.4 );
 		if ( this.y < hard ) {
@@ -497,7 +505,7 @@ export class WhaleBrain {
 		this.arch += ( ( target.arch || 0 ) - this.arch ) * k;
 		this.follow += ( ( target.follow ?? 0.85 ) - this.follow ) * Math.min( 1, dt * ( target.fluke ? 1.5 : 0.8 ) );
 		this.strokeAmp += ( ( target.stroke ?? 0.1 ) - this.strokeAmp ) * Math.min( 1, dt * 0.6 );
-		this.headPitch += ( ( target.blow ? 0.03 : 0 ) - this.headPitch ) * k;
+		this.headPitch += ( ( target.blow ? 0.08 : 0 ) - this.headPitch ) * k;
 		// tail beat: slow and heavy, ~5 s per stroke cruising, longer at the surface
 		this.strokePhase += TAU * ( 0.09 + 0.042 * this.speed ) * dt;
 		this.bob = - this.strokeAmp * 0.12 * Math.sin( this.strokePhase + 0.5 );
@@ -516,7 +524,7 @@ export class WhaleBrain {
 	// depth of the highest point of the back below the water (m, > 0 = submerged)
 	get backDepth() {
 
-		return this.water - ( this.y + 1.25 );
+		return this.water - ( this.y + 1.55 );
 
 	}
 
