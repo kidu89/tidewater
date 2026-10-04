@@ -2,6 +2,12 @@
 
 Acesta este roadmap-ul de lucru pentru Fishing Free. Prioritatea executabilă este **Android → stabilitate pe dispozitive → prima sesiune reușită → share → progres și revenire → monetizare → extindere**. Pe iOS păstrăm versiunea web/PWA ca rută fără taxă de distribuție; IPA-ul instalabil și publicarea în App Store rămân opționale până când există acces la Apple Developer Program și materialele de semnare. Nu adăugăm sisteme online sau monetizare înainte ca jocul de bază să ruleze bine pe telefoanele țintă.
 
+## Verificare Fishing Free 1.0.36 — 4 octombrie 2026
+
+- Am reparat cazul în care salvarea în port dispărea cât timp firul era activ: promptul de salvare rămâne accesibil și pe touch; acțiunea anulează firul și readuce jucătorul/barca la debarcader. Ridicarea automată a bărcii după răsturnare rămâne activă.
+- APK-ul 1.0.36 (cod 36, min API 24) s-a instalat peste buildul local 1.0.35 și a pornit în Scenic Fishing pe emulator Android 16. Samsung A52, MuMu și instalarea fizică rămân de verificat; buildul nu confirmă încă reproducerea unei răsturnări reale.
+- Pachetul Windows x64 1.0.36 s-a generat local, dar nu a fost lansat. Buildurile Actions și publicarea web urmează după push. Nicio schimbare la monetizare: jocul rămâne gratuit până avem rezultate de playtest/retention.
+
 ## Verificare pachet Fishing Free 1.0.35 — 4 octombrie 2026
 
 - Versiunea 1.0.35 aliniază metadatele Android, Windows și iOS și setează autorul Electron la Fishing Free; codul de joc nu s-a schimbat. APK-ul direct de 57.738.940 bytes a trecut verificarea manifestului, semnăturii v2 și alinierii, apoi s-a instalat ca actualizare și a deschis Scenic Fishing pe emulator Android 16 x86_64. Telefonul fizic și MuMu Player rămân neverificate.

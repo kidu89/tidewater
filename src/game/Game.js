@@ -302,13 +302,14 @@ export class Game {
 		const boat = app.boatCtl;
 		const boatDx = p.position.x - boat.position.x, boatDz = p.position.z - boat.position.z;
 		const nearBoat = ( p.mode === 'walk' || p.mode === 'swim' ) && p.nearBoat();
-		const walkSeparated = p.mode === 'walk' && ! boat.moored && boatDx * boatDx + boatDz * boatDz > 32 * 32 && ! p.busy;
+		const walkSeparated = p.mode === 'walk' && ! boat.moored && boatDx * boatDx + boatDz * boatDz > 32 * 32;
 		if ( p.mode === 'boat' || p.mode === 'deck' ) this._capsizeRecoveryPending = false;
 		const capsizedAndSeparated = this._capsizeRecoveryPending && ( p.mode === 'walk' || p.mode === 'swim' ) && ! nearBoat;
 		// Let the existing board prompt win while the swimmer is close enough to climb back aboard.
 		const separated = ( p.mode === 'swim' && ! nearBoat ) || walkSeparated;
 		const needsTow = ( boat.stranded && ! boat.moored ) || separated || capsizedAndSeparated;
-		if ( ! app.freeCam && ! p.busy && needsTow ) {
+		// Emergency harbor recovery stays visible while a cast is active; towToHarbor cancels it safely.
+		if ( ! app.freeCam && needsTow ) {
 
 			const text = capsizedAndSeparated ? 'Capsized · tap or press B for harbor rescue'
 				: boat.stranded && ! boat.moored ? 'Grounded · tap or press B for harbor tow'
