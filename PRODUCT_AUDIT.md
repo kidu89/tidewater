@@ -1,8 +1,17 @@
 # Fishing Free — product, market and monetization audit
 
 **Audit date:** 4 October 2026
-**Research baseline:** Fishing Free 1.0.37. The game systems and monetization remain assessed against the 1.0.34 gameplay baseline, 1.0.36 harbor-rescue fix and 1.0.37 whale-surfacing adjustment. Android, Windows, Pages and iOS Simulator Actions passed for 1.0.37; its local APK installed and launched on the Android 16 emulator. Physical-phone reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
+**Research baseline:** Fishing Free 1.0.38. The gameplay systems and monetization remain assessed against the 1.0.34 baseline, 1.0.36 harbor-rescue fix and 1.0.37 whale-surfacing adjustment; 1.0.38 improves portrait art in Scenic Fishing. Android, Windows, Pages and iOS Simulator Actions passed. Physical-phone reliability, retention and commercial viability remain unmeasured. The release source is in the user-owned kidu89/tidewater repository.
 **Purpose:** current product decision, market framing, monetization recommendation and release plan. Historical build details are kept in [docs/release status](docs/RELEASE_STATUS_2026-10-04.md).
+
+## Release validation update — Fishing Free 1.0.38 — 4 October 2026
+
+Commit `458729e` and tags `android-v1.0.38` / `desktop-v1.0.38` are pushed. The Scenic fallback now uses six high-resolution portrait scenes captured from the 3D renderer, while landscape keeps its panorama. Android Actions [#35](https://github.com/kidu89/tidewater/actions/runs/37213562689), Windows [#36](https://github.com/kidu89/tidewater/actions/runs/37213560189), Pages [#127](https://github.com/kidu89/tidewater/actions/runs/37213513841) and iOS Simulator [#34](https://github.com/kidu89/tidewater/actions/runs/37213513855) passed. The direct 1.0.38 APK is 60,771,416 bytes (SHA-256 `5C170F2D86850D9A59E225957C4A75059DC8F74C31EBA9BE7ECFE59F0FACC1B1`); its v2 signature, package metadata and 4-byte alignment passed verification.
+
+- **Phone delivery:** physical Samsung A52/MuMu installation remains unverified. The 1.0.38 Actions debug signature differs from both the supplied 1.0.24 APK and the previous 1.0.37 Actions APK, so Android refuses in-place updates across them. Uninstalling may erase local progress; 1.0.24 has no save-export screen. A stable private signing key is needed for future seamless updates. No emulator or phone data was removed.
+- **Windows/Steam:** Actions #36 passed the packaged Windows launch/loopback checks. The artifact is not an install through Steam; Steamworks IDs, store approval and SteamPipe upload remain open.
+- **iOS:** Actions #34 built an unsigned Simulator app. An iPhone-installable IPA still requires Apple signing assets; the user has a personal Apple ID only.
+- **Product evidence:** no retention, wishlist, conversion or sales data has been collected. The mobile art change does not establish increased retention or commercial viability.
 
 ## Release validation update — Fishing Free 1.0.37 — 4 October 2026
 

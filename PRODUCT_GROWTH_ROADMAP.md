@@ -2,6 +2,13 @@
 
 Acesta este roadmap-ul de lucru pentru Fishing Free. Prioritatea executabilă este **Android → stabilitate pe dispozitive → prima sesiune reușită → share → progres și revenire → monetizare → extindere**. Pe iOS păstrăm versiunea web/PWA ca rută fără taxă de distribuție; IPA-ul instalabil și publicarea în App Store rămân opționale până când există acces la Apple Developer Program și materialele de semnare. Nu adăugăm sisteme online sau monetizare înainte ca jocul de bază să ruleze bine pe telefoanele țintă.
 
+## Verificare Fishing Free 1.0.38 — 4 octombrie 2026
+
+- Fallback-ul de telefon folosește cadre portret 1080×2400 randate din joc pentru toate cele șase zone; landscape păstrează panoramele. Asset-urile sunt incluse în APK-ul 1.0.38.
+- Buildul Android, pachetul Windows, Pages și iOS Simulator au trecut în Actions. Asta confirmă împachetarea, nu instalarea pe Samsung A52/MuMu sau WebGPU pe telefoane.
+- Semnătura APK-ului Actions s-a schimbat față de 1.0.37. Pentru actualizări fără dezinstalare trebuie configurată o cheie Android stabilă; nu șterge instalarea veche dacă salvarea contează.
+- Nu schimbăm monetizarea pe baza acestui build; următorul pas rămâne verificarea unei sesiuni complete pe un telefon fizic și colectarea consimțită a datelor de retenție.
+
 ## Verificare Fishing Free 1.0.37 — 4 octombrie 2026
 
 - Am ajustat poziția de respirație a balenei și plafonul saltului după integrare; buildul web și APK-ul 1.0.37 au fost construite.
