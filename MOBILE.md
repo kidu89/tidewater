@@ -2,13 +2,13 @@
 
 Fishing Free keeps its original WebGPU 3D world on devices that support it. Android 12 and newer try WebGPU for up to 4.5 seconds, then open Scenic Fishing if no usable adapter is available; Android 10 and 11 go straight to Scenic Fishing. The touch fallback uses high-resolution scenes captured from the game, not real-time 3D. APKs display their version in the game and clear the game's old service-worker cache on startup; browser PWA caching stays on. Desktop retains the full renderer.
 
-## Current Android candidate — Fishing Free 1.0.29 (local candidate, 4 October 2026)
+## Current Android candidate — Fishing Free 1.0.29 (4 October 2026)
 
 - Local debug APK: `release/1.0.29-android-local/Fishing-Free-1.0.29-Android.apk` (57,761,153 bytes; SHA-256 `2409BC064353A00BBF36C89064D5676788379AE87AF08F5186A5E416679DBA29`).
 - Package `com.fishingfree.game`, version 1.0.29 / code 29, minimum API 24, target API 36. APK v2 signature and 4-byte alignment verified. Local signer SHA-256 `a6bcee7b761b12f3e85267f2579e9f3ec73609974d5fd0c8cb26dc37fb0507aa`; it matches the prior local 1.0.28 build. This is a debug sideload build, not a Play release.
 - Installed over 1.0.28 on an Android 16 x86_64 emulator: Scenic displayed the weekly objective card, accepted a cast and showed a fish bite. Full catch/claim and physical phone, MuMu Player, Huawei ELE-L29 and WebGPU 3D checks remain open.
 - GitHub Actions [run 37168743935](https://github.com/kidu89/tidewater/actions/runs/37168743935) passed its APK signature, package and alignment checks and uploaded an artifact (archive digest `sha256:fa1ed5cfee64fe058f22e23b6ab7ebf9cad1dc8c154214c097cdcafbbddbb288`, expires 18 October 2026). Actions debug signing can differ from the local signer.
-- Pages remains on 1.0.28 (run 37168627882); the 1.0.29 candidate is local and has not yet run in GitHub Actions.
+- The source commit 771ab24 and tag android-v1.0.29 are pushed. Pages, Android APK and iOS Simulator workflows are configured for these events; their 1.0.29 results have not yet been confirmed.
 
 ## Requirements
 
