@@ -601,7 +601,7 @@ export class CanvasFishingGame {
 		const labels = {
 			appVersion: 'Game version', mode: 'Rendering mode', osVersion: 'Operating system', engineVersion: 'Browser engine',
 			secureContext: 'Secure graphics context', webgpuApi: 'WebGPU API', adapterProbe: 'Adapter result',
-			adapterAttempts: 'Adapter attempts', reason: 'Fallback reason',
+			adapterDetails: 'Graphics adapter', adapterAttempts: 'Adapter attempts', reason: 'Fallback reason',
 		};
 		const rows = Object.entries( labels ).map( ( [ key, label ] ) => `<li><span>${ label }</span><strong data-graphics-value="${ key }">Checking…</strong></li>` ).join( '' );
 		const modal = this.root.querySelector( '[data-modal]' );

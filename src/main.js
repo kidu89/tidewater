@@ -52,6 +52,7 @@ function browserGraphicsDetails( reason = '' ) {
 		secureContext: globalThis.isSecureContext ? 'Yes' : 'No',
 		webgpuApi: navigator.gpu ? 'Available' : 'Not exposed',
 		adapterProbe: probe.result || ( navigator.gpu ? 'Not run' : 'Not available' ),
+		adapterDetails: probe.adapterDetails || 'Not exposed',
 		adapterAttempts: Array.isArray( probe.attempts ) && probe.attempts.length ? probe.attempts.join( '; ' ) : 'No adapter attempts recorded',
 		reason: reason || probe.startupError || 'No startup reason recorded',
 	};
@@ -195,10 +196,13 @@ async function findWebGPUAdapter() {
 		[ 'Compatibility', { featureLevel: 'compatibility' } ],
 	];
 	// Android 10/11 devices may expose WebGPU through Chrome's OpenGL ES compatibility
-	// backend rather than core Vulkan. Try that first so a slow core request cannot starve it.
+	// backend rather than core Vulkan. On newer Android, interleave both paths too: the short
+	// startup deadline must not be exhausted by stalled core probes before compatibility runs.
 	const optionsToTry = androidVersion > 0 && androidVersion < 12
 		? [ ...compatibilityOptions, ...coreOptions ]
-		: [ ...coreOptions, ...compatibilityOptions ];
+		: androidVersion >= 12
+			? [ ...coreOptions.slice( 0, 1 ), ...compatibilityOptions, ...coreOptions.slice( 1 ) ]
+			: [ ...coreOptions, ...compatibilityOptions ];
 	for ( const [ label, options ] of optionsToTry ) {
 		const remaining = deadline - performance.now();
 		if ( remaining <= 0 ) {
@@ -222,12 +226,20 @@ async function findWebGPUAdapter() {
 			] );
 			if ( adapter ) {
 				probe.attempts.push( `${ label }: adapter found` );
+				const info = adapter.info;
+				const adapterDetails = info && [ 'vendor', 'architecture', 'device', 'description' ]
+					.map( ( key ) => info[ key ] )
+					.filter( ( value ) => typeof value === 'string' && value.trim() )
+					.join( ' / ' );
+				probe.adapterDetails = adapterDetails || 'Adapter details are not exposed by this browser.';
 				probe.result = 'Adapter found.';
 				return adapter;
 			}
 			probe.attempts.push( `${ label }: ${ timedOut ? 'timed out' : 'no adapter' }` );
 		} catch ( error ) {
-			probe.attempts.push( `${ label }: request rejected${ error?.name ? ` (${ error.name })` : '' }` );
+			const message = error?.message ? String( error.message ).replace( /\s+/g, ' ' ).slice( 0, 120 ) : '';
+			const reason = [ error?.name, message ].filter( Boolean ).join( ': ' );
+			probe.attempts.push( `${ label }: request rejected${ reason ? ` (${ reason })` : '' }` );
 			// Keep trying without a preference for Android WebViews that reject adapter options.
 		} finally {
 			clearTimeout( timeout );
