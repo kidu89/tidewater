@@ -30,3 +30,12 @@ Physical Android installation/gameplay, full mobile WebGPU validation, signed Pl
 - Installed over 1.0.28 on the Android 16 x86_64 emulator. Scenic scene, weekly card, cast and fish-bite states were visually confirmed. Full eligible catch, reward claim and restart persistence were not verified end-to-end.
 - Android source commit 771ab24 and tag android-v1.0.29 are pushed. Android Actions [run #26](https://github.com/kidu89/tidewater/actions/runs/37172317923) passed; Pages [run #100](https://github.com/kidu89/tidewater/actions/runs/37173206912), iOS Simulator [run #7](https://github.com/kidu89/tidewater/actions/runs/37173206919), and Windows Steam [run #27](https://github.com/kidu89/tidewater/actions/runs/37173986774) passed for the 1.0.29 source. Physical Samsung A52, MuMu Player, Huawei ELE-L29, WebGPU 3D, signed Play and iOS install checks remain open.
 - Local Windows x64 folder `release/1.0.29-windows-candidate/win-unpacked/`: 752 files, 450,751,119 bytes; executable 1.0.29.0, PE x64, SHA-256 `C45C6B3D11EA2EBC341E03751542E1C90DA9E57FD767F8D319060EB08CEF6C86`. ZIP handoff is 218,302,372 bytes; SHA-256 `78E8E27E84173F4FA76C13F8910311944FA9F20AB4B7882B187CC81104023C44`. Windows Actions #27 uploaded a 214,625,301-byte artifact (digest `sha256:db283e3e7a34316cebe74c8970bcff72409edfd91d9c3832cc9f128d12004383`) and passed staged startup checks. This unsigned folder is not yet uploaded through SteamPipe.
+
+
+## Current source candidate: Fishing Free 1.0.30 — 4 October 2026
+
+- Added JSON export/restore for Scenic Fishing and local 3D saves. Imports are size-limited, schema-checked, normalized through the game save model, confirmed before replacement, and rolled back if storage writes fail.
+- Android sync and Vite production build completed. Local Gradle APK packaging is unavailable on this PC because Android SDK location is not configured. Android version is 1.0.30/code 30, minimum API 24, target API 36.
+- GitHub Actions Android artifact and physical Samsung A52/MuMu checks are pending. Existing repository authentication works in the terminal (git ls-remote succeeded), so no Git Credential Manager popup is required to push.
+- iOS project metadata is 1.0.30/build 30. The owner has no Apple Developer membership or signing assets; this remains an unsigned simulator/PWA path, not an installable IPA.
+- Previous installed/verified Android artifact remains version 1.0.29 until the 1.0.30 Actions build completes. Do not uninstall an existing install without saving its progress first.

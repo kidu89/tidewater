@@ -1,9 +1,10 @@
 import './CanvasFishingGame.css';
 import { FISH, fishLengthCm, fishValue } from '../game/FishTable.js';
 import { WEEKLY_BRIEFS, getUtcWeekId, getWeeklyBriefSpec } from '../game/WeeklyBriefs.js';
+import { SCENIC_SAVE_KEY, normalizeScenicSave, createSaveBackup, parseSaveBackup, restoreSaveBackup, exportSaveBackupFile } from './SaveBackup.js';
 
 // Preserve phone-mode progress from earlier builds under its original localStorage key.
-const SAVE_KEY = 'tidewater.phone-mode.v1';
+const SAVE_KEY = SCENIC_SAVE_KEY;
 const HOLD_LIMIT = 10;
 const WATERS = [
 	{ id: 'pier', label: 'Old Pier', habitat: 'pier', sea: '#2c8f9a', deep: '#145264', sky: '#86c9e6', scene: 'mobile-scenes/pier.webp', position: '94% 50%' },
@@ -51,41 +52,11 @@ export class CanvasFishingGame {
 		const empty = { cash: 0, rodLevel: 0, bag: [], collection: {}, catches: 0, bestKg: 0, weeklyBrief: null };
 		try {
 
-			const saved = JSON.parse( localStorage.getItem( SAVE_KEY ) || 'null' );
-			if ( ! saved || typeof saved !== 'object' ) return empty;
-			const bag = Array.isArray( saved.bag ) ? saved.bag.filter( ( fish ) => FISH[ fish.species ] && Number.isFinite( fish.kg ) && Number.isFinite( fish.value ) ).slice( 0, HOLD_LIMIT ) : [];
-			const collection = {};
-			if ( saved.collection && typeof saved.collection === 'object' ) {
+			return normalizeScenicSave( JSON.parse( localStorage.getItem( SAVE_KEY ) || 'null' ) ) || empty;
 
-				for ( const id in saved.collection ) if ( FISH[ id ] ) {
-
-					const entry = saved.collection[ id ];
-					if ( entry && Number.isFinite( entry.count ) ) collection[ id ] = { count: Math.max( 0, entry.count ), bestKg: Math.max( 0, Number( entry.bestKg ) || 0 ) };
-
-				}
-
-			}
-			const savedBrief = saved.weeklyBrief && typeof saved.weeklyBrief === 'object' && /^\d{4}-W\d{2}$/.test( saved.weeklyBrief.weekId || '' )
-				? WEEKLY_BRIEFS.find( ( brief ) => brief.id === saved.weeklyBrief.id && SCENIC_HABITATS.includes( brief.habitat ) && ( ! brief.location || SCENIC_LOCATIONS.includes( brief.location ) ) )
-				: null;
-			const weeklyBrief = savedBrief ? {
-				weekId: saved.weeklyBrief.weekId, id: savedBrief.id,
-				progress: Math.min( savedBrief.target, Math.max( 0, Math.floor( Number( saved.weeklyBrief.progress ) || 0 ) ) ),
-				claimed: !! saved.weeklyBrief.claimed,
-			} : null;
-			return {
-				cash: Math.max( 0, Number( saved.cash ) || 0 ), rodLevel: clamp( Number( saved.rodLevel ) || 0, 0, 3 ), bag, collection,
-				catches: Math.max( 0, Number( saved.catches ) || 0 ), bestKg: Math.max( 0, Number( saved.bestKg ) || 0 ), weeklyBrief,
-			};
-
-		} catch {
-
-			return empty;
-
-		}
+		} catch { return empty; }
 
 	}
-
 	save() {
 
 		try { localStorage.setItem( SAVE_KEY, JSON.stringify( this.data ) ); } catch { /* the game still works when storage is full or disabled */ }
@@ -209,6 +180,16 @@ export class CanvasFishingGame {
 			if ( event.target.closest( '[data-copy-graphics-info]' ) ) this.copyGraphicsDetails();
 			if ( event.target.closest( '[data-upgrade-rod]' ) ) this.upgradeRod();
 			if ( event.target.closest( '[data-claim-weekly]' ) ) this.claimWeeklyBrief();
+			if ( event.target.closest( '[data-save-manager]' ) ) this.showSaveManager();
+			if ( event.target.closest( '[data-export-save]' ) ) this.exportProgressBackup();
+			if ( event.target.closest( '[data-import-save]' ) ) this.root.querySelector( '[data-save-file]' )?.click();
+
+		} );
+		this.root.addEventListener( 'change', ( event ) => {
+
+			const picker = event.target.closest( '[data-save-file]' );
+			if ( picker?.files?.[ 0 ] ) this.importProgressBackup( picker.files[ 0 ] );
+			if ( picker ) picker.value = '';
 
 		} );
 		this.resize();
@@ -508,8 +489,69 @@ export class CanvasFishingGame {
 			return `<li><span>${ FISH[ id ].name }</span><strong>${ record.count } caught · best ${ record.bestKg.toFixed( 2 ) } kg</strong></li>`;
 
 		} ).join( '' );
-		this.root.querySelector( '[data-modal]' ).innerHTML = `<section class="tw-lite__dialog" role="dialog" aria-modal="true" aria-label="Fish logbook"><div class="tw-lite__dialog-top"><div><span>YOUR ISLAND JOURNAL</span><h2>Fish logbook</h2></div><button type="button" data-close-log aria-label="Close logbook">×</button></div><p>${ entries.length } of ${ Object.keys( FISH ).length } species discovered · ${ this.data.catches } fish landed · personal best ${ this.data.bestKg.toFixed( 2 ) } kg</p><ul>${ rows || '<li class="tw-lite__empty">No fish recorded yet. Cast a line to begin your collection.</li>' }</ul><button class="tw-lite__primary" type="button" data-close-log>BACK TO THE WATER</button></section>`;
+		this.root.querySelector( '[data-modal]' ).innerHTML = `<section class="tw-lite__dialog" role="dialog" aria-modal="true" aria-label="Fish logbook"><div class="tw-lite__dialog-top"><div><span>YOUR ISLAND JOURNAL</span><h2>Fish logbook</h2></div><button type="button" data-close-log aria-label="Close logbook">×</button></div><p>${ entries.length } of ${ Object.keys( FISH ).length } species discovered · ${ this.data.catches } fish landed · personal best ${ this.data.bestKg.toFixed( 2 ) } kg</p><ul>${ rows || '<li class="tw-lite__empty">No fish recorded yet. Cast a line to begin your collection.</li>' }</ul><button class="tw-lite__secondary tw-lite__save-manage" type="button" data-save-manager>BACK UP / RESTORE PROGRESS</button><button class="tw-lite__primary" type="button" data-close-log>BACK TO THE WATER</button></section>`;
 		this.root.querySelector( '[data-modal]' ).hidden = false;
+
+	}
+
+	showSaveManager( status = '' ) {
+
+		const modal = this.root.querySelector( '[data-modal]' );
+		modal.innerHTML = "<section class='tw-lite__dialog tw-lite__save-dialog' role='dialog' aria-modal='true' aria-label='Back up or restore progress'><div class='tw-lite__dialog-top'><div><span>PROTECT YOUR PROGRESS</span><h2>Save backup</h2></div><button type='button' data-close-log aria-label='Close save backup'>×</button></div><p>Your backup includes this fishing career and any 3D career saved on this device. Keep the JSON file somewhere safe before changing or reinstalling the app.</p><div class='tw-lite__save-actions'><button class='tw-lite__secondary' type='button' data-export-save>EXPORT BACKUP FILE</button><button class='tw-lite__secondary' type='button' data-import-save>RESTORE FROM BACKUP</button><input type='file' accept='application/json,.json,text/json' data-save-file hidden></div><small class='tw-lite__save-status' data-save-status role='status' aria-live='polite'></small><button class='tw-lite__primary' type='button' data-close-log>DONE</button></section>";
+		modal.querySelector( '[data-save-status]' ).textContent = status;
+		modal.hidden = false;
+
+	}
+
+	async exportProgressBackup() {
+
+		const status = this.root.querySelector( '[data-save-status]' );
+		if ( status ) status.textContent = 'Preparing your backup…';
+		try {
+
+			const backup = createSaveBackup( this.data, window.localStorage, __FISHING_FREE_VERSION__ );
+			const message = await exportSaveBackupFile( backup );
+			const currentStatus = this.root.querySelector( '[data-save-status]' );
+			if ( currentStatus ) currentStatus.textContent = message;
+
+		} catch ( error ) {
+
+			const currentStatus = this.root.querySelector( '[data-save-status]' );
+			if ( currentStatus ) currentStatus.textContent = error?.message || 'Could not create the backup file. Try again.';
+
+		}
+
+	}
+
+	async importProgressBackup( file ) {
+
+		const status = this.root.querySelector( '[data-save-status]' );
+		if ( ! file ) return;
+		if ( status ) status.textContent = 'Reading your backup…';
+		try {
+
+			if ( file.size > 1024 * 1024 ) throw new Error( 'The backup file is too large.' );
+			const backup = parseSaveBackup( await file.text() );
+			if ( ! window.confirm( 'Restore the progress contained in this backup? It will replace progress for the included game modes on this device.' ) ) {
+
+				if ( status ) status.textContent = 'Restore cancelled. Your current progress is unchanged.';
+				return;
+
+			}
+			const restored = restoreSaveBackup( backup, window.localStorage );
+			if ( backup.saves.scenic ) this.data = backup.saves.scenic;
+			this.renderUI();
+			const message = restored.scenic && restored.webgpu
+				? 'Scenic and 3D progress restored. Restart the game to reload the 3D career.'
+				: restored.webgpu ? '3D progress restored. Restart the game to reload that career.' : 'Scenic Fishing progress restored.';
+			this.showSaveManager( message );
+
+		} catch ( error ) {
+
+			const currentStatus = this.root.querySelector( '[data-save-status]' );
+			if ( currentStatus ) currentStatus.textContent = error?.message || 'Could not restore this backup. Your current progress is unchanged.';
+
+		}
 
 	}
 

@@ -1,6 +1,6 @@
 # Fishing Free — Steam for Windows
 
-The current store-page copy, verified feature list and media/release checklist are in [docs/STEAM_STORE_DRAFT.md](docs/STEAM_STORE_DRAFT.md). It is an internal draft, not a published Steam page.
+The project source is now version 1.0.30; the last packaged Windows candidate remains 1.0.29 until the new desktop-v1.0.30 Actions build completes. The current store-page copy, verified feature list and media/release checklist are in [docs/STEAM_STORE_DRAFT.md](docs/STEAM_STORE_DRAFT.md). It is an internal draft, not a published Steam page.
 
 The game is packaged as an Electron desktop app. It runs the bundled Vite build from a loopback-only local server, so the game does not depend on a website being online. The renderer has Node integration disabled, uses context isolation and sandboxing, blocks navigation away from the game, and only opens explicitly linked HTTPS pages in the system browser.
 
@@ -8,7 +8,7 @@ The game is packaged as an Electron desktop app. It runs the bundled Vite build 
 
 The public repository is owned by `kidu89`, and the game UI, package metadata and executable are branded **Fishing Free**. The `tidewater` repository slug and legacy browser-storage keys remain for URL and save compatibility; they are not product labels. Keep the upstream MIT copyright/license notice and all third-party asset credits in source and shipping builds. Those notices preserve the source and asset licenses; they are not publisher branding.
 
-## Current release candidate — Fishing Free 1.0.29 — 4 October 2026
+## Previous Windows candidate — Fishing Free 1.0.29 — 4 October 2026
 
 - Local Windows x64 folder: `release/1.0.29-windows-candidate/win-unpacked/` (752 files, 450,751,119 bytes). `Fishing Free.exe` reports 1.0.29.0 (245,780,992 bytes; SHA-256 `C45C6B3D11EA2EBC341E03751542E1C90DA9E57FD767F8D319060EB08CEF6C86`); `resources/app.asar` is 60,370,292 bytes (SHA-256 `964B18B4E15C94A4E4A3F058E30C0EFA9C7CFA655102E709C5D67A4C5041B2C1`). PE machine `0x8664` confirms x64. The candidate is unsigned. Windows handoff ZIP: `release/1.0.29-windows-candidate/Fishing-Free-1.0.29-Windows-x64.zip` (218,302,372 bytes; SHA-256 `78E8E27E84173F4FA76C13F8910311944FA9F20AB4B7882B187CC81104023C44`).
 - Local Electron packaging completed successfully from the current 1.0.29 source. Windows Actions [run #27](https://github.com/kidu89/tidewater/actions/runs/37173986774) built and uploaded `Fishing-Free-Windows-x64` (214,625,301 bytes; archive digest `sha256:db283e3e7a34316cebe74c8970bcff72409edfd91d9c3832cc9f128d12004383`), and passed executable-presence plus staged startup/loopback checks. The artifact is retained until 18 October 2026.

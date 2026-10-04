@@ -530,6 +530,25 @@
 	font-weight: 800;
 }
 
+.tw-lite__dialog .tw-lite__save-actions {
+	display: grid;
+	gap: 8px;
+	margin: 6px 0 12px;
+}
+
+.tw-lite__dialog .tw-lite__save-actions button,
+.tw-lite__dialog .tw-lite__save-manage {
+	width: 100%;
+}
+
+.tw-lite__dialog .tw-lite__save-status {
+	min-height: 30px;
+	margin: 0 0 10px;
+	color: var(--lite-aqua);
+	font-size: 11px;
+	line-height: 1.4;
+}
+
 .tw-lite__dialog .tw-lite__empty {
 	display: block;
 	color: var(--lite-muted);

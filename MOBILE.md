@@ -2,7 +2,14 @@
 
 Fishing Free keeps its original WebGPU 3D world on devices that support it. Android 12 and newer try WebGPU for up to 4.5 seconds, then open Scenic Fishing if no usable adapter is available; Android 10 and 11 go straight to Scenic Fishing. The touch fallback uses high-resolution scenes captured from the game, not real-time 3D. APKs display their version in the game and clear the game's old service-worker cache on startup; browser PWA caching stays on. Desktop retains the full renderer.
 
-## Current Android candidate — Fishing Free 1.0.29 (4 October 2026)
+## Current source — Fishing Free 1.0.30 (4 October 2026)
+
+- Added export and restore for Scenic Fishing progress and any saved 3D career. The JSON backup is validated before import; restore asks before replacing matching saves and rolls storage back if writing fails.
+- Production web build and Capacitor Android sync succeeded. Android metadata is version 1.0.30/code 30, package com.fishingfree.game, minimum API 24, target API 36.
+- This PC has no configured Android SDK (sdk.dir/ANDROID_HOME missing), so it could not produce a local APK. A push of tag android-v1.0.30 will ask GitHub Actions to build the sideload APK; result pending.
+- The native iOS project is version 1.0.30/build 30. The owner has a personal Apple ID but no Developer Program membership or signing assets, so a simulator build can be created but an iPhone-installable IPA cannot yet be signed.
+
+## Previous verified Android candidate — Fishing Free 1.0.29 (4 October 2026)
 
 - Local debug APK: `release/1.0.29-android-local/Fishing-Free-1.0.29-Android.apk` (57,761,153 bytes; SHA-256 `2409BC064353A00BBF36C89064D5676788379AE87AF08F5186A5E416679DBA29`).
 - Package `com.fishingfree.game`, version 1.0.29 / code 29, minimum API 24, target API 36. APK v2 signature and 4-byte alignment verified. Local signer SHA-256 `a6bcee7b761b12f3e85267f2579e9f3ec73609974d5fd0c8cb26dc37fb0507aa`; it matches the prior local 1.0.28 build. This is a debug sideload build, not a Play release.
