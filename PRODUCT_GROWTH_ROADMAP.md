@@ -7,6 +7,7 @@ Acesta este roadmap-ul de lucru pentru Fishing Free. Prioritatea executabilă es
 - Am ajustat poziția de respirație a balenei și plafonul saltului după integrare; buildul web și APK-ul 1.0.37 au fost construite.
 - APK-ul s-a instalat și a pornit în Scenic Fishing pe emulator Android 16. Animația 3D a balenei nu a fost reprodusă manual, iar Samsung A52/MuMu rămân neverificate.
 - Android #34, Windows #35, Pages #123 și iOS Simulator #30 au trecut în Actions. IPA-ul pentru iPhone și instalarea fizică rămân deschise; monetizarea nu se schimbă până avem date reale de retenție.
+- Candidatul local Windows x64 1.0.37 și arhiva Steam de transfer au fost construite; Actions #35 a trecut smoke testul de pornire. AppID/depot ID, pagina Steam, semnarea și uploadul SteamPipe rămân necesare.
 
 ## Verificare Fishing Free 1.0.36 — 4 octombrie 2026
 
