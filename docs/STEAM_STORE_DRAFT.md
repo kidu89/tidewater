@@ -1,8 +1,16 @@
 # Fishing Free — Steam store page draft
 
-**Status:** Internal copy draft, 4 October 2026. Current Windows candidate: Fishing Free 1.0.32. This is not a live Steam page; title clearance, Steamworks onboarding, final store art, owner approval and release approval remain open.
+**Status:** Internal copy draft, 4 October 2026. Current Windows candidate: Fishing Free 1.0.38, built by GitHub Actions run #36. This is not a live Steam page; title clearance, Steamworks onboarding, final store art, owner approval and release approval remain open.
 
-## Current 1.0.32 Windows screenshot review
+## Current 1.0.38 Windows package check
+
+The Windows Actions artifact from [run #36](https://github.com/kidu89/tidewater/actions/runs/37213560189) was downloaded and unpacked to release/1.0.38-windows-steam-candidate/win-unpacked/ for local review. The archive digest was sha256:2c5339ab7687e641070260ecdfe86a441d2570e2b8ebf6eb0e7bedd54e8914d6. The unpacked directory contains 72 files (448,985,436 bytes). Fishing Free.exe reports version 1.0.38.0 (245,780,992 bytes; SHA-256 780D551A30AF40ABA954451757A9D582390C051B64288CBB3AD1D8411673F866); resources/app.asar is 64,104,811 bytes (SHA-256 5B703F970287BF5530C76A218944CF3E2FD151B2621D5C6165AFAE69C64C20F8).
+
+The exact package was launched with an isolated local profile. It reached the title screen, completed shader loading, and entered the harbor scene after selecting the start button. The browser exposed a WebGPU adapter, and no JavaScript exceptions or browser console errors were recorded during this pass. All six portrait scene files (atoll, cay, deep, mangrove, pier and reef) returned HTTP 200 with image/webp content type from the packaged app. Local captures package-first-launch.png and package-after-start.png are retained with the ignored release files for review; they are not store submissions.
+
+This check covers one Windows host in headless mode. It does not verify a clean retail install, Steam overlay, physical controller, Steam Deck, save migration, or performance across other GPUs. The package has not been signed with a public code-signing certificate. The newer 1.0.38 scene captures made from the developer free camera are internal references only; several show clipped objects or unsuitable framing, so they are not the final Steam screenshot set. Capture and review at least five clean gameplay images from the exact release package before store submission.
+
+## Historical 1.0.32 Windows screenshot review
 
 The 1.0.32 candidate was launched from the packaged Windows executable in release/win-unpacked/Fishing Free.exe (245,780,992 bytes; SHA-256 A8CFBA8FCBFF09CBFCE17DF8714A9832BAC553F9F003C27DD4F1E745943BE444). Captures were made directly from that running production package at 1920×1080. Movement, fishing, catches, boat boarding, helm use and travel were performed with ordinary in-game controls. No screenshot was edited, cropped, composited or annotated.
 
@@ -67,9 +75,9 @@ Do not add Multiplayer, Online Co-op, PvP, Steam Cloud, Steam Achievements, Stea
 
 ### Screenshots
 
-The existing beach captures are useful scene references. The 1.0.32 packaged build now has eight local 1920×1080 review screenshots listed above; owner approval is still pending. Suggested coverage for the final submitted set:
+The 1.0.32 package has eight local 1920×1080 screenshots from actual play, but they are historical and do not represent the 1.0.38 candidate; owner approval is still pending. Suggested coverage for the final submitted set:
 
-Historical 1.0.30 review: the 18 images were captured from the production bundle rather than the packaged executable and are not current store evidence. Use the eight exact-package 1.0.32 frames listed near the top of this draft for owner review. Steam graphical asset requirements: [Valve documentation](https://partner.steamgames.com/doc/store/assets?language=english).
+Historical 1.0.30 review: the 18 images were captured from the production bundle rather than the packaged executable and are not current store evidence. The 1.0.32 screenshots above are historical too. The 1.0.38 free-camera captures are not a replacement store set; capture new unedited 1920×1080 images from the packaged 1.0.38 game and review their framing before submission. Steam graphical asset requirements: [Valve documentation](https://partner.steamgames.com/doc/store/assets?language=english).
 
 1. First-person cast from the pier, rod and open water visible.
 2. A landed fish and the in-game catch card or field guide.
@@ -101,7 +109,7 @@ Record a 45–60 second trailer from the final Windows build: harbor and changin
 - Decide whether a demo is worth maintaining. If offered, give it a satisfying, clearly bounded fishing loop and test the save handoff before publishing.
 - Confirm minimum Windows version and GPU requirements using a clean install. The current 3D renderer needs a usable WebGPU adapter; do not claim universal GPU compatibility.
 - Test first launch, shader compilation time, save persistence, display scaling, window controls, sleep/resume, the Steam overlay and controller input on a clean Windows 10/11 machine.
-- Windows 1.0.32 candidate: locally packaged in release/win-unpacked/ (752 files; 450,759,879 bytes; executable version 1.0.32.0; SHA-256 A8CFBA8FCBFF09CBFCE17DF8714A9832BAC553F9F003C27DD4F1E745943BE444). The production build was opened in an isolated profile with WebGPU; title screen, 3D gameplay, controls, photo mode, fishing, a natural catch, journal, pier walk, boat boarding, helm and underway movement were visually checked. The unsigned package has not been installed through Steam or a clean retail PC. Eight exact-package screenshots are locally available for owner review; destination fishing still needs a clean capture. Steamworks IDs, controller/overlay checks and SteamPipe upload remain outstanding. Windows Actions [run #30](https://github.com/kidu89/tidewater/actions/runs/37188543312) passed and uploaded the 1.0.32 ZIP artifact (214,626,920 bytes; digest sha256:7b7689a313689ad13bbc97ee0f30c38b13f520347581bad7c7ba158541965964).
+- Historical Windows 1.0.32 candidate: locally packaged in release/win-unpacked/ (752 files; 450,759,879 bytes; executable version 1.0.32.0; SHA-256 A8CFBA8FCBFF09CBFCE17DF8714A9832BAC553F9F003C27DD4F1E745943BE444). The production build was opened in an isolated profile with WebGPU; title screen, 3D gameplay, controls, photo mode, fishing, a natural catch, journal, pier walk, boat boarding, helm and underway movement were visually checked. The unsigned package has not been installed through Steam or a clean retail PC. Eight exact-package screenshots are locally available for owner review; destination fishing still needs a clean capture. Steamworks IDs, controller/overlay checks and SteamPipe upload remain outstanding. Windows Actions [run #30](https://github.com/kidu89/tidewater/actions/runs/37188543312) passed and uploaded the 1.0.32 ZIP artifact (214,626,920 bytes; digest sha256:7b7689a313689ad13bbc97ee0f30c38b13f520347581bad7c7ba158541965964).
 - Complete Steamworks partner onboarding, Steam Direct, the app and Windows depot setup, store/build review, SteamPipe upload, Coming Soon period and owner-triggered release.
 - Steam Direct is currently US$100 per app credit, recoupable after at least US$1,000 adjusted gross revenue; first releases also have a 30-day wait after fee payment and need a publicly visible Coming Soon page for at least two weeks. Valve says store-page and build reviews typically take 3–5 business days and recommends submitting at least 7 business days before a planned go-live. Recheck the fee, timing, and review state in Steamworks before setting a release date. [Steam Direct](https://partner.steamgames.com/steamdirect/), [review process](https://partner.steamgames.com/doc/store/review_process?l=english), [release process](https://partner.steamgames.com/doc/store/releasing?l=english).
 
