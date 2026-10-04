@@ -7,18 +7,18 @@ Fishing Free keeps its original WebGPU 3D world on devices that support it. Andr
 - Local debug APK: `release/1.0.29-android-local/Fishing-Free-1.0.29-Android.apk` (57,761,153 bytes; SHA-256 `2409BC064353A00BBF36C89064D5676788379AE87AF08F5186A5E416679DBA29`).
 - Package `com.fishingfree.game`, version 1.0.29 / code 29, minimum API 24, target API 36. APK v2 signature and 4-byte alignment verified. Local signer SHA-256 `a6bcee7b761b12f3e85267f2579e9f3ec73609974d5fd0c8cb26dc37fb0507aa`; it matches the prior local 1.0.28 build. This is a debug sideload build, not a Play release.
 - Installed over 1.0.28 on an Android 16 x86_64 emulator: Scenic displayed the weekly objective card, accepted a cast and showed a fish bite. Full catch/claim and physical phone, MuMu Player, Huawei ELE-L29 and WebGPU 3D checks remain open.
-- GitHub Actions [run 37168743935](https://github.com/kidu89/tidewater/actions/runs/37168743935) passed its APK signature, package and alignment checks and uploaded an artifact (archive digest `sha256:fa1ed5cfee64fe058f22e23b6ab7ebf9cad1dc8c154214c097cdcafbbddbb288`, expires 18 October 2026). Actions debug signing can differ from the local signer.
-- The source commit 771ab24 and tag android-v1.0.29 are pushed. Pages, Android APK and iOS Simulator workflows are configured for these events; their 1.0.29 results have not yet been confirmed.
+- GitHub Actions [run #26](https://github.com/kidu89/tidewater/actions/runs/37172317923) succeeded for 1.0.29 and uploaded artifact Fishing-Free-Android-APK (57,066,910 bytes; archive digest `sha256:cb9b68b2ebc30496146ff71fd523c1579725cc78edac6e01f4305eef30b7385f`).
+- Source commit 771ab24 and tag android-v1.0.29 are pushed. Android Actions run #26 passed; Pages run #99 and iOS Simulator run #6 also succeeded for the 1.0.29 code.
 
 ## Requirements
 
-- Current Android candidates: the local 1.0.29 APK above and the most recent Actions artifact from run 37168743935 (1.0.28). Both are debug-signed sideload builds, not Play releases; local and Actions keys may differ.
-- Safari on iOS can install the PWA. The native iOS project now uses 1.0.29/build 29. The last iOS Simulator workflow passed for 1.0.28 in [run 37168627889](https://github.com/kidu89/tidewater/actions/runs/37168627889); the unsigned simulator app cannot install on iPhone. The owner has a personal Apple ID but no Apple Developer membership or signing assets, so no signed IPA exists.
+- Current Android candidates: local APK 1.0.29 above and Actions artifact 1.0.29 from run #26. Both are debug-signed sideload builds, not Play releases; local and Actions keys may differ.
+- Safari on iOS can install the PWA. The native iOS project uses 1.0.29/build 29. iOS Simulator [run #6](https://github.com/kidu89/tidewater/actions/runs/37172503848) passed, but its unsigned simulator app cannot install on iPhone. The owner has a personal Apple ID but no Apple Developer membership or signing assets, so no signed IPA exists.
 - Android builds require Android Studio and its SDK. Native iOS builds require macOS with Xcode.
 
 ### Install on a phone with the PWA
 
-The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.28. Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
+The PWA is deployed at [Fishing Free](https://kidu89.github.io/tidewater/) at version 1.0.29 (Pages run #99). Open it in Chrome on Android or Safari on iOS and use **Install app** or **Add to Home Screen**. Supported devices start the full 3D renderer; if WebGPU fails, the source opens Scenic Fishing automatically. The PWA needs internet on first load, then the service worker caches the app shell and game assets. Native APKs bundle assets and run offline; they remove old game service-worker caches so app updates use the assets shipped in the APK.
 
 ## Create native projects
 
@@ -59,7 +59,7 @@ Create the upload keystore in Android Studio with **Build → Generate Signed Bu
 
 ## Build a signed IPA with GitHub Actions
 
-The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current source metadata is app version **1.0.29**, build **29**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. The unsigned Simulator workflow now runs on pushes to `main` and last passed for 1.0.28; it is not an iPhone-installable build. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
+The workflow at `.github/workflows/ios-ipa.yml` uses a GitHub-hosted macOS runner with Xcode. Current source metadata is app version **1.0.29**, build **29**, bundle ID `com.fishingfree.game`, and deployment target iOS 15. The unsigned Simulator workflow now runs on pushes to `main` and passed for 1.0.29 in [run #6](https://github.com/kidu89/tidewater/actions/runs/37172503848). It is not an iPhone-installable build. No signed IPA exists. The owner confirmed they have a personal Apple ID but no Apple Developer Program membership. Apple allows free-account testing on personal devices through Xcode on a Mac, but distributing through TestFlight or to registered devices requires program membership. Until then, the Safari PWA is the available iPhone install route. The workflow also requires these repository secrets before it can produce an installable IPA:
 
 - `IOS_TEAM_ID`: the Apple Developer team ID.
 - `IOS_CERTIFICATE_P12_BASE64`: base64-encoded Apple Distribution certificate and private key exported as a password-protected P12.
