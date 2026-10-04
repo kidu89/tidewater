@@ -7,13 +7,13 @@ Fishing Free keeps its original WebGPU 3D world on devices that support it. Andr
 - Local APK: `release/1.0.27-android-local/Fishing-Free-1.0.27-Android.apk` (57,732,097 bytes; SHA-256 `E88C201EC456838847B25A96DEB038939142F0BECAF2A86D6C20CEE5F5F42B33`).
 - Package `com.fishingfree.game`, version 1.0.27 / code 27, minimum API 24, target API 36. APK v2 signature and 4-byte alignment verified.
 - Local debug signer SHA-256: `a6bcee7b761b12f3e85267f2579e9f3ec73609974d5fd0c8cb26dc37fb0507aa`; it matches the prior local 1.0.26 build. This is a sideload candidate, not a Play release.
-- The 1.0.27 web bundle and Android debug APK built successfully. The APK itself has not yet been installed on an emulator or physical phone. The Android 16 emulator fallback check was for 1.0.26 and used a separate `.validation` package; the existing 1.0.20 emulator install and its data were preserved. No physical Samsung A52 or Huawei install/gameplay check has passed.
-- The previous GitHub Actions Android artifact is 1.0.26, run [37158444814](https://github.com/kidu89/tidewater/actions/runs/37158444814). A 1.0.27 artifact will be linked here after its tagged workflow finishes.
-- The public Pages deployment is still 1.0.26 until the new `main` commit finishes deployment. The previous deployment was [run 37158408850](https://github.com/kidu89/tidewater/actions/runs/37158408850).
+- Downloaded CI APK: `release/1.0.27-android-actions/Fishing-Free-1.0.27-Android.apk` (57,731,953 bytes; SHA-256 `17625E01DA5CBC71161C81B198B4AD70802807BD2D03581A2FC2134E4074383A`). CI verified its v2 signature and 4-byte alignment, which were also rechecked locally. The APK has not yet been installed on an emulator or physical phone; the Android 16 emulator fallback check is for 1.0.26 only, and no physical Samsung A52 or Huawei check has passed.
+- GitHub Actions run [37166245631](https://github.com/kidu89/tidewater/actions/runs/37166245631) uploaded the 1.0.27 APK successfully. Its artifact archive digest is `sha256:e78949781ac653e88f5af578501a8ba784ecceb377d89a27f460ce270a6a57b8`, retained until 18 October 2026; the previous 1.0.26 artifact is historical.
+- Pages deployed 1.0.27 successfully in [run 37166225321](https://github.com/kidu89/tidewater/actions/runs/37166225321). The previous deployment was [run 37158408850](https://github.com/kidu89/tidewater/actions/runs/37158408850).
 
 ## Requirements
 
-- Current local candidate: the standalone APK listed above. The matching GitHub Actions artifact will be linked when available.
+- Current candidates: the local APK listed above and the verified Actions APK from run 37166245631. Both are debug-signed sideload builds, not Play releases.
 - Safari on iOS can install the PWA. The native iOS project now has consistent 1.0.27/build 27 metadata, but no signed, phone-installable IPA exists. The owner has a personal Apple ID but no Apple Developer membership or signing assets.
 - Android builds require Android Studio and its SDK. Native iOS builds require macOS with Xcode.
 
